@@ -1,0 +1,6 @@
+F:\Checkmate\Checkmate\Plugins\Checkmate.GlobalData\obj\Debug\Checkmate.GlobalData.csprojAssemblyReference.cache
+F:\Checkmate\Checkmate\Plugins\Libs\GlobalData.dll
+F:\Checkmate\Checkmate\Plugins\Libs\GlobalData.pdb
+F:\Checkmate\Checkmate\Plugins\Checkmate.GlobalData\obj\Debug\GlobalData.dll
+F:\Checkmate\Checkmate\Plugins\Checkmate.GlobalData\obj\Debug\GlobalData.pdb
+F:\Checkmate\Checkmate\Plugins\Checkmate.GlobalData\obj\Debug\Checkmate.GlobalData.csproj.CopyComplete

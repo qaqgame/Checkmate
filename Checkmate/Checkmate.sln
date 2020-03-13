@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{B8BA81D9-4826-D0A2-FC92-BC8CE0F9533A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QGFCore", "..\QGF\QGFCore\QGFCore.csproj", "{1CAC25D1-719C-468B-A835-0591176B0179}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QGFUnity", "..\QGF\QGFUnity\QGFUnity.csproj", "{CD8CC7D2-E8B9-49C6-A0E0-F2C526431E48}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QGFDebuger", "..\QGF\QGFDebuger\QGFDebuger.csproj", "{1E82D70A-9A5F-440D-9668-D7F7F50B5336}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Checkmate.GlobalData", "Plugins\Checkmate.GlobalData\Checkmate.GlobalData.csproj", "{989CAECB-1A41-4C8C-A0A3-1A9B543623BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Checkmate.ILRScript", "Plugins\Checkmate.ILRScript\Checkmate.ILRScript.csproj", "{2C921970-777E-4D01-BC9B-4C5026106C55}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B8BA81D9-4826-D0A2-FC92-BC8CE0F9533A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8BA81D9-4826-D0A2-FC92-BC8CE0F9533A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8BA81D9-4826-D0A2-FC92-BC8CE0F9533A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8BA81D9-4826-D0A2-FC92-BC8CE0F9533A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CAC25D1-719C-468B-A835-0591176B0179}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CAC25D1-719C-468B-A835-0591176B0179}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CAC25D1-719C-468B-A835-0591176B0179}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CAC25D1-719C-468B-A835-0591176B0179}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD8CC7D2-E8B9-49C6-A0E0-F2C526431E48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD8CC7D2-E8B9-49C6-A0E0-F2C526431E48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD8CC7D2-E8B9-49C6-A0E0-F2C526431E48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD8CC7D2-E8B9-49C6-A0E0-F2C526431E48}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E82D70A-9A5F-440D-9668-D7F7F50B5336}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E82D70A-9A5F-440D-9668-D7F7F50B5336}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E82D70A-9A5F-440D-9668-D7F7F50B5336}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E82D70A-9A5F-440D-9668-D7F7F50B5336}.Release|Any CPU.Build.0 = Release|Any CPU
+		{989CAECB-1A41-4C8C-A0A3-1A9B543623BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{989CAECB-1A41-4C8C-A0A3-1A9B543623BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{989CAECB-1A41-4C8C-A0A3-1A9B543623BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{989CAECB-1A41-4C8C-A0A3-1A9B543623BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C921970-777E-4D01-BC9B-4C5026106C55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C921970-777E-4D01-BC9B-4C5026106C55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C921970-777E-4D01-BC9B-4C5026106C55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C921970-777E-4D01-BC9B-4C5026106C55}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

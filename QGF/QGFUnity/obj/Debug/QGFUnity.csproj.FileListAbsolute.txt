@@ -1,0 +1,6 @@
+F:\Checkmate\QGF\Libs\QGFUnity.dll
+F:\Checkmate\QGF\Libs\QGFUnity.pdb
+F:\Checkmate\QGF\QGFUnity\obj\Debug\QGFUnity.dll
+F:\Checkmate\QGF\QGFUnity\obj\Debug\QGFUnity.pdb
+F:\Checkmate\QGF\QGFUnity\obj\Debug\QGFUnity.csprojAssemblyReference.cache
+F:\Checkmate\QGF\QGFUnity\obj\Debug\QGFUnity.csproj.CopyComplete

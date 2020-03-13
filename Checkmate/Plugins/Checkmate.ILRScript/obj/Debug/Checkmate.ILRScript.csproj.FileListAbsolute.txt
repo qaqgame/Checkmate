@@ -1,0 +1,6 @@
+F:\Checkmate\Checkmate\Plugins\Libs\ILRScript.dll
+F:\Checkmate\Checkmate\Plugins\Libs\ILRScript.pdb
+F:\Checkmate\Checkmate\Plugins\Checkmate.ILRScript\obj\Debug\ILRScript.dll
+F:\Checkmate\Checkmate\Plugins\Checkmate.ILRScript\obj\Debug\ILRScript.pdb
+F:\Checkmate\Checkmate\Plugins\Checkmate.ILRScript\obj\Debug\Checkmate.ILRScript.csprojAssemblyReference.cache
+F:\Checkmate\Checkmate\Plugins\Checkmate.ILRScript\obj\Debug\Checkmate.ILRScript.csproj.CopyComplete
