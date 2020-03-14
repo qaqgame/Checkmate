@@ -7,7 +7,7 @@ using QGF.Common;
 
 namespace QGF.Module
 {
-    class ModuleManager:Singleton<ModuleManager>
+    public class ModuleManager:Singleton<ModuleManager>
     {
         class MessageObject
         {
@@ -25,6 +25,7 @@ namespace QGF.Module
         {
             mAllModules = new Dictionary<string, GeneralModule>();
             mCacheMessage = new Dictionary<string, List<MessageObject>>();
+            mListModuleActivator = new List<IModuleActivator>();
         }
 
         //初始化

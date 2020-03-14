@@ -5,14 +5,18 @@ using System.Text;
 using System.Threading.Tasks;
 using QGF.Unity.UI;
 using QGF;
+using UnityEngine.UI;
 namespace Assets.chess.Modules.ExampleA.UI
 {
-    class UIMsgBox:UIWindow
+    public class UIMsgBox:UIWindow
     {
+        public Text textContent;
         protected override void OnOpen(object arg = null)
         {
             base.OnOpen(arg);
-            this.AddUIClickListener("btnOK",OnBtnOk);
+            this.AddUIClickListener("btnOk",OnBtnOk);
+            textContent.text = arg as string;
+            
         }
 
         private void OnBtnOk()

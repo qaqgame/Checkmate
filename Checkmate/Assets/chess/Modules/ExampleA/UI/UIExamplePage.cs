@@ -4,28 +4,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QGF.Unity.UI;
-
+using QGF;
 namespace Assets.chess.Modules.ExampleA.UI
 {
-    class UIExamplePage:UIPage
+    public class UIExamplePage:UIPage
     {
 
         protected override void OnOpen(object arg = null)
         {
             base.OnOpen(arg);
 
-            this.AddUIClickListener("btmShowMsgBox", OnBtnShowMsgBox);
-            this.AddUIClickListener("btmShowMsgTips", OnBtnShowMsgTips);
+            this.AddUIClickListener("btnShowMsgBox", OnBtnShowMsgBox);
+            this.AddUIClickListener("btnShowMsgTips", OnBtnShowMsgTips);
         }
 
         private void OnBtnShowMsgBox()
         {
-            UIManager.Instance.OpenWindow("UIMsgBox");
+            Debuger.Log("btn msg clicked");
+            UIManager.Instance.OpenWindow("ExampleA/UIMsgBox","这是一个测试window");
         }
 
         private void OnBtnShowMsgTips()
         {
-            UIManager.Instance.OpenWindow("UIMsgTips");
+            
+            UIManager.Instance.OpenWidget("ExampleA/UIMsgTips");
         }
     }
 }

@@ -1,6 +1,10 @@
 ﻿using Assets.chess;
 using System;
 using UnityEngine;
+using QGF.Time;
+using QGF.Module;
+using QGF.Unity.UI;
+using QGF;
 namespace Assets.Chess
 {
     public class AppMain:MonoBehaviour
@@ -14,7 +18,7 @@ namespace Assets.Chess
         private void Start()
         {
             //初始化时间
-            //QGFTime.TimeAppStart = DateTime.Now;
+            QGFTime.TimeAppStart = DateTime.Now;
 
             //初始化debugger
             InitDebuger();
@@ -49,7 +53,9 @@ namespace Assets.Chess
         private void Exit(string msg)
         {
             //清理模块管理器
+            ModuleManager.Instance.Clear();
             //清理UI管理
+            UIManager.Instance.Clean();
             //清理在线管理
             //清理ILR
             //清理版本管理
@@ -58,6 +64,12 @@ namespace Assets.Chess
         private void InitDebuger()
         {
             //设置debugger的开关
+            Debuger.Init(Application.persistentDataPath + "/DebuggerLog/", new UnityDebugerConsole());
+            Debuger.EnableLog = true;
+            Debuger.EnableSave = true;
+            Debuger.EnableStack = true;
+            Debuger.Log("init over");
+
         }
 
         private void InitVersion()
@@ -73,14 +85,23 @@ namespace Assets.Chess
         {
             //初始化ILR
             //初始化模块管理器
+            ModuleManager.Instance.Init();
+            ModuleManager.Instance.RegistModuleActivator(new NativeModuleActivator(ModuleDef.Namespace, ModuleDef.NativeAssemblyName));
+
             //初始化UI管理
+            UIManager.Instance.Init("ui/");
+            UIManager.SceneLoading = "UISceneLoading";
             //初始化在线管理
 
 
             //显示登陆界面
 
             //如果登录成功，初始化普通业务模块
-            GlobalEvent.onLogin = OnLogin;
+            GlobalEvent.onLogin += OnLogin;
+
+            //example
+            ModuleManager.Instance.CreateModule("ExampleAModule");
+            ModuleManager.Instance.ShowModule("ExampleAModule");
         }
 
         private void OnLogin(bool success)

@@ -56,6 +56,15 @@ namespace QGF.Unity.UI
             }
         }
 
+        public static void SetText(UIBehaviour ui,string text)
+        {
+            Text objText = ui.transform.GetComponentInChildren<Text>();
+            if (objText != null)
+            {
+                objText.text = text;
+            }
+        }
+
 
     }
 }

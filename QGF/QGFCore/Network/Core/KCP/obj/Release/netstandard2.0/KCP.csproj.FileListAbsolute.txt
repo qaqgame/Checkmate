@@ -1,0 +1,3 @@
+F:\Checkmate\QGF\QGFCore\Network\Core\KCP\obj\Release\netstandard2.0\KCP.csprojAssemblyReference.cache
+F:\Checkmate\QGF\QGFCore\Network\Core\KCP\obj\Release\netstandard2.0\KCP.AssemblyInfoInputs.cache
+F:\Checkmate\QGF\QGFCore\Network\Core\KCP\obj\Release\netstandard2.0\KCP.AssemblyInfo.cs

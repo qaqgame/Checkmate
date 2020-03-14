@@ -17,7 +17,7 @@ namespace QGF.Unity.UI
             GameObject gobj = Find(name);
             if (gobj != null)
             {
-                gobj.GetComponent<T>();
+                return gobj.GetComponent<T>();
             }
             return null;
         }

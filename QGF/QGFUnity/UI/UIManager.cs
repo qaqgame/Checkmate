@@ -73,10 +73,10 @@ namespace QGF.Unity.UI
         {
             T ui=UIRoot.Find<T>(name);
             //没有则尝试加载
-            if (ui = null)
+            if (ui == null)
             {
+                Debuger.LogWarning("not found, start to load");
                 ui = Load<T>(name);
-                ;
             }
             //有则调出
             if(ui!=null)
@@ -98,6 +98,7 @@ namespace QGF.Unity.UI
             GameObject original=UIRes.LoadPrefab(name);
             if (original != null)
             {
+                Debuger.Log("succeed load res:{0}", name);
                 GameObject gobj = GameObject.Instantiate(original);
                 ui = gobj.GetComponent<T>();
 
@@ -105,6 +106,10 @@ namespace QGF.Unity.UI
                 {
                     gobj.name = name;
                     UIRoot.AddChild(ui);
+                    if (mListLoadedPanel.IndexOf(ui) < 0)
+                    {
+                        mListLoadedPanel.Add(ui);
+                    }
                 }
                 else
                 {
@@ -159,7 +164,7 @@ namespace QGF.Unity.UI
             {
                 mPageTrackStack.Push(mCurPage);
             }
-
+            OpenPageWorker(pageName, arg);
             
         }
 

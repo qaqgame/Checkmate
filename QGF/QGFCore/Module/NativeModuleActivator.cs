@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QGF.Module
 {
-    class NativeModuleActivator : IModuleActivator
+    public class NativeModuleActivator : IModuleActivator
     {
         private string mNamespace = "";
         private string mAssemblyName = "";
@@ -22,7 +22,7 @@ namespace QGF.Module
         {
             var fullName = mNamespace + "." + moduleName;
             
-            var type=Type.GetType(fullName + "." +mAssemblyName);
+            var type=Type.GetType(fullName + "," +mAssemblyName);
             if (type != null)
             {
                 return Activator.CreateInstance(type) as GeneralModule;

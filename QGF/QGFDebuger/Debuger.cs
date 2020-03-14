@@ -197,7 +197,7 @@ namespace QGF
         //----------------------------------------------------------------------
         //Log
         //----------------------------------------------------------------------
-        [Conditional("ENABLE_LOG")]
+        [Conditional("EnableLog")]
         public static void Log(object obj)
         {
             if (!Debuger.EnableLog)
@@ -209,7 +209,7 @@ namespace QGF
             Internal_Log(Prefix + message);
         }
 
-        [Conditional("ENABLE_LOG")]
+        [Conditional("EnableLog")]
         public static void Log(string message = "")
         {
             if (!Debuger.EnableLog)
@@ -221,7 +221,7 @@ namespace QGF
             Internal_Log(Prefix + message);
         }
 
-        [Conditional("ENABLE_LOG")]
+        [Conditional("EnableLog")]
         public static void Log(string format, params object[] args)
         {
             if (!Debuger.EnableLog)
@@ -235,7 +235,7 @@ namespace QGF
 
 
 
-        [Conditional("ENABLE_LOG")]
+        [Conditional("EnableLog")]
         public static void Log(this ILogTag obj, string message = "")
         {
             if (!Debuger.EnableLog)
@@ -248,7 +248,7 @@ namespace QGF
             
         }
 
-        [Conditional("ENABLE_LOG")]
+        [Conditional("EnableLog")]
         public static void Log(this ILogTag obj, string format, params object[] args)
         {
             if (!Debuger.EnableLog)
