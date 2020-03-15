@@ -12,6 +12,8 @@
 /Checkmate/[Bb]uilds/
 /Checkmate/[Ll]ogs/
 /Checkmate/[Mm]emoryCaptures/
+/Checkmate/Packages/
+/Checkmate/Plugins/Libs/
 
 # Never ignore Asset meta data
 !/Checkmate/[Aa]ssets/**/*.meta

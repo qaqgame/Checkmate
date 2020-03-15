@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace QGF.Network.Core
 {
-    class NetMessage
+    public class NetMessage
     {
 
         private static NetBuffer DefaultWriter = new NetBuffer(4096);

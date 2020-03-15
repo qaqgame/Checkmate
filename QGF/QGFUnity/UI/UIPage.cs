@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 namespace QGF.Unity.UI
 {
-    public class UIPage:UIPanel
+    public abstract class UIPage:UIPanel
     {
 
         public override UITypeDef UIType { get { return UITypeDef.Page; } }

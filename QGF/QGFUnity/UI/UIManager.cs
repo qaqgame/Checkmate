@@ -17,6 +17,7 @@ namespace QGF.Unity.UI
         {
             public string name;
             public object arg;
+            public Type type;
         }
 
         private Stack<UIPageTrack> mPageTrackStack;//page打开记录
@@ -101,6 +102,18 @@ namespace QGF.Unity.UI
                 Debuger.Log("succeed load res:{0}", name);
                 GameObject gobj = GameObject.Instantiate(original);
                 ui = gobj.GetComponent<T>();
+                //没有则尝试添加
+                if (ui == null)
+                {
+                    try
+                    {
+                        ui = gobj.AddComponent<T>();
+                    }
+                    catch(Exception e)
+                    {
+                        Debuger.LogError("无法添加抽象panel!");
+                    }
+                }
 
                 if (ui!=null)
                 {
@@ -156,6 +169,18 @@ namespace QGF.Unity.UI
 
         //==================================
         #region Page
+
+        public void OpenPage<T>(string name, object arg = null) where T : UIPage
+        {
+            Debuger.Log(name);
+
+            if (mCurPage != null)
+            {
+                mPageTrackStack.Push(mCurPage);
+            }
+
+            OpenPageWorker(name, arg,typeof(T));
+        }
         public void OpenPage(string pageName,object arg = null)
         {
             Debuger.Log("page:{0},arg:{1}", pageName, arg);
@@ -175,7 +200,7 @@ namespace QGF.Unity.UI
             if (mPageTrackStack.Count > 0)
             {
                 var track = mPageTrackStack.Pop();
-                OpenPageWorker(track.name, track.arg);
+                OpenPageWorker(track.name, track.arg,track.type);
             }
             //否则打开主页
             else
@@ -184,11 +209,12 @@ namespace QGF.Unity.UI
             }
         }
         //打开page
-        private void OpenPageWorker(string pageName,object arg)
+        private void OpenPageWorker(string pageName,object arg,Type type=null)
         {
             mCurPage = new UIPageTrack();
             mCurPage.name = pageName;
             mCurPage.arg = arg;
+            mCurPage.type = type;
 
             CloseAllLoadedPanel();
             Open<UIPage>(pageName, arg);
@@ -197,24 +223,30 @@ namespace QGF.Unity.UI
         public void EnterMainPage()
         {
             mPageTrackStack.Clear();
-            OpenPageInScene(MainScene, MainPage, null);
+            OpenPageInScene(MainScene, MainPage, null, null);
         }
 
-        private void OpenPageInScene(string scene,string page,object arg)
+        public void EnterMainPage<T>()
+        {
+            mPageTrackStack.Clear();
+            OpenPageInScene(MainScene, MainPage, null,typeof(T));
+        }
+
+        private void OpenPageInScene(string scene,string page,object arg,Type type)
         {
             Debuger.Log("scene:{0}, page:{1}, arg:{2}", scene, page, arg);
             string oldScene = SceneManager.GetActiveScene().name;
             //在该场景则直接显示
             if (oldScene == scene)
             {
-                OpenPageWorker(page, arg);
+                OpenPageWorker(page, arg,type);
             }
             //否则先回到该场景
             else
             {
                 LoadScene(scene, () =>
                 {
-                    OpenPageWorker(page, arg);
+                    OpenPageWorker(page, arg,type);
                 });
             }
         }
@@ -240,6 +272,13 @@ namespace QGF.Unity.UI
             }
         }
 
+        public UIWindow OpenWindow<T>(string name, object arg = null) where T : UIWindow
+        {
+            Debuger.Log(name);
+            UIWindow ui = Open<T>(name, arg);
+            return ui;
+        }
+
 
         #endregion
         //====================================
@@ -262,9 +301,17 @@ namespace QGF.Unity.UI
             }
         }
 
+        public UIWidget OpenWidget<T>(string name, object arg = null) where T : UIWidget
+        {
+            Debuger.Log(name);
+            UIWidget ui = Open<T>(name, arg);
+            return ui;
+        }
+
         #endregion
         //======================================
         #region UILoading
+
         public UILoading OpenLoading(string name, object arg = null)
         {
             Debuger.Log(name);
@@ -281,6 +328,17 @@ namespace QGF.Unity.UI
                 ui.Close(arg);
             }
         }
+
+        public UILoading OpenLoading<T>(string name, object arg = null) where T : UILoading
+        {
+            Debuger.Log(name);
+            UILoading ui = Open<T>(name, arg);
+            return ui;
+        }
         #endregion
+
+
+        //==========================================
+
     }
 }

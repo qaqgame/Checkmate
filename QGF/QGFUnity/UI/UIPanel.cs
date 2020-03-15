@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 namespace QGF.Unity.UI
 {
-    public class UIPanel:MonoBehaviour,ILogTag
+    public abstract class UIPanel:MonoBehaviour,ILogTag
     {
         public virtual UITypeDef UIType { get { return UITypeDef.Unknown; } }
 

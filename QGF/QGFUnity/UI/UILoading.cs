@@ -19,7 +19,7 @@ namespace QGF.Unity.UI
             return string.Format("title:{0}, tips:{1}, progress:{2}", title, tips, progress);
         }
     }
-    public class UILoading:UIPanel
+    public abstract class UILoading:UIPanel
     {
         public override UITypeDef UIType { get { return UITypeDef.Loading; } }
 

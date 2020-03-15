@@ -1,6 +1,8 @@
 ﻿using QGF.Codec;
+using QGF.Common;
 using QGF.Network.Core;
 using QGF.Network.Core.RPCLite;
+using QGF.Time;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +19,7 @@ namespace QGF.Network.General.Client
         private uint mUid;//user id
         private RPCManagerBase mRPC;
 
-        private string mCurInvokeName;//当前RPC调用的函数
+        
 
 
         //连接类型-连接id-连接用的本地端口
@@ -87,7 +89,7 @@ namespace QGF.Network.General.Client
             //通过传统方式(protobuf)
             else
             {
-                //HandlePBMessage(msg);
+                HandlePBMessage(msg);
             }
         }
 
@@ -95,10 +97,17 @@ namespace QGF.Network.General.Client
         //============================
         //处理RPC消息
         //================================
+        #region RPCHandler
+        private string mCurInvokeName;//当前RPC调用的函数
+
         //注册RPC函数反射
         public void RegistRPCListener(object listener)
         {
             mRPC.RegistListner(listener);
+        }
+        public void UnRegistRPCListener(object listener)
+        {
+            mRPC.UnRegistListner(listener);
         }
         public void HandleRPCMessage(RPCMessage msg)
         {
@@ -171,7 +180,196 @@ namespace QGF.Network.General.Client
             int len = nmsg.Serialize(out temp);
             mConn.Send(temp, len);
         }
+        #endregion
 
+
+        //================
+        //处理传统protobuf
+        //=======================
+        #region ProtoBuf
+
+        class ListenerHelper
+        {
+            public uint cmd;
+            public uint index;//监听的索引
+            public Type TMsg;//反序列化的类型
+            public Delegate onMsg;//反序列化后的处理
+            public Delegate onErr;//反序列化错误的处理
+            public float timeout;
+            public float timestamp;
+        }
+        //该类用于获取应答的索引
+        static class MessageIndexGenerator
+        {
+            private static uint m_lastIndex;
+            public static uint NewIndex()
+            {
+                return ++m_lastIndex;
+            }
+        }
+
+        //处理由服务器通知的消息
+        private DictionarySafe<uint, ListenerHelper> mListNtfListener = new DictionarySafe<uint, ListenerHelper>();
+        //处理与服务器之间问答的消息 index-listener
+        private MapList<uint, ListenerHelper> mListRepListener = new MapList<uint, ListenerHelper>();
+
+
+        //发送请求并等待回复
+        //req:请求内容
+        //cmd：协议类型
+        //onRsp:response的处理函数
+        public void Send<TReq,TRsp>(uint cmd,TReq req,Action<TRsp> onRsp,float timeout = 30, Action<int> onErr = null)
+        {
+            NetMessage msg = new NetMessage();
+            msg.head.index = MessageIndexGenerator.NewIndex();
+            msg.head.cmd = cmd;
+            msg.head.uid = mUid;
+            msg.content = PBSerializer.NSerialize(req);
+            msg.head.dataSize = (ushort)msg.content.Length;
+
+            byte[] temp;
+            int len = msg.Serialize(out temp);
+            mConn.Send(temp, len);
+
+            AddListener(cmd, typeof(TRsp), onRsp, msg.head.index, timeout, onErr);
+        }
+
+        //发送请求并不处理回复
+        public void Send<TReq>(uint cmd,TReq req)
+        {
+            Debuger.Log("cmd:{0}", cmd);
+
+            NetMessage msg = new NetMessage();
+            msg.head.index = 0;
+            msg.head.cmd = cmd;
+            msg.head.uid = mUid;
+            msg.content = PBSerializer.NSerialize(req);
+            msg.head.dataSize = (ushort)msg.content.Length;
+
+            byte[] temp;
+            int len = msg.Serialize(out temp);
+            mConn.Send(temp, len);
+        }
+
+        //添加应答式的监听器
+        private void AddListener(uint cmd, Type TRep, Delegate onRep, uint index, float timeout, Action<int> onErr)
+        {
+            ListenerHelper helper = new ListenerHelper()
+            {
+                cmd = cmd,
+                index = index,
+                TMsg = TRep,
+                onErr = onErr,
+                onMsg = onRep,
+                timeout = timeout,
+                timestamp = QGFTime.GetTimeSinceStartup()
+            };
+
+            mListRepListener.Add(index, helper);
+        }
+
+
+
+        //添加服务器主动消息的监听器
+        private void AddListener<TNtf>(uint cmd,Action<TNtf> onNtf)
+        {
+            Debuger.Log("cmd:{0},listener:{1},{2}", cmd, onNtf.Method.DeclaringType.Name, onNtf.Method.Name);
+
+            ListenerHelper helper = new ListenerHelper()
+            {
+                TMsg = typeof(TNtf),
+                onMsg = onNtf
+            };
+            mListNtfListener.Add(cmd, helper);
+        }
+
+
+        private void HandlePBMessage(NetMessage msg)
+        {
+            //表示该消息为服务器主动通知
+            if (msg.head.index == 0)
+            {
+                var helper = mListNtfListener[msg.head.cmd];
+                if (helper != null)
+                {
+                    var obj = PBSerializer.NDeserialize(msg.content, helper.TMsg);
+                    if (obj != null)
+                    {
+                        helper.onMsg.DynamicInvoke(obj);
+                    }
+                    else
+                    {
+                        Debuger.LogError("协议内容格式错误，反序列化失败: cmd{0}", msg.head.cmd);
+                    }
+                }
+                else
+                {
+                    Debuger.LogError("未找到该协议对应的监听值:cmd:{0}", msg.head.cmd);
+                }
+            }
+            //应答消息
+            else
+            {
+                var helper = mListRepListener[msg.head.index];
+                //该部分的listener都只会执行一次
+                if (helper != null)
+                {
+                    mListRepListener.Remove(msg.head.index);
+                    object obj = PBSerializer.NDeserialize(msg.content, helper.TMsg);
+                    if (obj != null)
+                    {
+                        helper.onMsg.DynamicInvoke(obj);
+                    }
+                    else
+                    {
+                        Debuger.LogError("协议格式错误,反序列化失败:cmd:{0}, index:{1}", msg.head.cmd, msg.head.index);
+                    }
+
+                }
+                else
+                {
+                    Debuger.LogError("未找到对应的监听值:cmd:{0}, index:{1}", msg.head.cmd, msg.head.index);
+                }
+            }
+        }
+        #endregion
+
+        //================
+        //处理超时
+        //=================
+        #region Timeout
+
+        private float mLastCheckTimeoutStamp = 0;
+
+        private void CheckTimeout()
+        {
+            float curTime = QGFTime.GetTimeSinceStartup();
+
+            if (curTime - mLastCheckTimeoutStamp >= 0)
+            {
+                mLastCheckTimeoutStamp = curTime;
+
+                var list = mListRepListener.ToArray();
+                for(int i = 0; i < list.Length; ++i)
+                {
+                    var helper = list[i];
+                    float deltaTime = curTime - helper.timestamp;
+                    //如果超时了
+                    if (deltaTime >= helper.timeout)
+                    {
+                        mListRepListener.Remove(helper.index);
+                        if (helper.onErr != null)
+                        {
+                            helper.onErr.DynamicInvoke(NetErrorCode.Timeout);
+                        }
+
+                        Debuger.LogWarning("cmd {0} is timeout!", helper.cmd);
+                    }
+                }
+            }
+        }
+
+        #endregion
 
     }
 }

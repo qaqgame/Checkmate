@@ -10,17 +10,12 @@ using System.Net.Sockets.Kcp;
 using System.Buffers;
 using QGF.Network.Utils;
 using System.Threading;
+using QGF.Utils;
+using QGF.Network.Core;
 
 namespace QGF.Network.General.Client
 {
-    public class KcpSendHandler : IKcpCallback
-    {
-        public Action<byte[], int> handler;
-        public void Output(IMemoryOwner<byte> buffer, int avalidLength)
-        {
-            handler(buffer.Memory.ToArray(), avalidLength);
-        }
-    }
+    
     public class KCPConnect : IConnection
     {
         //kcp发送时的处理
@@ -46,6 +41,9 @@ namespace QGF.Network.General.Client
 
         //临时存储接收数据的buffer
         private byte[] mReceiveBufferTemp = new byte[4096];
+
+        //存储接收消息的长期buffer
+        private SwitchQueue<byte[]> mRecvBufQueue = new SwitchQueue<byte[]>();
 
         //初始化
         public void Init(int connId, int bindPort)
@@ -165,29 +163,41 @@ namespace QGF.Network.General.Client
                 byte[] dst = new byte[cnt];
                 Buffer.BlockCopy(mReceiveBufferTemp, 0, dst, 0, cnt);
 
+                mRecvBufQueue.Push(dst);
+
+                
+            }
+        }
+
+        private void DoReceiveInMain()
+        {
+            mRecvBufQueue.Switch();
+
+            while (!mRecvBufQueue.Empty())
+            {
+                var recvBufferRaw = mRecvBufQueue.Pop();
+
                 //放入kcp
-                int ret=mKcp.Input(dst);
+                int ret = mKcp.Input(recvBufferRaw);
                 //收到的包不正确时
                 if (ret < 0)
                 {
                     Debuger.LogError("不正确的kcp包:Ret:{0}", ret);
                     return;
                 }
-            }
-        }
 
-        private void DoReceiveInMain()
-        {
-            mKcp.Update(DateTime.UtcNow);
-            int len;
-            //取出所有的数据并进行处理
-            while ((len=mKcp.PeekSize()) > 0)
-            {
-                var buffer = new byte[len];
 
-                if (mKcp.Recv(buffer) > 0)
+                mNeedKcpUpdateFlag = true;
+                int len;
+                //取出所有的数据并进行处理
+                while ((len = mKcp.PeekSize()) > 0)
                 {
-                    onReceive.Invoke(buffer, len);
+                    var buffer = new byte[len];
+
+                    if (mKcp.Recv(buffer) > 0)
+                    {
+                        onReceive.Invoke(buffer, len);
+                    }
                 }
             }
         }
@@ -212,15 +222,26 @@ namespace QGF.Network.General.Client
             return mKcp.Send(new Span<byte>(bytes,0,len)) > 0;
         }
 
+        private DateTime mNextKcpUpdateTime=DateTime.MinValue;
+        private bool mNeedKcpUpdateFlag = false;
         public void Tick()
         {
             if (Connected)
             {
                 DoReceiveInMain();
+
+                DateTime current = DateTime.UtcNow;
+
+                if (mNeedKcpUpdateFlag||current >= mNextKcpUpdateTime)
+                {
+                    mKcp.Update(current);
+                    mNextKcpUpdateTime = mKcp.Check(current);
+                    mNeedKcpUpdateFlag = false;
+                }
             }
             else
             {
-
+                //处理重连
             }
         }
     }

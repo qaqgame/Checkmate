@@ -9,7 +9,7 @@ using UnityEngine.EventSystems;
 
 namespace QGF.Unity.UI
 {
-    public class UIWindow:UIPanel
+    public abstract class UIWindow:UIPanel
     {
         public override UITypeDef UIType { get { return UITypeDef.Window; } }
 
