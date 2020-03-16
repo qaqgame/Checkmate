@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using QGF.Unity.UI;
 using QGF.Module;
 using QGF;
 using UnityEngine;
+using QGF.Unity.FGUI;
 namespace Chess.Module
 {
     public class ExampleAModule:GeneralModule
@@ -22,7 +22,7 @@ namespace Chess.Module
         {
             base.Show(arg);
 
-            UIManager.Instance.OpenPage("ExampleA/UIExamplePage");
+            FGUIManager.Instance.OpenPage<FGUIPage>("LoginPanel","Login","testwindow");
             Debuger.Log("page opened");
         
         }

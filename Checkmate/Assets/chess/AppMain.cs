@@ -3,8 +3,8 @@ using System;
 using UnityEngine;
 using QGF.Time;
 using QGF.Module;
-using QGF.Unity.UI;
 using QGF;
+using QGF.Unity.FGUI;
 namespace Assets.Chess
 {
     public class AppMain:MonoBehaviour
@@ -55,7 +55,7 @@ namespace Assets.Chess
             //清理模块管理器
             ModuleManager.Instance.Clear();
             //清理UI管理
-            UIManager.Instance.Clean();
+            FGUIManager.Instance.Clear();
             //清理在线管理
             //清理ILR
             //清理版本管理
@@ -89,8 +89,7 @@ namespace Assets.Chess
             ModuleManager.Instance.RegistModuleActivator(new NativeModuleActivator(ModuleDef.Namespace, ModuleDef.NativeAssemblyName));
 
             //初始化UI管理
-            UIManager.Instance.Init("ui/");
-            UIManager.SceneLoading = "UISceneLoading";
+            FGUIManager.Instance.Init("ui/");
             //初始化在线管理
 
 
@@ -129,6 +128,7 @@ namespace Assets.Chess
         private void Update()
         {
             GlobalEvent.onUpdate.Invoke();
+            FGUIManager.Instance.Tick();
         }
 
         private void FixedUpdate()
