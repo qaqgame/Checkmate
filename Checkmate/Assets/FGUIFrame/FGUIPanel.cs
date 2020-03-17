@@ -12,6 +12,7 @@ namespace QGF.Unity.FGUI
     {
         protected GComponent mRoot;
         protected GComponent mCtrlTarget;//操纵对象
+        float mLastWidth, mLastHeight;//之前的尺寸
 
         private bool mLoaded = false;
         public bool IsLoaded { get { return mLoaded; } }
@@ -63,19 +64,32 @@ namespace QGF.Unity.FGUI
         protected virtual void OnClose(object arg) { }
         //在被销毁时调用
         protected virtual void OnPanelDestroy() { }
-        protected virtual void OnResize(int ow, int oh, int nw, int nh) { }
+        protected virtual void OnResize(float ow, float oh, float nw, float nh) { }
     
         
         private void onCreateFinished(GObject result)
         {
             mLoaded = true;
             mCtrlTarget = result.asCom;
+            mLastWidth = mCtrlTarget.width;
+            mLastHeight = mCtrlTarget.height;
+            
+            mCtrlTarget.onSizeChanged.Add(onSizeChanged);
             if (mCtrlTarget == null)
             {
                 Debuger.LogError("无法得到FGUI panel组件");
                 return;
             }
             OnLoad();
+        }
+
+        private void onSizeChanged(EventContext context)
+        {
+            float nw = mCtrlTarget.width;
+            float nh = mCtrlTarget.height;
+            OnResize(mLastWidth, mLastHeight, nw, nh);
+            mLastHeight = nh;
+            mLastWidth = nw;
         }
 
     }

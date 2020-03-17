@@ -107,7 +107,8 @@ namespace QGF.Network.General.Client
             mSysSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             mSysSocket.Bind(new IPEndPoint(IPAddress.Any,bindPort));
 
-            mKcp = new Kcp(0, SendHandler);
+
+            mKcp = new Kcp(1, SendHandler);
             mKcp.NoDelay(1, 10, 2, 1);
             mKcp.WndSize(128, 128);
 
@@ -123,6 +124,7 @@ namespace QGF.Network.General.Client
         //kcp发送时的回调函数
         private void HandleKcpSend(byte[] bytes,int len)
         {
+            Debuger.Log("socket send! ip:{0},port:{1},first 4 byte:{2}",mRemoteEndPoint.Address.ToString(),mRemoteEndPoint.Port,BitConverter.ToUInt32(bytes,0));
             mSysSocket.SendTo(bytes, 0, len, SocketFlags.None, mRemoteEndPoint);
         }
 
@@ -154,7 +156,7 @@ namespace QGF.Network.General.Client
             if (cnt > 0)
             {
                 //如果不是来自目标服务器
-                if (mRemoteEndPoint.Equals(remotePoint))
+                if (!mRemoteEndPoint.Equals(remotePoint))
                 {
                     Debuger.LogError("收到非目标服务器的数据!");
                     return;
@@ -182,7 +184,7 @@ namespace QGF.Network.General.Client
                 //收到的包不正确时
                 if (ret < 0)
                 {
-                    Debuger.LogError("不正确的kcp包:Ret:{0}", ret);
+                    Debuger.LogError("不正确的kcp包:Ret:{0},len:{1}", ret,recvBufferRaw.Length);
                     return;
                 }
 
@@ -208,18 +210,20 @@ namespace QGF.Network.General.Client
         {
             if (!Connected)
             {
+                Debuger.LogError("kcp not connected!");
                 return false;
             }
-            return mKcp.Send(bytes) > 0;
+            return mKcp.Send(bytes) >= 0;
         }
 
         public bool Send(byte[] bytes, int len)
         {
             if (!Connected)
             {
+                Debuger.LogError("kcp not connected!");
                 return false;
             }
-            return mKcp.Send(new Span<byte>(bytes,0,len)) > 0;
+            return mKcp.Send(new Span<byte>(bytes,0,len)) >= 0;
         }
 
         private DateTime mNextKcpUpdateTime=DateTime.MinValue;

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace QGF.Network.General.Client
 {
-    class NetManager
+    public class NetManager
     {
 
         private IConnection mConn;
@@ -25,7 +25,7 @@ namespace QGF.Network.General.Client
         //连接类型-连接id-连接用的本地端口
         public void Init(Type connType,int connId,int bindPort)
         {
-            Debuger.Log("connType:{0}, connId:{1},bindPort:{3}", connType, connId, bindPort);
+            Debuger.Log("connType:{0}, connId:{1},bindPort:{2}", connType, connId, bindPort);
             mConn = Activator.CreateInstance(connType) as IConnection;
             mConn.Init(connId, bindPort);
             mRPC = new RPCManagerBase();
@@ -71,6 +71,7 @@ namespace QGF.Network.General.Client
         public void Update()
         {
             mConn.Tick();
+            CheckTimeout();
         }
 
         //处理接收消息
@@ -173,7 +174,7 @@ namespace QGF.Network.General.Client
             NetMessage nmsg = new NetMessage();
             nmsg.head = new ProtocolHead();
             nmsg.head.uid = mUid;
-            nmsg.head.dataSize = (ushort)buffer.Length;
+            nmsg.head.dataSize = buffer.Length;
             nmsg.content = buffer;
 
             byte[] temp = null;
@@ -218,24 +219,31 @@ namespace QGF.Network.General.Client
         //req:请求内容
         //cmd：协议类型
         //onRsp:response的处理函数
-        public void Send<TReq,TRsp>(uint cmd,TReq req,Action<TRsp> onRsp,float timeout = 30, Action<int> onErr = null)
+        public int Send<TReq,TRsp>(uint cmd,TReq req,Action<TRsp> onRsp,float timeout = 30, Action<int> onErr = null)
         {
             NetMessage msg = new NetMessage();
             msg.head.index = MessageIndexGenerator.NewIndex();
             msg.head.cmd = cmd;
             msg.head.uid = mUid;
             msg.content = PBSerializer.NSerialize(req);
-            msg.head.dataSize = (ushort)msg.content.Length;
+            msg.head.dataSize = (int)msg.content.Length;
 
             byte[] temp;
             int len = msg.Serialize(out temp);
-            mConn.Send(temp, len);
-
-            AddListener(cmd, typeof(TRsp), onRsp, msg.head.index, timeout, onErr);
+            Debuger.Log("contentSize:{0},uid:{1},readuid:{2}",msg.content.Length,mUid,BitConverter.ToUInt32(temp,0));
+            if (mConn.Send(temp, len))
+            {
+                AddListener(cmd, typeof(TRsp), onRsp, msg.head.index, timeout, onErr);
+            }
+            else
+            {
+                Debuger.LogError("SendMsg failed! msglen:{0}",len);
+            }
+            return len;
         }
 
         //发送请求并不处理回复
-        public void Send<TReq>(uint cmd,TReq req)
+        public int Send<TReq>(uint cmd,TReq req)
         {
             Debuger.Log("cmd:{0}", cmd);
 
@@ -244,15 +252,16 @@ namespace QGF.Network.General.Client
             msg.head.cmd = cmd;
             msg.head.uid = mUid;
             msg.content = PBSerializer.NSerialize(req);
-            msg.head.dataSize = (ushort)msg.content.Length;
+            msg.head.dataSize = (int)msg.content.Length;
 
             byte[] temp;
             int len = msg.Serialize(out temp);
             mConn.Send(temp, len);
+            return len;
         }
 
         //添加应答式的监听器
-        private void AddListener(uint cmd, Type TRep, Delegate onRep, uint index, float timeout, Action<int> onErr)
+        public void AddListener(uint cmd, Type TRep, Delegate onRep, uint index, float timeout, Action<int> onErr)
         {
             ListenerHelper helper = new ListenerHelper()
             {

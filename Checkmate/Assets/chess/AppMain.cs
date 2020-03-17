@@ -89,7 +89,8 @@ namespace Assets.Chess
             ModuleManager.Instance.RegistModuleActivator(new NativeModuleActivator(ModuleDef.Namespace, ModuleDef.NativeAssemblyName));
 
             //初始化UI管理
-            FGUIManager.Instance.Init("ui/");
+            FGUISceneManager sceneMng = GetComponent<FGUISceneManager>();
+            FGUIManager.Instance.Init("ui/",sceneMng);
             //初始化在线管理
 
 
@@ -127,6 +128,7 @@ namespace Assets.Chess
 
         private void Update()
         {
+            ModuleManager.Instance.SendMessage("ExampleAModule", "Update", null);
             GlobalEvent.onUpdate.Invoke();
             FGUIManager.Instance.Tick();
         }

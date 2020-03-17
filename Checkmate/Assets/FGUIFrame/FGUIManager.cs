@@ -43,7 +43,12 @@ namespace QGF.Unity.FGUI
             }
         }
 
-        private static int refreshInterval=50;//每50ms检查一次显示序列
+        private FGUISceneManager mSceneManager;//场景管理
+
+        public static string DefaultLoadingPackageName = "";
+        public static string DefaultLoadingComName = "";
+
+        private static int refreshInterval=10;//每10ms检查一次显示序列
         private static DateTime mLastCheckTime;
 
         private Stack<UIPageTrack> mPageTrackStack;//page打开记录
@@ -51,7 +56,7 @@ namespace QGF.Unity.FGUI
 
         private DictionarySafe<string,FGUIPanel> mListLoadedPanel;//所有已经加载的UI
         private List<string> mLoadedPkgFileName;//加载了的包的名字
-        private Action<string> onSceneLoaded;//场景加载完成的事件
+        
 
         private List<OpenTrack> mCacheOpenPanel;//打开panel的命令的缓存
         
@@ -63,17 +68,14 @@ namespace QGF.Unity.FGUI
             mCacheOpenPanel = new List<OpenTrack>();
         }
 
-        public void Init(string uiResRoot)
+        public void Init(string uiResRoot,FGUISceneManager sceneMng)
         {
             FGUIPackageManager.Instance.Init(uiResRoot);
             GRoot.inst.SetContentScaleFactor(1920, 1080, ScreenMatchMode.MatchWidthOrHeight);
             mPageTrackStack.Clear();
             mListLoadedPanel.Clear();
-
-            SceneManager.sceneLoaded += (scene, mode) =>
-            {
-                if (onSceneLoaded != null) onSceneLoaded(scene.name);
-            };
+            mSceneManager = sceneMng;
+            
         }
 
         public void Clear()
@@ -128,6 +130,25 @@ namespace QGF.Unity.FGUI
                 mListLoadedPanel.Remove(realName);
             }
         }
+
+        //==============
+        //场景
+        //===============
+        public void LoadScene<T>(string scene, Action onLoadComplete,string loadingPkg=null,string loadingCom=null) where T:FGUILoading,new()
+        {
+            string pkgName=loadingPkg??DefaultLoadingPackageName;
+            string comName = loadingCom ?? DefaultLoadingComName;
+
+            string realName = pkgName + "." + comName;
+            onLoadComplete += () =>
+            {
+                CloseLoading(realName);
+            };
+            OpenLoading<T>(comName,pkgName);
+
+            mSceneManager.EnterScene(scene, onLoadComplete);
+        }
+
 
         //打开某个UI
         public T Open<T>(string name,string package,object arg = null) where T : FGUIPanel,new()
@@ -234,7 +255,7 @@ namespace QGF.Unity.FGUI
 
         //=============
         #region page
-        public void OpenPage<T>(string name,string pkg, object arg = null) where T : FGUIPage,new()
+        public T OpenPage<T>(string name,string pkg, object arg = null) where T : FGUIPage,new()
         {
             Debuger.Log(name);
 
@@ -243,7 +264,7 @@ namespace QGF.Unity.FGUI
                 mPageTrackStack.Push(mCurPage);
             }
 
-            OpenPageWorker<T>(name,pkg, arg);
+            return OpenPageWorker<T>(name,pkg, arg);
         }
 
         ////返回上一页
@@ -257,14 +278,14 @@ namespace QGF.Unity.FGUI
         //    }
         //}
         //打开page
-        private void OpenPageWorker<T>(string pageName,string pkg,object arg) where T:FGUIPage
+        private T OpenPageWorker<T>(string pageName,string pkg,object arg) where T:FGUIPage,new()
         {
             mCurPage = new UIPageTrack();
-            mCurPage.name = pageName;
+            mCurPage.name = pkg+"."+pageName;
             mCurPage.arg = arg;
 
             CloseAllLoadedPanel();
-            Open<FGUIPage>(pageName, pkg,arg);
+            return Open<T>(pageName, pkg,arg);
         }
         #endregion
 
@@ -288,6 +309,27 @@ namespace QGF.Unity.FGUI
             return ui;
         }
 
+        #endregion
+
+        #region Loading
+
+
+        public void CloseLoading(string name, object arg = null)
+        {
+            Debuger.Log(name);
+            FGUILoading ui = GetUI(name) as FGUILoading;
+            if (ui != null)
+            {
+                ui.Close(arg);
+            }
+        }
+
+        public FGUILoading OpenLoading<T>(string name, string pkg,object arg = null) where T : FGUILoading,new()
+        {
+            Debuger.Log(name);
+            FGUILoading ui = Open<T>(name,pkg, arg);
+            return ui;
+        }
         #endregion
     }
 }

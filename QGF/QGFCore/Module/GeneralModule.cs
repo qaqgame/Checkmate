@@ -36,7 +36,6 @@ namespace QGF.Module
         //收到消息后，进行处理(通过反射来调用函数）
         internal void HangleMessage(string msg, object[] args)
         {
-            this.Log("msg:{0}, args: {1}", msg, args);
 
             var mt=this.GetType().GetMethod(msg, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
