@@ -18,6 +18,7 @@ namespace QGF.Network.General.Client
     
     public class KCPConnect : IConnection
     {
+        static int sendCnt = 0;
         //kcp发送时的处理
         public KcpSendHandler SendHandler;
         //接收时的处理函数
@@ -77,7 +78,7 @@ namespace QGF.Network.General.Client
             //关闭接收线程
             if (mThreadRecv != null)
             {
-                mThreadRecv.Interrupt();
+                mThreadRecv.Abort();
                 mThreadRecv = null;
             }
 
@@ -124,7 +125,8 @@ namespace QGF.Network.General.Client
         //kcp发送时的回调函数
         private void HandleKcpSend(byte[] bytes,int len)
         {
-            Debuger.Log("socket send! ip:{0},port:{1},first 4 byte:{2}",mRemoteEndPoint.Address.ToString(),mRemoteEndPoint.Port,BitConverter.ToUInt32(bytes,0));
+            ++sendCnt;
+            Debuger.Log("send msg time:{0}", sendCnt);
             mSysSocket.SendTo(bytes, 0, len, SocketFlags.None, mRemoteEndPoint);
         }
 
@@ -164,7 +166,6 @@ namespace QGF.Network.General.Client
                 //取出数据
                 byte[] dst = new byte[cnt];
                 Buffer.BlockCopy(mReceiveBufferTemp, 0, dst, 0, cnt);
-
                 mRecvBufQueue.Push(dst);
 
                 
@@ -208,6 +209,7 @@ namespace QGF.Network.General.Client
 
         public bool Send(byte[] bytes)
         {
+            Debuger.Log("connect send times:{0}", sendCnt);
             if (!Connected)
             {
                 Debuger.LogError("kcp not connected!");
@@ -218,6 +220,7 @@ namespace QGF.Network.General.Client
 
         public bool Send(byte[] bytes, int len)
         {
+            Debuger.Log("connect send times:{0}", sendCnt);
             if (!Connected)
             {
                 Debuger.LogError("kcp not connected!");
@@ -228,6 +231,7 @@ namespace QGF.Network.General.Client
 
         private DateTime mNextKcpUpdateTime=DateTime.MinValue;
         private bool mNeedKcpUpdateFlag = false;
+        int times = 0;
         public void Tick()
         {
             if (Connected)

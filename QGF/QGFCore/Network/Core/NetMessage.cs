@@ -20,14 +20,26 @@ namespace QGF.Network.Core
         {
             head.Deserialize(buffer);
             content = new byte[head.dataSize];
-            buffer.ReadBytes(content, 0, head.dataSize);
+            int dataSize = (int)(head.dataSize);
+            if (dataSize != head.dataSize)
+            {
+                Debuger.LogError("net mseeage size too large:{0}", head.dataSize);
+                return null;
+            }
+            buffer.ReadBytes(content, 0, dataSize);
             return this;
         }
         //序列化
         public NetBuffer Serialize(NetBuffer buffer)
         {
             head.Serialize(buffer);
-            buffer.WriteBytes(content, 0, head.dataSize);
+            int dataSize = (int)(head.dataSize);
+            if (dataSize != head.dataSize)
+            {
+                Debuger.LogError("net mseeage size too large:{0}", head.dataSize);
+                return null;
+            }
+            buffer.WriteBytes(content, 0, dataSize);
             return buffer;
         }
 

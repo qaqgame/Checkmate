@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace QGF.Network.General.Client
 {
-    interface IConnection
+    public interface IConnection
     {
         //字节-字节长度
         //接收到数据时调用

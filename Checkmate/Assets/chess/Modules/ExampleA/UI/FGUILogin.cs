@@ -11,7 +11,7 @@ public class FGUILoginPage : FGUIPage
     GTextInput mActInput, mPswInput;
     GButton mBtnLogin;
     NetManager mNet;
-    int cnt = 0;
+    int cnt = 1;
     public void Init(NetManager manager)
     {
         mNet = manager;
@@ -28,20 +28,28 @@ public class FGUILoginPage : FGUIPage
 
     private void OnLoginBtnClicked()
     {
-        LoginProto proto = new LoginProto();
-        proto.id = cnt++;
-        proto.name = "test" + cnt.ToString();
-        int len=mNet.Send<LoginProto, LoginRsp>(1,proto, OnResponse,30, OnErr);
+        LoginTestProto proto = new LoginTestProto();
+        proto.uid = cnt;
+        cnt++;
+        proto.name = "test"+cnt;
+        int len=mNet.Send<LoginTestProto, LoginTestRsp>(1,proto, OnResponse,30, OnErr);
         Debuger.Log("btn login clicked, msglen:{0}",len);
     }
 
-    private void OnResponse(LoginRsp rsp)
+    private void OnResponse(LoginTestRsp rsp)
     {
+        mNet.SetUserId((uint)rsp.ret);
         Debuger.LogWarning("success get response:ret:{0}, msg:{1}", rsp.ret,rsp.msg);
     }
 
     private void OnErr(int err)
     {
         Debuger.LogError("error net code:{0}", err);
+    }
+
+    protected override void OnPanelDestroy()
+    {
+        base.OnPanelDestroy();
+        mNet.Clear();
     }
 }

@@ -13,7 +13,7 @@ namespace QGF.Network.Core
         public uint uid = 0;
         public uint cmd = 0;//协议类型
         public uint index = 0;//序列号
-        public int dataSize = 0;//数据长度
+        public uint dataSize = 0;//数据长度
         public uint checksum = 0;//检验和
 
         public ProtocolHead Deserialize(NetBuffer buffer)
@@ -22,7 +22,7 @@ namespace QGF.Network.Core
             head.uid = buffer.ReadUInt();
             head.cmd = buffer.ReadUInt();
             head.index = buffer.ReadUInt();
-            head.dataSize = buffer.ReadInt();
+            head.dataSize = buffer.ReadUInt();
             head.checksum = buffer.ReadUInt();
             return head;
         }
@@ -32,7 +32,7 @@ namespace QGF.Network.Core
             buffer.WriteUInt(uid);
             buffer.WriteUInt(cmd);
             buffer.WriteUInt(index);
-            buffer.WriteInt(dataSize);
+            buffer.WriteUInt(dataSize);
             buffer.WriteUInt(checksum);
             return buffer;
         }

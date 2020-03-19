@@ -33,7 +33,7 @@ namespace QGF.Network.General.Client
         }
 
 
-        private void Clear()
+        public void Clear()
         {
             Debuger.Log();
             if (mConn != null)
@@ -174,7 +174,7 @@ namespace QGF.Network.General.Client
             NetMessage nmsg = new NetMessage();
             nmsg.head = new ProtocolHead();
             nmsg.head.uid = mUid;
-            nmsg.head.dataSize = buffer.Length;
+            nmsg.head.dataSize = (uint)buffer.Length;
             nmsg.content = buffer;
 
             byte[] temp = null;
@@ -225,8 +225,9 @@ namespace QGF.Network.General.Client
             msg.head.index = MessageIndexGenerator.NewIndex();
             msg.head.cmd = cmd;
             msg.head.uid = mUid;
+            Debuger.Log("send msg:{0}", req.ToString());
             msg.content = PBSerializer.NSerialize(req);
-            msg.head.dataSize = (int)msg.content.Length;
+            msg.head.dataSize = (uint)msg.content.Length;
 
             byte[] temp;
             int len = msg.Serialize(out temp);
@@ -252,7 +253,7 @@ namespace QGF.Network.General.Client
             msg.head.cmd = cmd;
             msg.head.uid = mUid;
             msg.content = PBSerializer.NSerialize(req);
-            msg.head.dataSize = (int)msg.content.Length;
+            msg.head.dataSize = (uint)msg.content.Length;
 
             byte[] temp;
             int len = msg.Serialize(out temp);
