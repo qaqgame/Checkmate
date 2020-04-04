@@ -10,7 +10,7 @@ namespace Checkmate.Global.Proto
     public class ProtoCmd
     {
         public const uint LoginReq = 1;
-        public const uint LoinRes = 2;
+        public const uint LoginRes = 2;
         public const uint HeartbeatReq = 3;
         public const uint HeartBeatRsp = 4;
     }
@@ -35,7 +35,7 @@ namespace Checkmate.Global.Proto
 
         public override string ToString()
         {
-            return string.Format("{code:{0}, info:{1}}",code,info);
+            return string.Format("(code:{0}, info:{1})",code,info);
         }
 
 

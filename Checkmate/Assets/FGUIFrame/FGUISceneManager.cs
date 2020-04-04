@@ -31,6 +31,10 @@ namespace QGF.Unity.FGUI
         private Action<string> onSceneLoaded;//场景加载完成的事件
 
         private bool IsSwithing = false;//是否正在进行场景切换
+
+        public bool IsSwithingScene { get { return IsSwithing; } }
+
+        //在切换场景时执行(转场效果)
         public delegate bool OnSceneSwitchingCallback();
 
         public void Init()
@@ -220,7 +224,7 @@ namespace QGF.Unity.FGUI
             {
                 if (sceneName == scene)
                 {
-                    onSceneLoaded = null;
+                    this.onSceneLoaded = null;
                     if (onSceneLoadFinished != null) onSceneLoadFinished();
                 }
             };
@@ -231,13 +235,16 @@ namespace QGF.Unity.FGUI
             while (!mAsyncOperation.isDone)
             {
                 onSceneLoading(mAsyncOperation.progress);
-                if(mAsyncOperation.progress>=0.9)
+                Debuger.Log("current progress:{0}", mAsyncOperation.progress);
+                if(mAsyncOperation.progress>=0.9f)
                 {
+                    Debuger.Log("change states called");
                     mAsyncOperation.allowSceneActivation = true;
                 }
                 yield return null;
             }
             IsSwithing = false;
+            Debuger.Log("load scene finished");
         }
 
         //===================

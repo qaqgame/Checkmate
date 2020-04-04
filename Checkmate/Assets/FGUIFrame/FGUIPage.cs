@@ -19,7 +19,7 @@ namespace QGF.Unity.FGUI
             if (mCtrlTarget.GetChild("btnBack") != null)
             {
                 mBtnBack = mCtrlTarget.GetChild("btnBack").asButton;
-                mBtnBack.onClick.Add(OnPageGoBack);
+                mBtnBack.onClick.Add(OnBackClicked);
             }
             
         }
@@ -31,6 +31,11 @@ namespace QGF.Unity.FGUI
             mCtrlTarget.AddRelation(mRoot, RelationType.Size);
         }
 
+        private void OnBackClicked()
+        {
+            FGUIManager.Instance.GoBackPage();
+            OnPageGoBack();
+        }
         protected virtual void OnPageGoBack()
         {
 

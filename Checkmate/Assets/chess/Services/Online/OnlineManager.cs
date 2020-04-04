@@ -5,6 +5,7 @@ using Checkmate.Global.Proto;
 using Checkmate.Global.Server;
 using QGF;
 using QGF.Common;
+using QGF.Network.Core.RPCLite;
 using QGF.Network.General.Client;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace Checkmate.Services.Online
     {
         private NetManager m_net;
         private UserData mMainUserData;
-        //private HeartBeatHandler m_heartbeat;
+        private HeartBeatHandler m_heartbeat;
 
         public UserData MainUserData { get { return mMainUserData; } }
 
@@ -38,6 +39,9 @@ namespace Checkmate.Services.Online
 
             GlobalEvent.onUpdate.AddListener(OnUpdate);
 
+            m_heartbeat = new HeartBeatHandler();
+            m_heartbeat.Init(m_net);
+            m_heartbeat.onTimeout.AddListener(OnHeartBeatTimeout);
         }
 
         public void Clear()
@@ -50,17 +54,17 @@ namespace Checkmate.Services.Online
                 m_net = null;
             }
 
-            //if (m_heartbeat != null)
-            //{
-            //    m_heartbeat.onTimeout.RemoveListener(OnHeartBeatTimeout);
-            //    m_heartbeat.Clean();
-            //    m_heartbeat = null;
-            //}
+            if (m_heartbeat != null)
+            {
+                m_heartbeat.onTimeout.RemoveListener(OnHeartBeatTimeout);
+                m_heartbeat.Clear();
+                m_heartbeat = null;
+            }
         }
 
         private void Connect()
         {
-            m_net.Connect("127.0.0.1", 4540);
+            m_net.Connect("120.79.240.163", 4050);
         }
 
         private void CloseConnect()
@@ -73,34 +77,35 @@ namespace Checkmate.Services.Online
             m_net.Update();
         }
 
+        //处理心跳超时
+        private void OnHeartBeatTimeout()
+        {
+            Debuger.LogError("");
+            CloseConnect();
 
-        //private void OnHeartBeatTimeout()
-        //{
-        //    Debuger.LogError("");
-        //    CloseConnect();
+            m_heartbeat.Stop();
 
-        //    m_heartbeat.Stop();
+            ReLogin();
+        }
 
-        //    ReLogin();
-        //}
+        //重新登录
+        private void ReLogin()
+        {
+            Connect();
 
-        //private void ReLogin()
-        //{
-        //    Connect();
+            LoginProto req = new LoginProto();
+            req.id = mMainUserData.id;
+            req.name = mMainUserData.name;
 
-        //    LoginProto req = new LoginProto();
-        //    req.id = (int)m_mainUserData.id;
-        //    req.name = m_mainUserData.name;
-
-        //    m_net.Send<LoginProto, LoginRsp>(ProtoCmd.LoginReq, req, OnLoginRsp, 30, OnLoginErr);
-        //}
+            m_net.Send<LoginProto, LoginRsp>(ProtoCmd.LoginReq, req, OnLoginRsp, 30, OnLoginErr);
+        }
 
         public void Login(string name)
         {
             Connect();
 
             LoginProto req = new LoginProto();
-            req.id = 0;
+            req.id = 2;
             req.name = name;
 
             m_net.Send<LoginProto, LoginRsp>(ProtoCmd.LoginReq, req, OnLoginRsp, 30, OnLoginErr);
@@ -108,17 +113,25 @@ namespace Checkmate.Services.Online
 
         private void OnLoginRsp(LoginRsp rsp)
         {
-            Debuger.Log("ret:{0},msg:{1}", rsp.ret, rsp.userData);
+            Debuger.Log("ret:{0},msg:{1}", rsp.ret.ToString(), rsp.userData.ToString());
             if (rsp.ret.code == 0)
             {
                 //userdata赋值
                 mMainUserData = rsp.userData;
+                
                 AppConfig.Value.mainUserData = mMainUserData;
                 AppConfig.Save();
+
+                m_net.SetUserId(rsp.userData.id);
+
                 //启动心跳
+                m_heartbeat.Start();
 
-
-                GlobalEvent.onLogin.Invoke(true);
+                GlobalEvent.onLoginSuccess.Invoke();
+            }
+            else
+            {
+                GlobalEvent.onLoginFailed.Invoke(rsp.ret.code, rsp.ret.info);
             }
         }
 
@@ -128,15 +141,16 @@ namespace Checkmate.Services.Online
         private void OnLoginErr(int errcode)
         {
             Debuger.LogError("ErrCode:{0}", errcode);
+            GlobalEvent.onLoginFailed.Invoke(errcode, "消息发送失败!");
         }
 
 
 
-       
+        [RPCInvoke]
         public void Logout()
         {
             //停止心跳
-
+            m_heartbeat.Stop();
             if (mMainUserData != null)
             {
                 m_net.Invoke("Logout");
@@ -147,6 +161,7 @@ namespace Checkmate.Services.Online
 
 
         //登出的回包处理
+        [RPC]
         private void OnLogout()
         {
             Debuger.Log();

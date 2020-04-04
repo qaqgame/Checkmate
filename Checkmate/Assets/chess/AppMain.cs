@@ -5,6 +5,9 @@ using QGF.Time;
 using QGF.Module;
 using QGF;
 using QGF.Unity.FGUI;
+using Checkmate.Services.Version;
+using Checkmate.Services.Online;
+
 namespace Assets.Chess
 {
     public class AppMain:MonoBehaviour
@@ -57,6 +60,7 @@ namespace Assets.Chess
             //清理UI管理
             FGUIManager.Instance.Clear();
             //清理在线管理
+            OnlineManager.Instance.Clear();
             //清理ILR
             //清理版本管理
         }
@@ -67,7 +71,6 @@ namespace Assets.Chess
             Debuger.Init(Application.persistentDataPath + "/DebuggerLog/", new UnityDebugerConsole());
             Debuger.EnableLog = true;
             Debuger.EnableSave = true;
-            Debuger.EnableStack = true;
             Debuger.Log("init over");
 
         }
@@ -75,7 +78,15 @@ namespace Assets.Chess
         private void InitVersion()
         {
             //进行版本更新
-
+            //VersionManager.Instance.Init();
+            //VersionManager.onUpdateProgress += (progress) =>
+            //{
+            //    //do something while loading
+            //};
+            //VersionManager.onUpdateComplete += () =>
+            //{
+            //    //dosomething after loading
+            //};
             //版本更新或检查完成后，初始化服务模块
             InitServices();
         }
@@ -90,45 +101,54 @@ namespace Assets.Chess
 
             //初始化UI管理
             FGUISceneManager sceneMng = GetComponent<FGUISceneManager>();
+            sceneMng.Init();
             FGUIManager.Instance.Init("ui/",sceneMng);
             //初始化在线管理
-
+            OnlineManager.Instance.Init();
+            
 
             //显示登陆界面
 
             //如果登录成功，初始化普通业务模块
-            GlobalEvent.onLogin += OnLogin;
+            GlobalEvent.onLoginSuccess += OnLoginSuccess;
+            GlobalEvent.onLoginFailed += OnLoginFailed;
 
             //example
             ModuleManager.Instance.CreateModule("ExampleAModule");
             ModuleManager.Instance.ShowModule("ExampleAModule");
         }
 
-        private void OnLogin(bool success)
+        private void OnLoginSuccess()
         {
-            GlobalEvent.onLogin -= OnLogin;
+            GlobalEvent.onLoginSuccess-= OnLoginSuccess;
+            Debuger.Log("login success:{0}", OnlineManager.Instance.MainUserData.name);
 
-            if (success)
-            {
-                //隐藏登录界面
-                //通过ILR启动业务模块
+            FGUIManager.Instance.CloseLoading("Login.LoadPanel");
+            //隐藏登录界面
+            //通过ILR启动业务模块
+            //bool result=ILRManager.Instance.Invoke("Checkmate.ScriptMain", "Init");
+            //if (!result)
+            //{
+            //    //初始化业务模块失败
+            //}
 
-                //bool result=ILRManager.Instance.Invoke("Checkmate.ScriptMain", "Init");
-                //if (!result)
-                //{
-                //    //初始化业务模块失败
-                //}
-            }
-            else
-            {
-                //登陆失败
-            }
         }
 
+        private void OnLoginFailed(int code,string info)
+        {
+            GlobalEvent.onLoginFailed -= OnLoginFailed;
+            Debuger.LogError("login failed:{0}, msg:{1}", code, info);
+            FGUIManager.Instance.CloseLoading("Login.LoadPanel");
+
+            FGUIManager.Instance.LoadScene<FGUILoading>("Main", () => {
+                Debuger.Log("create home page");
+                FGUIManager.Instance.OpenPage<FGUIPage>("Root", "Home");
+            });
+            //显示错误信息
+        }
 
         private void Update()
         {
-            ModuleManager.Instance.SendMessage("ExampleAModule", "Update", null);
             GlobalEvent.onUpdate.Invoke();
             FGUIManager.Instance.Tick();
         }

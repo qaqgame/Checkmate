@@ -17,12 +17,6 @@ namespace Checkmate.Global.Data
         public uint id;
         [ProtoMember(2)]
         public string name;
-        [ProtoMember(3)]
-        public string psw;
-        [ProtoMember(4)]
-        public int level;
-        [ProtoMember(5)]
-        public int defaultPlayerId;
 
         public ServerUserData svrData = new ServerUserData();
 

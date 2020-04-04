@@ -16,6 +16,7 @@ namespace QGF.Unity.FGUI
         public double MinValue { get { return mProgressBar.min; } }
         public double Value { get { return mProgressBar.value; } }
 
+        public bool HasBar { get { return mProgressBar != null; } }
         /// <summary>
         /// 用duration的时间来改变进度条的值至value
         /// </summary>
@@ -23,21 +24,25 @@ namespace QGF.Unity.FGUI
         /// <param name="transitionTime"></param>
         public void SetValue(double value,float duration = .0f)
         {
-            value = value < mProgressBar.min ? mProgressBar.min : value > mProgressBar.max ? mProgressBar.max : value;
-
-            double last = (mProgressBar.value-mProgressBar.min) / (mProgressBar.max-mProgressBar.min);
-            double current = (value - mProgressBar.min) / (mProgressBar.max - mProgressBar.min);
-
-
-            if (duration <= .0f)
+            if (mProgressBar != null)
             {
-                mProgressBar.value = value;
+                value = value < mProgressBar.min ? mProgressBar.min : value > mProgressBar.max ? mProgressBar.max : value;
+
+                double last = (mProgressBar.value - mProgressBar.min) / (mProgressBar.max - mProgressBar.min);
+                double current = (value - mProgressBar.min) / (mProgressBar.max - mProgressBar.min);
+
+
+                if (duration <= .0f)
+                {
+                    mProgressBar.value = value;
+                }
+                else
+                {
+                    mProgressBar.TweenValue(value, duration);
+                }
+
+                OnProgressUpdate(last, current);
             }
-            else
-            {
-                mProgressBar.TweenValue(value, duration);
-            }
-            OnProgressUpdate(last, current);
         }
 
         //加载时存储进度条

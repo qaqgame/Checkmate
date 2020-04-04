@@ -9,8 +9,11 @@ namespace Assets.Chess
 {
     public static class GlobalEvent
     {
-        public static QGFEvent<bool> onLogin=new QGFEvent<bool>();//登录事件
+        
         public static QGFEvent onUpdate=new QGFEvent();//更新事件
         public static QGFEvent onFixedUpdate=new QGFEvent();
+
+        public static QGFEvent onLoginSuccess = new QGFEvent();//登录事件
+        public static QGFEvent<int, string> onLoginFailed = new QGFEvent<int, string>();//登录失败
     }
 }

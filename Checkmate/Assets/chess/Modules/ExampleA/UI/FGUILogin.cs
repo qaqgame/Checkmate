@@ -6,16 +6,13 @@ using FairyGUI;
 using QGF;
 using QGF.Network.General.Client;
 using Checkmate.Global.Proto;
+using Checkmate.Services.Online;
+
 public class FGUILoginPage : FGUIPage
 {
     GTextInput mActInput, mPswInput;
     GButton mBtnLogin;
-    NetManager mNet;
     int cnt = 1;
-    public void Init(NetManager manager)
-    {
-        mNet = manager;
-    }
     protected override void OnLoad()
     {
         Debuger.Log("login panel loaded suc!");
@@ -28,17 +25,20 @@ public class FGUILoginPage : FGUIPage
 
     private void OnLoginBtnClicked()
     {
-        LoginTestProto proto = new LoginTestProto();
-        proto.uid = cnt;
-        cnt++;
-        proto.name = "test"+cnt;
-        int len=mNet.Send<LoginTestProto, LoginTestRsp>(1,proto, OnResponse,30, OnErr);
-        Debuger.Log("btn login clicked, msglen:{0}",len);
+        string account = mActInput.text;
+        Debuger.Log("login act:{0}", account);
+        FGUIManager.Instance.OpenLoading<FGUILoading>("LoadPanel", "Login");
+        OnlineManager.Instance.Login(account);
+        //LoginTestProto proto = new LoginTestProto();
+        //proto.uid = cnt;
+        //cnt++;
+        //proto.name = "test"+cnt;
+        //int len=mNet.Send<LoginTestProto, LoginTestRsp>(1,proto, OnResponse,30, OnErr);
+        //Debuger.Log("btn login clicked, msglen:{0}",len);
     }
 
     private void OnResponse(LoginTestRsp rsp)
     {
-        mNet.SetUserId((uint)rsp.ret);
         Debuger.LogWarning("success get response:ret:{0}, msg:{1}", rsp.ret,rsp.msg);
     }
 
@@ -50,6 +50,5 @@ public class FGUILoginPage : FGUIPage
     protected override void OnPanelDestroy()
     {
         base.OnPanelDestroy();
-        mNet.Clear();
     }
 }

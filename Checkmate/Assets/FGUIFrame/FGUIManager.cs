@@ -45,8 +45,8 @@ namespace QGF.Unity.FGUI
 
         private FGUISceneManager mSceneManager;//场景管理
 
-        public static string DefaultLoadingPackageName = "";
-        public static string DefaultLoadingComName = "";
+        public static string DefaultLoadingPackageName = "Login";
+        public static string DefaultLoadingComName = "LoadPanel";
 
         private static int refreshInterval=10;//每10ms检查一次显示序列
         private static DateTime mLastCheckTime;
@@ -55,16 +55,20 @@ namespace QGF.Unity.FGUI
         private UIPageTrack mCurPage;//当前page
 
         private DictionarySafe<string,FGUIPanel> mListLoadedPanel;//所有已经加载的UI
-        private List<string> mLoadedPkgFileName;//加载了的包的名字
+        private Dictionary<string,string> mLoadedPkgFileName;//加载了的包的名字
         
 
         private List<OpenTrack> mCacheOpenPanel;//打开panel的命令的缓存
+
+        private Action<float> onSceneLoading=null;
+        private Action onSceneLoadFinished= null;
+        private string mCurLoadingName;//当前的loading的全名
         
         public FGUIManager()
         {
             mPageTrackStack = new Stack<UIPageTrack>();
             mListLoadedPanel = new DictionarySafe<string, FGUIPanel>();
-            mLoadedPkgFileName = new List<string>();
+            mLoadedPkgFileName = new Dictionary<string, string>();
             mCacheOpenPanel = new List<OpenTrack>();
         }
 
@@ -136,17 +140,57 @@ namespace QGF.Unity.FGUI
         //===============
         public void LoadScene<T>(string scene, Action onLoadComplete,string loadingPkg=null,string loadingCom=null) where T:FGUILoading,new()
         {
+            ClearView();
             string pkgName=loadingPkg??DefaultLoadingPackageName;
             string comName = loadingCom ?? DefaultLoadingComName;
 
             string realName = pkgName + "." + comName;
-            onLoadComplete += () =>
-            {
-                CloseLoading(realName);
-            };
-            OpenLoading<T>(comName,pkgName);
+            mCurLoadingName = realName;
+            //加载结束时执行的事件
+            onSceneLoadFinished = onLoadComplete;
 
-            mSceneManager.EnterScene(scene, onLoadComplete);
+            FGUILoading loadingBar= OpenLoading<T>(comName,pkgName);
+            //如果存在该loading则在加载过程中加载loading界面，否则不显示
+            if (loadingBar == null)
+            {
+                Debuger.LogError("error open loading:{0}!", realName);
+            }
+            else
+            {
+                //加载过程中执行的事件
+                onSceneLoading = (progress) =>
+                {
+                    if (loadingBar.HasBar)
+                    {
+                        double value = (loadingBar.MaxValue - loadingBar.MinValue) * progress + loadingBar.MinValue;
+                        loadingBar.SetValue(value, 0.3f);
+                    }
+                };
+            }
+
+            mSceneManager.EnterSceneAsync(scene, OnSceneLoadFinished,OnSceneLoading);
+        }
+
+        private void OnSceneLoadFinished()
+        {
+            //执行外部的结束事件
+            if (onSceneLoadFinished != null)
+            {
+                onSceneLoadFinished();
+                onSceneLoadFinished = null;
+            }
+            //取消加载中事件
+            onSceneLoading = null;
+            //关闭loading
+            CloseLoading(mCurLoadingName);
+            Debuger.Log("load scene complete called");
+        }
+        private void OnSceneLoading(float progress)
+        {
+            if (onSceneLoading != null)
+            {
+                onSceneLoading(progress);
+            }
         }
 
 
@@ -155,13 +199,20 @@ namespace QGF.Unity.FGUI
         {
             string realPkgName = package;
             //检查有没有加载过该包
-            if (!mLoadedPkgFileName.Contains(package))
+            if (!mLoadedPkgFileName.ContainsKey(package))
             {
                 //未加载则加入
                 realPkgName=FGUIPackageManager.Instance.LoadPackage(package);
-                mLoadedPkgFileName.Add(package);
+                mLoadedPkgFileName.Add(package,realPkgName);
+            }
+            else
+            {
+                //有则获取包名
+                realPkgName = mLoadedPkgFileName[package];
             }
             string idxName = package + "." + name;
+            Type type;
+            
             T ui = mListLoadedPanel[idxName] as T;
             //没有则尝试加载
             if (ui == null)
@@ -172,19 +223,24 @@ namespace QGF.Unity.FGUI
             //有则调出
             if (ui != null)
             {
-                OpenTrack track = new OpenTrack(idxName, arg);
-                //加入显示队列,如果已存在则移除原本的
-                if (mCacheOpenPanel.Contains(track))
-                {
-                    mCacheOpenPanel.Remove(track);
-                }
-                mCacheOpenPanel.Add(track);
+                AddOpenCache(idxName, arg);
             }
             else
             {
                 Debuger.LogError("cannot find panel:{0}", name);
             }
             return ui;
+        }
+
+        private void AddOpenCache(string name,object arg)
+        {
+            OpenTrack track = new OpenTrack(name, arg);
+            //加入显示队列,如果已存在则移除原本的
+            if (mCacheOpenPanel.Contains(track))
+            {
+                mCacheOpenPanel.Remove(track);
+            }
+            mCacheOpenPanel.Add(track);
         }
 
         /// <summary>
@@ -217,6 +273,7 @@ namespace QGF.Unity.FGUI
         public void Tick()
         {
             DateTime current;
+            //将等待打开的panel打开
             if (mCacheOpenPanel.Count > 0 && ((current=DateTime.UtcNow) - mLastCheckTime).TotalMilliseconds >= refreshInterval)
             {
                 for(int i = mCacheOpenPanel.Count - 1; i >= 0; --i)
@@ -268,15 +325,20 @@ namespace QGF.Unity.FGUI
         }
 
         ////返回上一页
-        //public void GoBackPage()
-        //{
-        //    //有上页则打开上页
-        //    if (mPageTrackStack.Count > 0)
-        //    {
-        //        var track = mPageTrackStack.Pop();
-        //        OpenPageWorker(track.name, track.arg, track.type);
-        //    }
-        //}
+        public void GoBackPage()
+        {
+            //有上页则打开上页
+            if (mPageTrackStack.Count > 0)
+            {
+                var track = mPageTrackStack.Pop();
+                mCurPage.name = track.name;
+                mCurPage.arg = track.arg;
+
+                CloseAllLoadedPanel();
+                //添加到打开缓冲区
+                AddOpenCache(track.name, track.arg);
+            }
+        }
         //打开page
         private T OpenPageWorker<T>(string pageName,string pkg,object arg) where T:FGUIPage,new()
         {
