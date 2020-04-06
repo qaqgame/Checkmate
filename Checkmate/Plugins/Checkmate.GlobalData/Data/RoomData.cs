@@ -17,11 +17,20 @@ namespace Checkmate.Global.Data
         [ProtoMember(2)]
         public string name;//房间名
         [ProtoMember(3)]
+        public string mode;//游戏模式名
+        [ProtoMember(4)]
+        public string map;//地图名
+        [ProtoMember(5)]
         public List<PlayerRoomData> players = new List<PlayerRoomData>();//所有的玩家
 
+        [ProtoMember(6)]
+        public int maxPlayerCount;//最大的玩家数
+
+        [ProtoMember(7)]
+        public List<int> teams;//每个队伍的数目 
         public override string ToString()
         {
-            return string.Format("<id:{0},name:{1},players:{2}>", id, name, players.ToListString());
+            return string.Format("<id:{0},name:{1},players:{2},maxPlayers:{3}>", id, name, players.ToListString(),maxPlayerCount);
         }
     }
 

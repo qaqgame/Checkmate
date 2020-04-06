@@ -13,37 +13,50 @@ namespace QGF.Unity.FGUI
     {
         protected class ExWindow : Window
         {
-            private Action onShow, onHide;
+            private Action onWindowShow, onWindowHide;
             public ExWindow(Action onShow, Action onHide) : base()
             {
-                this.onShow = onShow;
-                this.onHide = onHide;
+                this.onWindowShow = onShow;
+                this.onWindowHide = onHide;
             }
 
             protected override void DoShowAnimation()
             {
-                onShow();
+                onWindowShow();
+                OnShown();
+                
             }
 
             protected override void DoHideAnimation()
             {
-                onHide();
+                onWindowHide();
+                HideImmediately();
             }
         }
 
 
         protected ExWindow mWindow;//窗口
         protected GButton mCloseBtn;//关闭按钮
-
+        private GObject mDragArea;//拖动区域
         protected virtual bool IsModal{get{return false;} }
 
         protected override void OnLoad()
         {
             base.OnLoad();
             mWindow = new ExWindow(OnShow,OnHide);
+            
             mWindow.contentPane = mCtrlTarget;
             mWindow.modal = IsModal;
-            mCloseBtn = mCtrlTarget.GetChild("btnClose").asButton;
+            mCloseBtn = mCtrlTarget.GetChild("BtnClose")!=null?mCtrlTarget.GetChild("BtnClose").asButton:null;
+            if (mCloseBtn != null)
+            {
+                mWindow.closeButton = mCloseBtn;
+            }
+            mDragArea = mCtrlTarget.GetChild("DragArea");
+            if (mDragArea != null)
+            {
+                mWindow.dragArea = mDragArea;
+            }
         }
 
         public override void Open(GComponent root, object arg = null)

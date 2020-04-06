@@ -124,6 +124,14 @@ namespace Assets.Chess
             Debuger.Log("login success:{0}", OnlineManager.Instance.MainUserData.name);
 
             FGUIManager.Instance.CloseLoading("Login.LoadPanel");
+            
+
+            FGUIManager.Instance.LoadScene<FGUILoading>("Main", () => {
+                Debuger.Log("create home page");
+                ModuleManager.Instance.CreateModule("HomeModule");
+                ModuleManager.Instance.CreateModule("RoomModule");
+                ModuleManager.Instance.ShowModule("HomeModule");
+            });
             //隐藏登录界面
             //通过ILR启动业务模块
             //bool result=ILRManager.Instance.Invoke("Checkmate.ScriptMain", "Init");
@@ -139,11 +147,6 @@ namespace Assets.Chess
             GlobalEvent.onLoginFailed -= OnLoginFailed;
             Debuger.LogError("login failed:{0}, msg:{1}", code, info);
             FGUIManager.Instance.CloseLoading("Login.LoadPanel");
-
-            FGUIManager.Instance.LoadScene<FGUILoading>("Main", () => {
-                Debuger.Log("create home page");
-                FGUIManager.Instance.OpenPage<FGUIPage>("Root", "Home");
-            });
             //显示错误信息
         }
 

@@ -108,7 +108,7 @@ namespace Checkmate.Services.Online
             req.id = 2;
             req.name = name;
 
-            m_net.Send<LoginProto, LoginRsp>(ProtoCmd.LoginReq, req, OnLoginRsp, 30, OnLoginErr);
+            m_net.Send<LoginProto, LoginRsp>(ProtoCmd.LoginReq, req, OnLoginRsp, 10, OnLoginErr);
         }
 
         private void OnLoginRsp(LoginRsp rsp)
@@ -142,30 +142,6 @@ namespace Checkmate.Services.Online
         {
             Debuger.LogError("ErrCode:{0}", errcode);
             GlobalEvent.onLoginFailed.Invoke(errcode, "消息发送失败!");
-        }
-
-
-
-        [RPCInvoke]
-        public void Logout()
-        {
-            //停止心跳
-            m_heartbeat.Stop();
-            if (mMainUserData != null)
-            {
-                m_net.Invoke("Logout");
-            }
-
-            mMainUserData = null;
-        }
-
-
-        //登出的回包处理
-        [RPC]
-        private void OnLogout()
-        {
-            Debuger.Log();
-            CloseConnect();
         }
 
 

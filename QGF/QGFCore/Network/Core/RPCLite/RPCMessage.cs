@@ -182,11 +182,11 @@ namespace QGF.Network.Core.RPCLite
         ULong = 4,
         Short = 5,
         UShort = 6,
-        Double = 8,
-        Float = 9,
-        String = 10,
-        Byte = 11,
-        Bool = 12,
+        Double = 7,
+        Float = 8,
+        String = 9,
+        Byte = 10,
+        Bool = 11,
         ByteArray = 31,
         PBObject = 32
     }

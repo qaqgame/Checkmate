@@ -63,4 +63,10 @@ namespace Checkmate.Global.Data
         [ProtoMember(3)]
         public string file = "";//文件
     }
+
+
+    public class GameParamUtils
+    {
+
+    }
 }

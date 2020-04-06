@@ -8,7 +8,7 @@ namespace Assets.Chess
 {
     public static class ModuleDef
     {
-        public const string Namespace = "Chess.Module";
+        public const string Namespace = "Checkmate.Module";
         public const string NativeAssemblyName = "Assembly-CSharp";
         public const string ScriptAssemblyName = "ILRScript";
 

@@ -16,9 +16,9 @@ namespace QGF.Unity.FGUI
         {
             base.OnLoad();
 
-            if (mCtrlTarget.GetChild("btnBack") != null)
+            if (mCtrlTarget.GetChild("Back") != null)
             {
-                mBtnBack = mCtrlTarget.GetChild("btnBack").asButton;
+                mBtnBack = mCtrlTarget.GetChild("Back").asButton;
                 mBtnBack.onClick.Add(OnBackClicked);
             }
             

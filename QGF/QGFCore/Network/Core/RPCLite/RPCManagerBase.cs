@@ -14,10 +14,21 @@ namespace QGF.Network.Core.RPCLite
 
     }
 
-    public class RPCInvokeAttribute : Attribute
+    public class RPCRequestAttribute : Attribute
     {
 
     }
+
+    public class RPCResponseAttribute : Attribute
+    {
+
+    }
+
+    public class RPCNotifyAttribute : Attribute
+    {
+
+    }
+
     //指明方法来自谁
     public class RPCMethodHelper
     {
@@ -32,6 +43,7 @@ namespace QGF.Network.Core.RPCLite
         public void Init()
         {
             mListListener = new List<object>();
+            mMethodHelper = new DictionarySafe<string, RPCMethodHelper>();
         }
 
         public void Clear()

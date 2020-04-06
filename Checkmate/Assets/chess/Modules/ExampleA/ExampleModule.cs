@@ -8,8 +8,9 @@ using QGF;
 using UnityEngine;
 using QGF.Unity.FGUI;
 using QGF.Network.General.Client;
+using Checkmate.Module.UI;
 
-namespace Chess.Module
+namespace Checkmate.Module
 {
     public class ExampleAModule:GeneralModule
     {

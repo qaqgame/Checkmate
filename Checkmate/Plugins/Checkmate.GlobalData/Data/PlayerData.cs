@@ -18,17 +18,16 @@ namespace Checkmate.Global.Data
         public uint uid;//用户id
 
         [ProtoMember(3)]
-        public uint name;//显示昵称
+        public string name;//显示昵称
 
         [ProtoMember(4)]
-        public uint friendMask;//标识友军，1为友军
+        public uint team;//队伍
 
         [ProtoMember(5)]
-        public uint enemyMask;//标识敌军，1为敌军
-
+        public bool isReady;//是否准备
         public override string ToString()
         {
-            return string.Format("<id:{0},name:{1},uid:{2},friend:{3},enemy:{4}>", id, name, uid, friendMask, enemyMask);
+            return string.Format("<id:{0},name:{1},uid:{2},temp:{3}>", id, name, uid, team);
         }
     }
 
@@ -44,7 +43,7 @@ namespace Checkmate.Global.Data
         public uint uid;//用户id
 
         [ProtoMember(3)]
-        public uint name;//显示昵称
+        public string name;//显示昵称
 
         [ProtoMember(4)]
         public uint friendMask;//标识友军，1为友军
