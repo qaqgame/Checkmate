@@ -20,6 +20,9 @@ namespace Checkmate.Module.UI
         GTextField mRoomTitle, mMapTitle, mModeInfo;
 
         RoomManager mManager;
+        List<string> teamItems;//队伍选择项
+
+        protected override bool IsModal { get { return true; } }
 
         protected override void OnLoad()
         {
@@ -37,6 +40,7 @@ namespace Checkmate.Module.UI
             mExitBtn.onClick.Add(OnBtnExitClicked);
 
             mTeamSelector.onChanged.Add(OnTeamChanged);
+            teamItems = new List<string>(10);
         }
 
         protected override void OnOpen(object arg)
@@ -47,6 +51,8 @@ namespace Checkmate.Module.UI
             mManager.onUpdateRoomInfo.AddListener(OnUpdateRoomInfo);
             Debuger.Log("add listener");
             mManager.UpdateRoomInfo();
+            //使窗口居中
+            mWindow.AddRelation(GRoot.inst, RelationType.Center_Center);
         }
 
         //在更新房间内信息时被调用
@@ -56,11 +62,18 @@ namespace Checkmate.Module.UI
             mRoomTitle.text = data.name;
             mMapTitle.SetVar("map", data.map);
             mModeInfo.SetVar("mode", data.mode);
-
-            mTeamSelector.selectedIndex = (int)mManager.TeamId;
+            
 
             //更新playerlist
             mPlayerList.Update(data);
+            teamItems.Clear();
+            for (int i = 0; i < data.teams.Count; ++i)
+            {
+                teamItems.Add(i.ToString());
+            }
+            mTeamSelector.items = teamItems.ToArray();
+
+            mTeamSelector.selectedIndex = (int)mManager.TeamId;
         }
 
         //准备按钮

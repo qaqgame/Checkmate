@@ -1,0 +1,12 @@
+[
+    {
+        "name":"绿地",
+        "description":"test-g",
+        "file":"green.png"
+    },
+    {
+        "name":"沙漠",
+        "description":"test-d",
+        "file":"desert.png"
+    }
+]

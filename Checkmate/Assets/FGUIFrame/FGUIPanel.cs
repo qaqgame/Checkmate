@@ -35,7 +35,7 @@ namespace QGF.Unity.FGUI
         //打开
         public virtual void Open(GComponent root,object arg = null)
         {
-            if (root != null)
+            if (root != null&&!IsOpened)
             {
                 mRoot = root;
                 root.AddChild(mCtrlTarget);
@@ -46,7 +46,7 @@ namespace QGF.Unity.FGUI
         //关闭
         public virtual void Close(object arg = null)
         {
-            if (mRoot != null)
+            if (mRoot != null&&IsOpened)
             {
                 OnClose(arg);
                 mRoot.RemoveChild(mCtrlTarget);

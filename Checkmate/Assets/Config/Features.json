@@ -1,0 +1,12 @@
+[
+    {
+        "name":"tree",
+        "file":"Tree",
+        "effectIdx":[]
+    },
+    {
+        "name":"grass",
+        "file":"Grass",
+        "effectIdx":[]
+    }
+]

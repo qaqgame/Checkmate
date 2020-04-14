@@ -61,16 +61,22 @@ namespace QGF.Unity.FGUI
 
         public override void Open(GComponent root, object arg = null)
         {
-            IsOpened = true;
-            mWindow.Show();
-            OnOpen(arg);
+            if (!IsOpened)
+            {
+                IsOpened = true;
+                mWindow.Show();
+                OnOpen(arg);
+            }
         }
 
         public override void Close(object arg)
         {
-            IsOpened = false;
-            OnClose(arg);
-            mWindow.Hide();
+            if (IsOpened)
+            {
+                IsOpened = false;
+                OnClose(arg);
+                mWindow.Hide();
+            }
         }
 
         protected override void OnPanelDestroy()

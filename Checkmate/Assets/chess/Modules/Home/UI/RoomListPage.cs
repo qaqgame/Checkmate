@@ -87,6 +87,7 @@ namespace Checkmate.Module.UI
         private void OnExitRoom()
         {
             FGUIManager.Instance.CloseWindow("Home.RoomWindow");
+            mManager.UpdateRoomList();
         }
     }
 }

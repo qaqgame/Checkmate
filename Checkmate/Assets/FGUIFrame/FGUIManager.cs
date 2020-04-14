@@ -48,6 +48,10 @@ namespace QGF.Unity.FGUI
         public static string DefaultLoadingPackageName = "Login";
         public static string DefaultLoadingComName = "LoadPanel";
 
+        public static string DefaultDialogPkgName = "Login";
+        public static string DefaultDialogComName = "Dialog";
+        public static string DefaultSimpleDialogComName = "ExDialog";
+
         private static int refreshInterval=10;//每10ms检查一次显示序列
         private static DateTime mLastCheckTime;
 
@@ -269,6 +273,22 @@ namespace QGF.Unity.FGUI
             return ui;
         }
 
+        public void Close<T>(string name,object arg)where T:FGUIPanel
+        {
+            OpenTrack track = new OpenTrack(name, null);
+            //从显示序列中清除
+            if (mCacheOpenPanel.Contains(track))
+            {
+                mCacheOpenPanel.Remove(track);
+            }
+
+            T ui = GetUI(name) as T;
+            if (ui != null)
+            {
+                ui.Close(arg);
+            }
+
+        }
 
         public void Tick()
         {
@@ -357,11 +377,7 @@ namespace QGF.Unity.FGUI
         public void CloseWindow(string name, object arg = null)
         {
             Debuger.Log(name);
-            FGUIWindow ui = GetUI(name) as FGUIWindow;
-            if (ui != null)
-            {
-                ui.Close(arg);
-            }
+            Close<FGUIWindow>(name, arg);
         }
 
         public FGUIWindow OpenWindow<T>(string name,string pkg, object arg = null) where T : FGUIWindow,new()
@@ -379,11 +395,7 @@ namespace QGF.Unity.FGUI
         public void CloseLoading(string name, object arg = null)
         {
             Debuger.Log(name);
-            FGUILoading ui = GetUI(name) as FGUILoading;
-            if (ui != null)
-            {
-                ui.Close(arg);
-            }
+            Close<FGUILoading>(name, arg);
         }
 
         public FGUILoading OpenLoading<T>(string name, string pkg,object arg = null) where T : FGUILoading,new()
@@ -392,6 +404,30 @@ namespace QGF.Unity.FGUI
             FGUILoading ui = Open<T>(name,pkg, arg);
             return ui;
         }
+        #endregion
+
+
+        #region Dialog
+        public Dialog ShowDialog(string content,Action onCancel=null)
+        {
+            DialogParam param = new DialogParam();
+            param.content = content;
+            param.onCancel = onCancel;
+            Dialog ui=Open<Dialog>(DefaultDialogComName, DefaultDialogPkgName, param);
+            return ui;
+        }
+
+        public ExDialog ShowExDialog(string content, Action onCancel=null,Action onConfirm=null)
+        {
+            DialogParam param = new DialogParam();
+            param.content = content;
+            param.onCancel = onCancel;
+            param.onConfirm = onConfirm;
+            ExDialog ui = Open<ExDialog>(DefaultSimpleDialogComName, DefaultDialogPkgName, param);
+            return ui;
+        }
+
+
         #endregion
     }
 }

@@ -28,41 +28,15 @@ namespace Checkmate.Global.Data
         [ProtoMember(1)]
         public uint id = 0;//该局游戏的id
 
-        [ProtoMember(2)]
-        public MapData mapData = new MapData();//地图数据
+        //[ProtoMember(2)]
+        //public MapData mapData = new MapData();//地图数据
 
-        [ProtoMember(3)]
+        [ProtoMember(2)]
         public int randomSeed = 0;//随机数种子
     }
 
-    //地图的数据
-    //如：胜利条件
-    [ProtoContract]
-    public class MapData
-    {
-        [ProtoMember(1)]
-        public uint id = 0;//地图id
 
-        [ProtoMember(2)]
-        public string name = "";//地图名
 
-        [ProtoMember(3)]
-        public string mode = "";//游戏模式
-    }
-
-    //角色的数据
-    [ProtoContract]
-    public class RoleData
-    {
-        [ProtoMember(1)]
-        public uint pid;//所属的player
-
-        [ProtoMember(2)]
-        public string name = "";//显示的名字
-
-        [ProtoMember(3)]
-        public string file = "";//文件
-    }
 
 
     public class GameParamUtils
