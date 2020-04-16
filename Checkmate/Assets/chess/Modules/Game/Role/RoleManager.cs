@@ -1,5 +1,7 @@
-﻿using Checkmate.Game.Controller;
+﻿using Checkmate.Game;
+using Checkmate.Game.Controller;
 using Checkmate.Global.Data;
+using Checkmate.Modules.Game.Map;
 using Checkmate.Modules.Game.Utils;
 using System;
 using System.Collections.Generic;
@@ -16,22 +18,25 @@ namespace Checkmate.Modules.Game.Role
         public const string prefabType = "Role";//类别名
 
 
-        private List<string> mActiveRoles;//处于激活状态的role
-        private Dictionary<string, RoleController> mRolePool;//角色池
+        private List<int> mActiveRoles;//处于激活状态的role
+        private Dictionary<int, RoleController> mRolePool;//角色池
 
         private Dictionary<string, GameObject> mModelPrefabs;//模型预制体缓存
 
-        public RoleManager()
+        private MapManager mMap;//地图
+
+        public RoleManager(MapManager map)
         {
-            mActiveRoles = new List<string>();
-            mRolePool = new Dictionary<string, RoleController>(20);
+            mActiveRoles = new List<int>();
+            mRolePool = new Dictionary<int, RoleController>(20);
             mModelPrefabs = new Dictionary<string, GameObject>(10);
+            mMap = map;
         }
 
         //添加角色
         public RoleController AddRole(RoleData role)
         {
-            string nameKey = role.name + role.team.ToString();
+            int id = role.id;
 
             GameObject obj = ObjectPool.Instance.GetGameObject(prefabType);
             //生成模型
@@ -50,27 +55,33 @@ namespace Checkmate.Modules.Game.Role
             
 
             RoleController controller = new RoleController(role,obj);
-            mRolePool.Add(nameKey, controller);
+            mRolePool.Add(id, controller);
             //添加到激活列表
-            mActiveRoles.Add(nameKey);
+            mActiveRoles.Add(id);
+
+            //设置角色的实际位置
+            Position pos = new Position(role.position.x, role.position.y, role.position.z);
+            controller.GetGameObject().transform.position = mMap.GetCellWorldPosition(pos);
             return controller;
         }
 
         //移除角色
-        public void RemoveRole(RoleController controller)
+        public void RemoveRole(int id)
         {
-            //将其隐藏
-            controller.GetGameObject().SetActive(false);
-
-            string key = controller.Name + controller.Team.ToString();
-            //从激活列表中移除
-            mActiveRoles.Remove(key);
+            if (mActiveRoles.Contains(id))
+            {
+                RoleController controller = mRolePool[id];
+                //将其隐藏
+                controller.GetGameObject().SetActive(false);
+                //从激活列表中移除
+                mActiveRoles.Remove(id);
+            }
         }
 
         //复活角色
-        public void Revive(string name,int team,RoleProperty property)
+        public void Revive(int id,RoleProperty property,Position position)
         {
-            string key = name + team.ToString();
+            int key = id;
             if (mRolePool.ContainsKey(key))
             {
                 RoleController controller = mRolePool[key];
@@ -82,11 +93,16 @@ namespace Checkmate.Modules.Game.Role
 
                 //添加至激活列表
                 mActiveRoles.Add(key);
+                //设置位置
+                controller.GetGameObject().transform.position = mMap.GetCellWorldPosition(position);
             }
         }
 
 
         //获取角色
-
+        public RoleController GetRole(int id)
+        {
+            return mRolePool[id];
+        }
     }
 }

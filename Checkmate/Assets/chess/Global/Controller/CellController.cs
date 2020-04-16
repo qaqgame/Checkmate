@@ -13,11 +13,21 @@ namespace Checkmate.Game.Controller
     {
         private HexCell mCell;
 
-        private string mRole=null;//当前的角色
+        private int mRole=-1;//当前的角色
 
-        public string Role
+        public HexCell Cell
+        {
+            get { return mCell; }
+        }
+
+        public int Role
         {
             get { return mRole; }
+        }
+
+        public bool HasRole
+        {
+            get { return mRole > -1; }
         }
 
         public CellController(int cost,bool available,HexCell cell,string extra=null):base(extra)

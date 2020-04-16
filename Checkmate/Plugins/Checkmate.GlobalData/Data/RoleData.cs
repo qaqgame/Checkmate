@@ -49,23 +49,25 @@ namespace Checkmate.Global.Data
     public class RoleData
     {
         [ProtoMember(1)]
-        public string name;//显示名
+        public int id;//角色实例id（每局唯一）
         [ProtoMember(2)]
-        public string model;//显示的模型名
+        public string name;//显示名
         [ProtoMember(3)]
-        public int team;//队伍id
+        public string model;//显示的模型名
         [ProtoMember(4)]
-        public v3i position;//初始位置
+        public int team;//队伍id
         [ProtoMember(5)]
-        public int status;//初始状态
+        public v3i position;//初始位置
         [ProtoMember(6)]
-        public int mask;//可站立的方格类型掩码
+        public int status;//初始状态
         [ProtoMember(7)]
-        public Dictionary<int, int> extraMove;//额外的行动力
+        public int mask;//可站立的方格类型掩码
         [ProtoMember(8)]
+        public Dictionary<int, int> extraMove;//额外的行动力
+        [ProtoMember(9)]
         public RoleProperty props;//初始属性
 
-        [ProtoMember(9)]
+        [ProtoMember(10)]
         public string extraData;//额外数据
     }
 }

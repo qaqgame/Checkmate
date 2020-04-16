@@ -47,23 +47,37 @@ namespace Checkmate.Modules.Game
             mMapMng = new MapManager();
             mMapMng.Init(hexGrid,Application.dataPath + "/Test/testMap.map");
 
-            mRoleMng = new RoleManager();
+            DrawUtil.Init(mMapMng);
+
+            mRoleMng = new RoleManager(mMapMng);
+
+            //=============================
+            //测试部分
             RoleData alice = JsonConvert.DeserializeObject<RoleData>(File.ReadAllText(Application.dataPath + "/Test/Alice.json"));
             AddRole(alice);
+            alice.id = 1;
             alice.model = "Bob";
             alice.name = "Bob";
             alice.position.x = 2;
             alice.position.y = -1;
             alice.position.z = -1;
             AddRole(alice);
+            Debug.Log("extra:" + mRoleMng.GetRole(1).GetValue("Current.test"));
+            RemoveRole(0);
+
         }
 
 
         public void AddRole(RoleData data)
         {
             RoleController controller = mRoleMng.AddRole(data);
-            Position pos = new Position(data.position.x, data.position.y, data.position.z);
-            controller.GetGameObject().transform.position = mMapMng.GetCellWorldPosition(pos);
+            Debug.Log(data.name + ",data:"+controller.GetValue("Id"));
+            
+        }
+
+        public void RemoveRole(int id)
+        {
+            mRoleMng.RemoveRole(id);
         }
     }
 }

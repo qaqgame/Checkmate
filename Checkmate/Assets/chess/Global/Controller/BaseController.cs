@@ -68,6 +68,7 @@ namespace Checkmate.Game.Controller
             }
             //获取类型
             Type type = Type.GetType(p.type);
+            Debug.Log("extra type:" + p.type);
             //判断是否是枚举
             if (type.IsEnum)
             {
@@ -185,11 +186,14 @@ namespace Checkmate.Game.Controller
                 object obj = GetValue(newObj);
                 if (obj == null)
                 {
+                    Debug.LogError("obj null:" + newObj);
                     //为空代表无该变量
                     Debuger.LogError("error get property:{0} from {1}", newObj, this.GetType().Name);
                     return false;
                 }
-                if (obj.GetType().IsAssignableFrom(typeof(BaseController)))
+                Debug.Log("type:" + obj.GetType().Name);
+                Debug.Log("available " + obj.GetType().IsSubclassOf(typeof(BaseController)));
+                if (obj.GetType().IsSubclassOf(typeof(BaseController)))
                 {
                     //如果为basecontroller的子类
                     return (obj as BaseController).GetValue(newParam);

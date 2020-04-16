@@ -12,6 +12,20 @@ namespace Checkmate.Game.Controller
     {
         private GameObject mObj;
 
+        //该角色当前是否可操作
+        public bool CanOperate
+        {
+            get;
+        }
+
+        //角色id
+        [GetProperty]
+        public int Id
+        {
+            get;
+            private set;
+        }
+
 
         [GetProperty]
         public RoleAttributeController Current
@@ -72,6 +86,7 @@ namespace Checkmate.Game.Controller
 
         public RoleController(RoleData data,GameObject obj):base(data.extraData)
         {
+            Id = data.id;
             Current = new RoleAttributeController(data.props);
             Origin = new RoleAttributeController(data.props);
             Position = new Position(data.position.x, data.position.y, data.position.z);
