@@ -12,11 +12,14 @@ using UnityEngine;
 using Newtonsoft.Json;
 using System.IO;
 using Checkmate.Game.Controller;
+using QGF.Network.FSPLite.Client;
 
 namespace Checkmate.Modules.Game
 {
     public class GameManager:MonoBehaviour
     {
+        public FSPManager fsp;
+        public FSPClient client;
         public static GameManager Instance;
 
         public static MapManager MapManager

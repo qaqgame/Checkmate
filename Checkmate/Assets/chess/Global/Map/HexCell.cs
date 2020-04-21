@@ -462,7 +462,9 @@ namespace Checkmate.Game
         //获取高度差异
         public int GetElevationDifference(HexDirection dir)
         {
-            int diff = elevation - GetNeighbor(dir).elevation;
+            int origin = IsUnderWater ? waterLevel : elevation;
+            int target = GetNeighbor(dir).IsUnderWater ? GetNeighbor(dir).WaterLevel : GetNeighbor(dir).Elevation;
+            int diff = origin-target;
             return diff >= 0 ? diff : -diff;
         }
 
@@ -530,32 +532,6 @@ namespace Checkmate.Game
         void ValidateAccess()
         {
             Debug.Log("start validate access");
-            //先检查水
-            if (IsUnderWater)
-            {
-                //水位高直接设为否
-                if (waterLevel - elevation > 1)
-                {
-                    for (int i = 0; i < 6; ++i)
-                    {
-                        access[i] = false;
-                    }
-                    return;
-                }
-            }
-            //有水时不检测河流
-            else
-            {
-                if (HasRiver)
-                {
-                    for (int i = 0; i < 6; ++i)
-                    {
-                        access[i] = false;
-                    }
-                    return;
-                }
-            }
-            Debug.Log("start validate elevation");
             //检测高度
             for (HexDirection direction = HexDirection.NE; direction <= HexDirection.N; ++direction)
             {
