@@ -30,18 +30,20 @@ namespace Checkmate.Global.Data
     [ProtoContract]
     public class FeatureData
     {
-        [ProtoMember(1)] public string name;//特征名
-        [ProtoMember(2)] public string file;//文件名
-        [ProtoMember(3)] public List<int> effectIdx;//效果（idx）
+        [ProtoMember(1)] public int id;//特征id
+        [ProtoMember(2)] public string name;//特征名
+        [ProtoMember(3)] public string file;//文件名
+        [ProtoMember(4)] public List<int> effectIdx;//效果（idx）
     }
 
     //terrain数据
     [ProtoContract]
     public class TerrainData
     {
-        [ProtoMember(1)] public string name;//地形名
-        [ProtoMember(2)] public string description;//描述
-        [ProtoMember(3)] public string file;//文件
+        [ProtoMember(1)] public int id;//地形id
+        [ProtoMember(2)] public string name;//地形名
+        [ProtoMember(3)] public string description;//描述
+        [ProtoMember(4)] public string file;//文件
     }
 
     //地图单元格数据

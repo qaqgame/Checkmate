@@ -15,8 +15,8 @@ namespace Checkmate.Game
     public enum TerrainType
     {
         Water,
-        Green,
-        Desert
+        Terrain,//1-1024留给地形
+        Feature//1024+为特征
     }
     public static class HexDirectionExtensioons
     {
@@ -111,17 +111,7 @@ namespace Checkmate.Game
             }
         }
 
-        public TerrainType TerrainType
-        {
-            get
-            {
-                if (IsUnderWater)
-                {
-                    return TerrainType.Water;
-                }
-                return (TerrainType)(terrainTypeIndex + 1);
-            }
-        }
+        
 
         //是否可见
         [SerializeField]
@@ -635,7 +625,7 @@ namespace Checkmate.Game
         }
 
         //是否可以通行
-        public bool IsAccessible(HexDirection dir)
+        private bool IsAccessible(HexDirection dir)
         {
             return access[(int)dir];
         }

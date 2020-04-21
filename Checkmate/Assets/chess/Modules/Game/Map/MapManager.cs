@@ -25,7 +25,7 @@ namespace Checkmate.Modules.Game.Map
         {
             get
             {
-                return hexGrid.Features;
+                return HexGrid.Features;
             }
         }
 
@@ -33,7 +33,7 @@ namespace Checkmate.Modules.Game.Map
         {
             get
             {
-                return hexGrid.Effects;
+                return HexGrid.Effects;
             }
         }
 

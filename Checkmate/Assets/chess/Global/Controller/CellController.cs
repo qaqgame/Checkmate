@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using Checkmate.Game.Feature;
 
 namespace Checkmate.Game.Controller
 {
@@ -56,8 +57,71 @@ namespace Checkmate.Game.Controller
             get { return _available; }
         }
 
+        [GetProperty]
+        public Position Position
+        {
+            get { return mCell.coordinates.ToPosition(); }
+        }
+
+        //获取地形id
+        [GetProperty]
+        public int Terrain
+        {
+            get
+            {
+                if (mCell.IsUnderWater || mCell.HasRiver)
+                {
+                    return 0;
+                }
+                //获取特征
+                int fid = HexGrid.Features.GetFeatureId(mCell.Feature);
+                IFeature temp = HexGrid.Features.GetFeature(fid);
+                //如果特征覆盖了地形
+                if (temp.OverwriteTerrain)
+                {
+                    return fid;
+                }
+
+                //不然就返回地形
+                return HexGrid.GetTerrainId(mCell.TerrainTypeIndex);
+
+            }
+        }
+        //获取起作用的地面类型（地形、特征)
+        [GetProperty]
+        public TerrainType TerrainType
+        {
+            get
+            {
+                int id = Terrain;
+                if (id == 0)
+                {
+                    return TerrainType.Water;
+                }
+                else if (id > 0 && id <= 1024)
+                {
+                    return TerrainType.Terrain;
+                }
+                else
+                {
+                    return TerrainType.Feature;
+                }
+            }
+        }
 
 
+
+        //获取邻居
+        public CellController GetNeighbor(HexDirection direction)
+        {
+            return mCell.GetNeighbor(direction).Controller;
+        }
+
+        //判断邻居是否可达
+        public bool IsReachable(HexDirection direction)
+        {
+            return mCell.IsReachable(direction);
+        }
 
         public override GameObject GetGameObject()
         {

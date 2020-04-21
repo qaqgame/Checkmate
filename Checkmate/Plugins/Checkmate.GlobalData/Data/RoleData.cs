@@ -61,7 +61,7 @@ namespace Checkmate.Global.Data
         [ProtoMember(6)]
         public int status;//初始状态
         [ProtoMember(7)]
-        public int mask;//可站立的方格类型掩码
+        public List<int> mask;//可站立的方格类型掩码
         [ProtoMember(8)]
         public Dictionary<int, int> extraMove;//额外的行动力
         [ProtoMember(9)]

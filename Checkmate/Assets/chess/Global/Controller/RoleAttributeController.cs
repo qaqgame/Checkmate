@@ -23,12 +23,18 @@ namespace Checkmate.Game.Controller
         private int _viewRange;//视距
         private int _viewHeight;//视高
 
+        public Action<string, object> onAttributeChanged;//属性改变事件 
+
         [GetProperty]
         [SetProperty]
         public int Hp
         {
             get { return _hp; }
-            set { _hp = value; }
+            set 
+            {
+                _hp = value;
+                onAttributeChanged("Hp", value);
+            }
         }
 
         [GetProperty]
@@ -36,7 +42,7 @@ namespace Checkmate.Game.Controller
         public int Mp
         {
             get { return _mp; }
-            set { _mp = value; }
+            set { _mp = value; onAttributeChanged("Mp", value); }
         }
 
         [GetProperty]
@@ -44,7 +50,7 @@ namespace Checkmate.Game.Controller
         public float Miss
         {
             get { return _miss; }
-            set { _miss = value > 1.0f ? 1.0f : value; }
+            set { _miss = value > 1.0f ? 1.0f : value; onAttributeChanged("Miss", _miss); }
         }
 
         [GetProperty]
@@ -52,7 +58,7 @@ namespace Checkmate.Game.Controller
         public int PhysicalRes
         {
             get { return _phyRes; }
-            set { _phyRes = value; }
+            set { _phyRes = value; onAttributeChanged("PhysicalRes", value); }
         }
 
         [GetProperty]
@@ -60,7 +66,7 @@ namespace Checkmate.Game.Controller
         public int MagicRes
         {
             get { return _magicRes; }
-            set { _magicRes = value; }
+            set { _magicRes = value; onAttributeChanged("MagicRes", value); }
         }
 
         [GetProperty]
@@ -68,7 +74,7 @@ namespace Checkmate.Game.Controller
         public int Attack
         {
             get { return _attack; }
-            set { _attack = value; }
+            set { _attack = value; onAttributeChanged("Attack", value); }
         }
 
         [GetProperty]
@@ -76,7 +82,7 @@ namespace Checkmate.Game.Controller
         public int MoveRange
         {
             get { return _moveRange; }
-            set { _moveRange = value>10?10:value; }
+            set { _moveRange = value>10?10:value; onAttributeChanged("MoveRange", _moveRange); }
         }
 
         [GetProperty]
@@ -84,7 +90,7 @@ namespace Checkmate.Game.Controller
         public float AttackSpeed
         {
             get { return _atkSpeed; }
-            set { _atkSpeed = value>3.0f?3.0f:value; }
+            set { _atkSpeed = value>3.0f?3.0f:value; onAttributeChanged("AttackSpeed", _atkSpeed); }
         }
 
         [GetProperty]
@@ -92,7 +98,7 @@ namespace Checkmate.Game.Controller
         public float PhysicalIgnore
         {
             get { return _phyIgn; }
-            set { _phyIgn= value>1.0f?1.0f:value; }
+            set { _phyIgn= value>1.0f?1.0f:value; onAttributeChanged("PhysicalIgnore", _phyIgn); }
         }
 
         [GetProperty]
@@ -100,7 +106,7 @@ namespace Checkmate.Game.Controller
         public float MagicIgnore
         {
             get { return _magicIgn; }
-            set { _magicIgn = value > 1.0f ? 1.0f : value; }
+            set { _magicIgn = value > 1.0f ? 1.0f : value; onAttributeChanged("MagicIgnore", _magicIgn); }
         }
 
         [GetProperty]
@@ -108,7 +114,7 @@ namespace Checkmate.Game.Controller
         public int ViewRange
         {
             get { return _viewRange; }
-            set { _viewRange = value > 5 ? 5 : value; }
+            set { _viewRange = value > 5 ? 5 : value; onAttributeChanged("ViewRange", _viewRange); }
         }
 
         [GetProperty]
@@ -116,7 +122,7 @@ namespace Checkmate.Game.Controller
         public int ViewHeight
         {
             get { return _viewHeight; }
-            set { _viewHeight = value > 3 ? 13 : value; }
+            set { _viewHeight = value > 3 ? 3 : value; onAttributeChanged("ViewHeight", _viewHeight); }
         }
 
         public RoleAttributeController(RoleProperty data):base(data.extraData)

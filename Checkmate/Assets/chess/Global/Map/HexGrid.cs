@@ -38,10 +38,10 @@ namespace Checkmate.Game
         private static List<Checkmate.Global.Data.TerrainData> mTerrainData;//地形数据
         private static Texture2DArray mTerrainTextures;//地形的贴图
 
-        private FeatureManager mFeatureMng;//特征管理（列表管理）
-        private EffectManager mEffectMng;//效果管理（列表管理)
+        private static FeatureManager mFeatureMng;//特征管理（列表管理）
+        private static EffectManager mEffectMng;//效果管理（列表管理)
 
-        public FeatureManager Features
+        public static FeatureManager Features
         {
             get
             {
@@ -49,7 +49,7 @@ namespace Checkmate.Game
             }
         }
 
-        public EffectManager Effects
+        public static EffectManager Effects
         {
             get
             {
@@ -57,6 +57,11 @@ namespace Checkmate.Game
             }
         }
 
+        //获取目标索引地形的id
+        public static int GetTerrainId(int idx)
+        {
+            return mTerrainData[idx].id;
+        }
 
         private void OnEnable()
         {
@@ -65,6 +70,11 @@ namespace Checkmate.Game
                 HexMetrics.noiseSource = noiseSource;
                 HexMetrics.InitializeHashGrid(seed);
             }
+        }
+
+        private void OnDestroy()
+        {
+            //清除特征与效果管理
         }
 
         private void Awake()

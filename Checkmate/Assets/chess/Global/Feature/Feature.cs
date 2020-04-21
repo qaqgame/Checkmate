@@ -4,21 +4,16 @@ using UnityEngine;
 
 namespace Checkmate.Game.Feature
 {
-    public abstract class Feature : MonoBehaviour
+    public interface IFeature
     {
+        bool OverwriteTerrain { get; }//是否覆盖地形的效果
+    }
 
-        public void Visible()
+    public class TestFeature : IFeature
+    {
+        public bool OverwriteTerrain
         {
-
+            get { return true; }
         }
-        //使其不可见
-        public void InVisible()
-        {
-
-        }
-        //用于控制物体的显示
-        public abstract void OnBuild(HexCell cell);
-        //用于控制feature的效果
-        public abstract void OnAttach(HexCell cell);
     }
 }

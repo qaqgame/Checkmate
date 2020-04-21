@@ -1,4 +1,5 @@
-﻿using Checkmate.Game.Controller;
+﻿using Checkmate.Game;
+using Checkmate.Game.Controller;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -85,6 +86,7 @@ namespace Checkmate.Modules.Game.Control
                 //与地图有交点
                 if(Physics.Raycast(ray,out hit, 500, mouseMask))
                 {
+                    BaseController temp = mObj.CurrentObj;//当前对象
                     BaseController target = mObj.OnClick(hit.point);
                     //如果是idle状态
                     if (mState == InputState.Idle)
@@ -95,6 +97,7 @@ namespace Checkmate.Modules.Game.Control
                             if ((target as RoleController).CanOperate)
                             {
                                 mState = InputState.Operate;
+                                (target as RoleController).SetState(RoleState.PreMove);
                             }
                         }
                     }
@@ -102,10 +105,23 @@ namespace Checkmate.Modules.Game.Control
                     //是操作状态
                     else
                     {
-                        //点击地面进行移动
-                        if (target.Type == 1)
+                        //如果是角色
+                        if (temp.Type == 2)
                         {
-                            //移动
+                            RoleController role = temp as RoleController;
+                            if (role.CanOperate)
+                            {
+                                if (role.CurrentState == RoleState.PreMove && target.Type == 1)
+                                {
+                                    //移动
+                                    role.SetState(RoleState.Move);
+                                }
+                                else if (role.CurrentState == RoleState.PreSpell)
+                                {
+                                    //施法
+                                    role.SetState(RoleState.Spell);
+                                }
+                            }
                         }
                     }
                 }
@@ -138,7 +154,28 @@ namespace Checkmate.Modules.Game.Control
             //操作状态下
             if (mState == InputState.Operate)
             {
-                //地面移动预览
+                BaseController temp = mObj.CurrentObj;//获取当前角色
+
+                Ray ray = Camera.main.ScreenPointToRay(position);
+                RaycastHit hit;
+
+                //与地图有交点
+                if (Physics.Raycast(ray, out hit, 500, mouseMask))
+                {
+                    Position target = HexMapUtil.GetRoundPosition(hit.point);
+                    if (temp.Type == 2)
+                    {
+                        RoleController role = temp as RoleController;
+                        if (role.CurrentState == RoleState.PreMove)
+                        {
+                            //预览移动
+                        }
+                        else if (role.CurrentState == RoleState.PreSpell)
+                        {
+                            //预览施法
+                        }
+                    }
+                }
 
             }
         }

@@ -19,5 +19,7 @@ namespace Checkmate.Modules.Game
         //角色点击事件
         public static QGFEvent<RoleController> onRoleClicked;
 
+        //角色属性改变事件
+        public static QGFEvent<RoleController> onRoleChanged;
     }
 }

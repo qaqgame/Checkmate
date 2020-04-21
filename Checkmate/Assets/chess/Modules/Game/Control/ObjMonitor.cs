@@ -24,6 +24,14 @@ namespace Checkmate.Modules.Game.Control
             mMap = map;
         }
 
+        public BaseController CurrentObj
+        {
+            get
+            {
+                return mCurObj;
+            }
+        }
+
         //外部调用的点击
         public BaseController OnClick(Vector3 position)
         {

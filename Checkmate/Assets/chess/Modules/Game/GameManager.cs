@@ -51,6 +51,7 @@ namespace Checkmate.Modules.Game
 
             mRoleMng = new RoleManager(mMapMng);
 
+            GameEnv.Instance.Init();//初始化环境
             //=============================
             //测试部分
             RoleData alice = JsonConvert.DeserializeObject<RoleData>(File.ReadAllText(Application.dataPath + "/Test/Alice.json"));
