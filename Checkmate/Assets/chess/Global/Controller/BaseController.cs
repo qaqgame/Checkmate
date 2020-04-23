@@ -149,6 +149,7 @@ namespace Checkmate.Game.Controller
             }
         }
 
+       
 
         public BaseController(string extraData=null)
         {
@@ -262,7 +263,6 @@ namespace Checkmate.Game.Controller
 
         
 
-        public abstract Position GetPosition();
-        public abstract GameObject GetGameObject();
+        
     }
 }

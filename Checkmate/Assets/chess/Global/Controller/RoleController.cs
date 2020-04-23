@@ -20,7 +20,7 @@ namespace Checkmate.Game.Controller
         Spell,//施法中
         EndSpell//结束施法
     }
-    public class RoleController : BaseController
+    public class RoleController : ModelController
     {
         private GameObject mObj;//根物体
         private RolePanel mPanel;//头顶面板
@@ -169,7 +169,7 @@ namespace Checkmate.Game.Controller
 
         //==========================
         //继承的接口
-        public override int Type { get { return 3; } }
+        public override int Type { get { return (int)ControllerType.Role; } }
 
         public override GameObject GetGameObject()
         {

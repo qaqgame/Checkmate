@@ -29,7 +29,7 @@ namespace Checkmate.Modules.Game.Control
 
         public InputManager()
         {
-            mObj = new ObjMonitor(GameManager.MapManager);
+            mObj = new ObjMonitor();
         }
 
         

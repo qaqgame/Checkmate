@@ -6,15 +6,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Checkmate.Modules.Game
+namespace Checkmate.Game.Utils
 {
 
     //环境变量
-    internal class EnvVariable
+    public class EnvVariable
     {
+        public BaseController Obj;//当前对象
         public BaseController Src;//来源
         public BaseController Dst;//目标
-        public BaseController Main;//主体
+        public BaseController Main;//主体(技能、buff等)
         public object Data;
     }
 
@@ -24,6 +25,16 @@ namespace Checkmate.Modules.Game
     {
         private Stack<EnvVariable> mEnvStacks;//环境变量栈
 
+        private Dictionary<string, List<BaseController>> mTempTargets;//临时搜索/筛选得到的对象
+        
+        public EnvVariable Current
+        {
+            get
+            {
+                return mEnvStacks.Peek();
+            }
+        }
+        
         public void Init()
         {
 
@@ -51,5 +62,6 @@ namespace Checkmate.Modules.Game
                 mEnvStacks.Pop();
             }
         }
+
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Checkmate.Game;
 using Checkmate.Game.Controller;
 using Checkmate.Global.Data;
-using Checkmate.Modules.Game.Map;
+using Checkmate.Game.Map;
 using Checkmate.Modules.Game.Utils;
 using System;
 using System.Collections.Generic;
@@ -9,11 +9,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using QGF.Common;
 
-namespace Checkmate.Modules.Game.Role
+namespace Checkmate.Game.Role
 {
     //角色管理器(管理所有角色）
-    public class RoleManager
+    public class RoleManager:Singleton<RoleManager>
     {
         public const string prefabType = "Role";//类别名
 
@@ -23,14 +24,12 @@ namespace Checkmate.Modules.Game.Role
 
         private Dictionary<string, GameObject> mModelPrefabs;//模型预制体缓存
 
-        private MapManager mMap;//地图
 
-        public RoleManager(MapManager map)
+        public void Init()
         {
             mActiveRoles = new List<int>();
             mRolePool = new Dictionary<int, RoleController>(20);
             mModelPrefabs = new Dictionary<string, GameObject>(10);
-            mMap = map;
         }
 
         //添加角色
@@ -61,7 +60,7 @@ namespace Checkmate.Modules.Game.Role
 
             //设置角色的实际位置
             Position pos = new Position(role.position.x, role.position.y, role.position.z);
-            controller.GetGameObject().transform.position = mMap.GetCellWorldPosition(pos);
+            controller.GetGameObject().transform.position = MapManager.Instance.GetCellWorldPosition(pos);
             return controller;
         }
 
@@ -94,7 +93,7 @@ namespace Checkmate.Modules.Game.Role
                 //添加至激活列表
                 mActiveRoles.Add(key);
                 //设置位置
-                controller.GetGameObject().transform.position = mMap.GetCellWorldPosition(position);
+                controller.GetGameObject().transform.position =MapManager.Instance.GetCellWorldPosition(position);
             }
         }
 

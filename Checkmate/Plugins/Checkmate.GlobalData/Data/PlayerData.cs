@@ -56,4 +56,26 @@ namespace Checkmate.Global.Data
             return string.Format("<id:{0},name:{1},uid:{2},friend:{3},enemy:{4}>", id, name, uid, friendMask, enemyMask);
         }
     }
+
+    //友军标识数据
+    [ProtoContract]
+    public class MaskData
+    {
+        [ProtoMember(1)]
+        public uint pid;//分配的游戏内id
+
+        [ProtoMember(2)]
+        public uint friendMask;//友军标识
+
+        [ProtoMember(3)]
+        public uint enemyMask;//敌军标识
+    }
+
+    //游戏开始时下行的队伍数据
+    [ProtoContract]
+    public class PlayerTeamData
+    {
+        [ProtoMember(1)]
+        public List<MaskData> masks;//标识数据
+    }
 }

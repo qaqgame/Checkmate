@@ -10,7 +10,7 @@ using Checkmate.Game.Feature;
 
 namespace Checkmate.Game.Controller
 {
-    public class CellController :BaseController
+    public class CellController :ModelController
     {
         private HexCell mCell;
 
@@ -39,7 +39,7 @@ namespace Checkmate.Game.Controller
         }
 
         //控制器类别：地板
-        public override int Type { get { return 1; } }
+        public override int Type { get { return (int)ControllerType.Cell; } }
 
         
         private int _cost;//移动花费

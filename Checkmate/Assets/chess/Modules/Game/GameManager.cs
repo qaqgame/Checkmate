@@ -1,7 +1,7 @@
 ﻿using Checkmate.Game;
 using Checkmate.Global.Data;
-using Checkmate.Modules.Game.Map;
-using Checkmate.Modules.Game.Role;
+using Checkmate.Game.Map;
+using Checkmate.Game.Role;
 using Checkmate.Modules.Game.Utils;
 using System;
 using System.Collections.Generic;
@@ -22,16 +22,8 @@ namespace Checkmate.Modules.Game
         public FSPClient client;
         public static GameManager Instance;
 
-        public static MapManager MapManager
-        {
-            get { return mMapMng; }
-        }
 
 
-
-        private static MapManager mMapMng;//地图管理
-
-        private static RoleManager mRoleMng;//角色管理
 
         static readonly List<string> types = new List<string>()
         {
@@ -47,12 +39,11 @@ namespace Checkmate.Modules.Game
         private void Start()
         {
             HexGrid hexGrid = GameObject.Find("Map").GetComponentInChildren<HexGrid>();
-            mMapMng = new MapManager();
-            mMapMng.Init(hexGrid,Application.dataPath + "/Test/testMap.map");
+            MapManager.Instance.Init(hexGrid,Application.dataPath + "/Test/testMap.map");
 
-            DrawUtil.Init(mMapMng);
+            DrawUtil.Init(MapManager.Instance);
 
-            mRoleMng = new RoleManager(mMapMng);
+            RoleManager.Instance.Init();
 
             GameEnv.Instance.Init();//初始化环境
             //=============================
@@ -66,7 +57,7 @@ namespace Checkmate.Modules.Game
             alice.position.y = -1;
             alice.position.z = -1;
             AddRole(alice);
-            Debug.Log("extra:" + mRoleMng.GetRole(1).GetValue("Current.test"));
+            Debug.Log("extra:" + RoleManager.Instance.GetRole(1).GetValue("Current.test"));
             RemoveRole(0);
 
         }
@@ -74,14 +65,14 @@ namespace Checkmate.Modules.Game
 
         public void AddRole(RoleData data)
         {
-            RoleController controller = mRoleMng.AddRole(data);
+            RoleController controller =RoleManager.Instance.AddRole(data);
             Debug.Log(data.name + ",data:"+controller.GetValue("Id"));
             
         }
 
         public void RemoveRole(int id)
         {
-            mRoleMng.RemoveRole(id);
+            RoleManager.Instance.RemoveRole(id);
         }
     }
 }

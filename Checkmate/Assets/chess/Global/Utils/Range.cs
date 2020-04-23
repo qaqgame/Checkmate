@@ -131,10 +131,11 @@ namespace Checkmate.Game.Utils
     //范围的解析类
     public static class RangeParser
     {
+        static string RangeNameSpace = "Checkmate.Game.Utils.";
         public static IRange ParseRange(XmlNode root)
         {
             //获取类名
-            System.Type tp = System.Type.GetType(root.Name);
+            System.Type tp = System.Type.GetType(RangeNameSpace+root.Name);
             ConstructorInfo constructor = tp.GetConstructor(System.Type.EmptyTypes);
 
             IRange range = (IRange)constructor.Invoke(null);

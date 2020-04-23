@@ -1,6 +1,6 @@
 ﻿using Checkmate.Game;
 using Checkmate.Game.Controller;
-using Checkmate.Modules.Game.Map;
+using Checkmate.Game.Map;
 using System;
 using System.Collections.Generic;
 using System.Linq;

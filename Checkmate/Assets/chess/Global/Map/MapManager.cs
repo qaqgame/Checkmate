@@ -6,6 +6,7 @@ using Checkmate.Game.Utils;
 using Checkmate.Global.Data;
 using QGF;
 using QGF.Codec;
+using QGF.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,9 +15,9 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Checkmate.Modules.Game.Map
+namespace Checkmate.Game.Map
 {
-    public class MapManager
+    public class MapManager:Singleton<MapManager>
     {
         private HexGrid hexGrid;
 

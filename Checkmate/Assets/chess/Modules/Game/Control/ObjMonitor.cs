@@ -1,6 +1,6 @@
 ﻿using Checkmate.Game.Controller;
-using Checkmate.Modules.Game.Map;
-using Checkmate.Modules.Game.Role;
+using Checkmate.Game.Map;
+using Checkmate.Game.Role;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,11 +17,9 @@ namespace Checkmate.Modules.Game.Control
         private BaseController mTempObj=null;//临时点击对象
 
 
-        private MapManager mMap;//地图管理
         private RoleManager mRoles;//角色管理
-        public ObjMonitor(MapManager map)
+        public ObjMonitor()
         {
-            mMap = map;
         }
 
         public BaseController CurrentObj
@@ -35,7 +33,7 @@ namespace Checkmate.Modules.Game.Control
         //外部调用的点击
         public BaseController OnClick(Vector3 position)
         {
-            CellController cell=mMap.GetCell(position);
+            CellController cell=MapManager.Instance.GetCell(position);
             //如果该位置存在cell
             if (cell != null)
             {
