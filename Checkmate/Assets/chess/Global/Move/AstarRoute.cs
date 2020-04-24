@@ -1,6 +1,6 @@
 ﻿using Checkmate.Game;
 using Checkmate.Game.Controller;
-using Checkmate.Modules.Game.Map;
+using Checkmate.Game.Map;
 using Checkmate.Modules.Game.Role;
 using System;
 using System.Collections;
@@ -138,7 +138,8 @@ public class AstarRoute : MonoBehaviour
     void Start()
     {
         // Init Map here
-        map = GameObject.Find("Map").GetComponent<MapManager>();
+        // map = GameObject.Find("Map").GetComponent<MapManager>();
+        
     }
 
     // Update is called once per frame

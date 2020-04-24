@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using System.IO;
 using Checkmate.Game.Controller;
 using QGF.Network.FSPLite.Client;
+using Checkmate.Game.Utils;
 
 namespace Checkmate.Modules.Game
 {

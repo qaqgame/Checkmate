@@ -4,6 +4,7 @@ using UnityEngine;
 using Newtonsoft.Json;
 using Checkmate.Game;
 using Checkmate.Game.Controller;
+using Checkmate.Game.Map;
 
 // 操作消息中的移动消息
 public struct MoveInfo
@@ -25,6 +26,8 @@ public struct OperateInfo<T>
 public class MoveManager : MonoBehaviour
 {
     public static MoveManager instance;
+    public MapManager map;
+    private Queue<MoveItem> moveItems = new Queue<MoveItem>();
 
     public void Move(string msg)
     {
@@ -51,7 +54,10 @@ public class MoveManager : MonoBehaviour
 
 
         MoveItem moveItem = new MoveItem();
-        moveItem.SetUp(objname, path, obj, Opn.OperationCnt.StartPosition, Opn.OperationCnt.EndPosition);
+        moveItem.SetUp(objname, path, obj, Opn.OperationCnt.StartPosition, Opn.OperationCnt.EndPosition,map);
+
+        // 
+        moveItems.Enqueue(moveItem);
 
     }
 
@@ -96,16 +102,31 @@ public class MoveManager : MonoBehaviour
         return null;
     }
 
+    private void DoMove(MoveItem item)
+    {
+        if(item && item.Path != null)
+        {
+            item.Travel();
+        }
+    }
+
+
     // Start is called before the first frame update
     void Start()
     {
         // init instance;
         instance = GetComponent<MoveManager>();
+        // map = GetComponent<MapManager>();
+        // TODO: init Map
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        while (moveItems.Count > 0)
+        {
+            MoveItem item = moveItems.Dequeue();
+            DoMove(item);
+        }
     }
 }
