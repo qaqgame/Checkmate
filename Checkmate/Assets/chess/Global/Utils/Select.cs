@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using UnityEngine;
 
 namespace Checkmate.Game.Utils
 {
@@ -172,12 +173,16 @@ namespace Checkmate.Game.Utils
     //筛选器解析
     public static class SelectorParser
     {
-        static string SelectNameSpace = "Checkmate.Game.Utils";
+        static string SelectNameSpace = "Checkmate.Game.Utils.";
 
         public static ISelector ParseSelector(XmlNode root)
         {
             //获取类名
             System.Type tp = System.Type.GetType(SelectNameSpace + root.Name);
+            if (tp == null)
+            {
+                Debug.LogError("error load selector:" + SelectNameSpace + root.Name);
+            }
             ConstructorInfo constructor = tp.GetConstructor(System.Type.EmptyTypes);
 
             ISelector range = (ISelector)constructor.Invoke(null);

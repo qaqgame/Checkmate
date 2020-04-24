@@ -83,7 +83,7 @@ namespace Checkmate.Game.Utils
         }
 
         //执行
-        public object Execute(string method, params object[] param)
+        public object Execute(string method, object[] param)
         {
             string className = method.Substring(0, method.LastIndexOf('.'));
             object result;
@@ -164,9 +164,12 @@ namespace Checkmate.Game.Utils
                 info.parameters.Add(pi);
             }
 
+            info.returnValue = null;
             XmlNode r = node.SelectSingleNode("Return");
-            info.returnValue = r.Attributes["value"].Value;
-
+            if (r != null)
+            {
+                info.returnValue = r.Attributes["value"].Value;
+            }
             return info;
         }
     }
@@ -177,7 +180,8 @@ namespace Checkmate.Game.Utils
         Controller,
         Int,
         Float,
-        String
+        String,
+        ControllerList
     }
 
 

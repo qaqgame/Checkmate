@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Checkmate.Game.Skill;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,9 +11,10 @@ namespace Checkmate.Game.Utils
 {
     public static class ObjectParser
     {
-        public static string GetExtraDataContent(string path)
+        public static string GetExtraDataContent(string name,string path)
         {
-            return File.ReadAllText(path);
+            string fullPath = SkillManager.Instance.RootPath + "/" + name + "/" + path;
+            return File.ReadAllText(fullPath);
         }
 
         public static object ParseObject(XmlNode node, out string name)

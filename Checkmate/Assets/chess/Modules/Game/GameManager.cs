@@ -14,6 +14,7 @@ using System.IO;
 using Checkmate.Game.Controller;
 using QGF.Network.FSPLite.Client;
 using Checkmate.Game.Utils;
+using Checkmate.Game.Skill;
 
 namespace Checkmate.Modules.Game
 {
@@ -42,6 +43,7 @@ namespace Checkmate.Modules.Game
             HexGrid hexGrid = GameObject.Find("Map").GetComponentInChildren<HexGrid>();
             MapManager.Instance.Init(hexGrid,Application.dataPath + "/Test/testMap.map");
 
+            SkillManager.Instance.Init(Application.dataPath + "/Test");
             DrawUtil.Init(MapManager.Instance);
 
             RoleManager.Instance.Init();
@@ -62,10 +64,14 @@ namespace Checkmate.Modules.Game
             RemoveRole(0);
 
             RoleController role = RoleManager.Instance.GetRole(1);
+            Debug.Log(role.Name);
             CellController cell = MapManager.Instance.GetCell(role.Position);
             Debug.Log(cell.Terrain);
 
             Debug.Log(role.CanStand(cell.Terrain));
+
+            int sid = SkillManager.Instance.GetSkill("TestSkill");
+            Debug.Log("load skill suc:" + sid);
         }
 
 

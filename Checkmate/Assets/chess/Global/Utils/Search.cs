@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using UnityEngine;
 
 namespace Checkmate.Game.Utils
 {
@@ -24,14 +25,16 @@ namespace Checkmate.Game.Utils
         public abstract void Parse(XmlNode node);
 
         public abstract List<ModelController> GetSearchResult(Position Start,Position Center);
+
     }
 
     //默认的搜索类
-    public abstract class DefaultSearch : BaseSearch
+    public class DefaultSearch : BaseSearch
     {
         public ControllerType type;//筛选类型
         public int limit;//限制数量
         public List<IRange> ranges;//解析出来的范围
+
 
 
         private List<CellController> mTempResult=new List<CellController>();//用于临时存储搜索结果
@@ -105,9 +108,10 @@ namespace Checkmate.Game.Utils
         {
             //获取类名
             System.Type tp = System.Type.GetType(SearchNameSpace+node.Name);
-            ConstructorInfo constructor = tp.GetConstructor(System.Type.EmptyTypes);
 
-            BaseSearch search = (BaseSearch)constructor.Invoke(null);
+            Debug.Log("load search:"+SearchNameSpace+node.Name);
+            BaseSearch search = Activator.CreateInstance(tp) as BaseSearch;
+            search.Parse(node);
             return search;
         }
     }

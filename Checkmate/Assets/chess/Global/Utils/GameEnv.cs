@@ -46,6 +46,10 @@ namespace Checkmate.Game.Utils
 
         }
 
+        public void PushEnv(EnvVariable value)
+        {
+            mEnvStacks.Push(value);
+        }
         public void PushEnv(ModelController src,ModelController dst,BaseController main,object data = null)
         {
             EnvVariable variable = new EnvVariable();

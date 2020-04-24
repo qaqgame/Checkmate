@@ -1,0 +1,34 @@
+<Skill name="TestSkill" cd="1" type="Active" icon="damage.png">
+    <Description>TestSkill</Description>
+    <SkillRange max="3" min="0" type="Cell|Role" team="Self|Friend|Enemy|Neutual">
+        <DefaultRange type="Range" limit="3"/>
+    </SkillRange>
+    <EffectRange>
+        <DefaultRange type="Range" limit="1"/>
+    </EffectRange>
+    <Data>
+        <value name="level" type="Int">3</value>
+        <value name="Damage" type="Int">30</value>
+    </Data>
+
+    <Content>
+        <Action trigger="Execute">
+            <Targets>
+                <DefaultSearch id="1" type="Role" limit="99" start="Src" center="Center">
+                    <DefaultRange type="Range" limit="1"/>
+                </DefaultSearch>
+                <Selects id="2" src="1">
+                    <DefaultTeamSelector team="Enemy"/>
+                </Selects>
+            </Targets>
+            <Executes>
+                <Execute src="Standard.Damage">
+                    <Params>
+                        <Param type="Controller" value="%Src"/>
+                        <Param type="Int" value="$Damage"/>
+                    </Params>
+                </Execute>
+            </Executes>
+        </Action>
+    </Content>
+</Skill>
