@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Checkmate.Game;
 using Checkmate.Game.Controller;
 using Checkmate.Game.Map;
+using Checkmate.Game.Role;
 
 // 操作消息中的移动消息
 public struct MoveInfo
@@ -19,27 +20,26 @@ public struct OperateInfo<T>
 {
     public string OperationType;
     public T OperationCnt;
-    public string OperationObj;
+    public int OperationObjID;
 }
 
 
 public class MoveManager : MonoBehaviour
 {
     public static MoveManager instance;
-    public MapManager map;
-    private Queue<MoveItem> moveItems = new Queue<MoveItem>();
+    // private Queue<MoveItem> moveItems = new Queue<MoveItem>();
+    private MoveItem moveItem;
 
     public void Move(string msg)
     {
         // 解析json
         OperateInfo<MoveInfo> Opn = JsonConvert.DeserializeObject<OperateInfo<MoveInfo>>(msg);
-        string objname = Opn.OperationObj;
         // 获取gameobject
-        GameObject obj = GameObject.Find(objname);
+        RoleController rc = RoleManager.Instance.GetRole(Opn.OperationObjID);
         AstarRoute astarRoute = GetComponent<AstarRoute>();
 
         Opn.OperationCnt.MoveDirection = null;
-        List<Position> path = astarRoute.AstarNavigatorE(obj.GetComponent<RoleController>(), Opn.OperationCnt.StartPosition, Opn.OperationCnt.EndPosition);
+        List<Position> path = astarRoute.AstarNavigatorE(rc, Opn.OperationCnt.StartPosition, Opn.OperationCnt.EndPosition);
         if (path == null)
         {
             Debug.LogError("path is null");
@@ -53,12 +53,9 @@ public class MoveManager : MonoBehaviour
         }*/
 
 
-        MoveItem moveItem = new MoveItem();
-        moveItem.SetUp(objname, path, obj, Opn.OperationCnt.StartPosition, Opn.OperationCnt.EndPosition,map);
-
+        MoveItem moveitem = GetComponent<MoveItem>();
+        moveitem.SetUp(rc, path, Opn.OperationCnt.StartPosition, Opn.OperationCnt.EndPosition);
         // 
-        moveItems.Enqueue(moveItem);
-
     }
 
     public string MoveRangePath(List<Position> path, GameObject obj)
@@ -102,30 +99,40 @@ public class MoveManager : MonoBehaviour
         return null;
     }
 
-    private void DoMove(MoveItem item)
+    private void DoMove(Item item)
     {
-        if(item && item.Path != null)
+        if(item != null && item.Path != null)
         {
-            item.Travel();
+            moveItem.Travel(item);
+        } else
+        {
+            Debug.LogError("not travel");
         }
     }
 
+    // Test move
+    public void TestMoveObj()
+    {
+        RoleController rc = RoleManager.Instance.GetRole(1);
+        string test = "{\"OperationType\":\"Move\",\"OperationCnt\":{\"StartPosition\":\"" + "(2,-1,-1)" + "\",\"MoveDirection\":[0,0,0,2,3],\"EndPosition\":\"" + "(2,2,2)" + "\"},\"OperationObjID\":1}";
+        MoveManager.instance.Move(test);
+    }
 
     // Start is called before the first frame update
     void Start()
     {
         // init instance;
         instance = GetComponent<MoveManager>();
-        // map = GetComponent<MapManager>();
-        // TODO: init Map
+        moveItem = GetComponent<MoveItem>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        while (moveItems.Count > 0)
+        while (moveItem.moveitems.Count > 0)
         {
-            MoveItem item = moveItems.Dequeue();
+            // Debug.LogError("count: " + moveItems.Count);
+            Item item = moveItem.moveitems.Dequeue();
             DoMove(item);
         }
     }

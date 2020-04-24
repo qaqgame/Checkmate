@@ -33,7 +33,11 @@ public class HexCellPriorityQueue
         {
             list.Add(null);
         }
-        cell.Cell.GetComponent<AstarCell>().nextWithSameFvalue = list[priority].Cell.GetComponent<AstarCell>();
+
+        if(list[priority] != null)
+        {
+            cell.Cell.GetComponent<AstarCell>().nextWithSameFvalue = list[priority].Cell.GetComponent<AstarCell>();
+        }
         list[priority] = cell;
     }
 
@@ -45,7 +49,15 @@ public class HexCellPriorityQueue
             CellController cell = list[minimum];
             if (cell != null)
             {
-                list[minimum] = cell.Cell.GetComponent<AstarCell>().nextWithSameFvalue.Cellctrl;
+                AstarCell next = cell.Cell.GetComponent<AstarCell>().nextWithSameFvalue;
+                if (next == null)
+                {
+                    list[minimum] = null;
+                } else
+                {
+                    list[minimum] = next.Cellctrl;
+                }
+                // list[minimum] = cell.Cell.GetComponent<AstarCell>().nextWithSameFvalue.Cellctrl;
                 return cell;
             }
         }

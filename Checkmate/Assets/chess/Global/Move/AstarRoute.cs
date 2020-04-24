@@ -11,8 +11,7 @@ using UnityEngine;
 public class AstarRoute : MonoBehaviour
 {
     public int[] directions = {0,1,2,3,4,5};
-
-    public MapManager map;
+    
     
 
     public List<Position> AstarNavigatorE(RoleController rc, string start, string end)
@@ -22,8 +21,8 @@ public class AstarRoute : MonoBehaviour
         Position ender = Position.Parse(end);
 
         // 获取该Position的Cell的CellController
-        CellController fromCellCtrl = map.GetCell(starter);
-        CellController toCellCtrl = map.GetCell(ender);
+        CellController fromCellCtrl = MapManager.Instance.GetCell(starter);
+        CellController toCellCtrl = MapManager.Instance.GetCell(ender);
 
         return Astar(rc, fromCellCtrl, toCellCtrl);
     }
@@ -61,20 +60,24 @@ public class AstarRoute : MonoBehaviour
             }
             for (int i = 0; i < 6; i++)
             {
-                CellController neighborCtrl = currentCtrl.GetNeighbor((HexDirection)directions[i]);
-                AstarCell neighborAstarCell = neighborCtrl.Cell.GetComponent<AstarCell>();
-                neighborAstarCell.Cellctrl = neighborCtrl;
-                
-                if (!current.IsReachable((HexDirection)directions[i]))
+                if (!current.IsReachable((HexDirection)i))
                 {
                     continue;
                 }
+                // Debug.LogError(i);
+                CellController neighborCtrl = currentCtrl.GetNeighbor((HexDirection)i);
+                AstarCell neighborAstarCell = neighborCtrl.Cell.GetComponent<AstarCell>();
+                neighborAstarCell.Cellctrl = neighborCtrl;
                 
-                TerrainType terrain = neighborCtrl.TerrainType;
                 
-                int extra = rc.GetExtraMove((int)terrain);
 
-                if (!rc.CanStand((int)terrain))
+                // TerrainType terrain = neighborCtrl.TerrainType;
+                // int terrain = neighborCtrl.Terrain;
+                int terrain = neighborCtrl.Terrain;
+
+                int extra = rc.GetExtraMove(terrain);
+
+                if (!rc.CanStand(terrain))
                 {
                     continue;
                 }
