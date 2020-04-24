@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4125635320322827977}
   - component: {fileID: 7764952402577366430}
+  - component: {fileID: 7692009177805494290}
   m_Layer: 0
   m_Name: HexCell
   m_TagString: Cube
@@ -59,3 +60,21 @@ MonoBehaviour:
   - {fileID: 0}
   roads: 000000000000
   access: 000000000000
+--- !u!114 &7692009177805494290
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4125635320322827982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097cad9de25959346ae63cb65922e004, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Gvalue: 0
+  Hvalue: 0
+  pathmark: 0
+  mark: 0
+  label: 0
+  pathFrom: {fileID: 0}
