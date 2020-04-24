@@ -101,7 +101,7 @@ namespace Checkmate.Game.Utils
                 result = instance.Invoke(mClassCache[className], param);
                 return result;
             }
-            string methodName = method.Substring(method.LastIndexOf('.'));
+            string methodName = method.Substring(method.LastIndexOf('.')+1);
             //否则，加载该方法，并执行
             Type type = mClassCache[className].GetType();
             MethodInfo info = type.GetMethod(methodName);
@@ -127,6 +127,47 @@ namespace Checkmate.Game.Utils
             //加入缓存
             mClassCache.Add(name, instance);
 
+        }
+        ////加载某个方法
+        //private void LoadMethod(string method)
+        //{
+        //    string className = method.Substring(0, method.LastIndexOf('.'));
+        //    //如果没有加载该类，报错
+        //    if (!mClassCache.ContainsKey(className))
+        //    {
+        //        Debug.LogError("error get class:" + className);
+        //        return;
+        //    }
+
+        //    string methodName = method.Substring(method.LastIndexOf('.')+1);
+        //    //否则，加载该方法，并执行
+        //    Type type = mClassCache[className].GetType();
+        //    MethodInfo info = type.GetMethod(methodName);
+        //    mMethodLoaded.Add(method, info);
+        //}
+
+        //解析xml
+        public static ExecuteInfo ParseExecute(XmlNode node)
+        {
+            ExecuteInfo info = new ExecuteInfo();
+            info.method = node.Attributes["src"].Value;
+            
+            //解析参数
+            info.parameters = new List<ParamInfo>();
+            XmlNode param = node.SelectSingleNode("Params");
+            XmlNodeList pl = param.ChildNodes;
+            foreach(XmlNode l in pl)
+            {
+                ParamInfo pi = new ParamInfo();
+                pi.type =(ParamType)Enum.Parse(typeof(ParamType),l.Attributes["type"].Value);
+                pi.value = l.Attributes["value"].Value;
+                info.parameters.Add(pi);
+            }
+
+            XmlNode r = node.SelectSingleNode("Return");
+            info.returnValue = r.Attributes["value"].Value;
+
+            return info;
         }
     }
 

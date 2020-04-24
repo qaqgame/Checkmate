@@ -11,13 +11,13 @@ using System.Xml;
 namespace Checkmate.Game.Utils
 {
     //筛选的接口
-    public abstract class BaseSelect
+    public interface ISelector
     {
-        public abstract void Parse(XmlNode node);
-        public abstract List<BaseController> GetFilterResult(List<BaseController> objs);
+         void Parse(XmlNode node);
+         List<ModelController> GetFilterResult(List<ModelController> objs);
     }
 
-    public class DefaultTeamSelector : BaseSelect
+    public class DefaultTeamSelector : ISelector
     {
         enum TeamType
         {
@@ -29,7 +29,7 @@ namespace Checkmate.Game.Utils
 
         List<TeamType> mTypes;
 
-        public override void Parse(XmlNode node)
+        public void Parse(XmlNode node)
         {
 
             mTypes =ParseTypes(node.Attributes["team"].Value);
@@ -56,7 +56,7 @@ namespace Checkmate.Game.Utils
             return result;
         }
 
-        public override List<BaseController> GetFilterResult(List<BaseController> objs)
+        public List<ModelController> GetFilterResult(List<ModelController> objs)
         {
             List<RoleController> result = new List<RoleController>();
             //先将objs筛选出其中的role
@@ -70,7 +70,7 @@ namespace Checkmate.Game.Utils
 
 
             //获取当前的操作主体
-            BaseController controller = GameEnv.Instance.Current.Obj;
+            ModelController controller = GameEnv.Instance.Current.Obj;
             //如果为地面，则全触发
             if (controller.Type == (int)ControllerType.Cell)
             {
@@ -93,9 +93,9 @@ namespace Checkmate.Game.Utils
 
 
         //筛选types对应的role
-        private List<BaseController> Filter(List<RoleController> roles,RoleController src,List<TeamType> types)
+        private List<ModelController> Filter(List<RoleController> roles,RoleController src,List<TeamType> types)
         {
-            List<BaseController> result = new List<BaseController>();
+            List<ModelController> result = new List<ModelController>();
             //遍历所有role
             foreach(var role in roles)
             {
@@ -137,18 +137,50 @@ namespace Checkmate.Game.Utils
 
     }
 
+    //Selects的类
+    public class Selects
+    {
+        public string id;//生成id
+        public string src;//源
+
+        List<ISelector> mSelectors;
+
+        public Selects(XmlNode node)
+        {
+            mSelectors = new List<ISelector>();
+            id = node.Attributes["id"].Value;
+            src = node.Attributes["src"].Value;
+            XmlNodeList list = node.ChildNodes;
+            foreach(XmlNode l in list)
+            {
+                ISelector s = SelectorParser.ParseSelector(l);
+                mSelectors.Add(s);
+            }
+        }
+
+        public List<ModelController> ExecuteFilter(List<ModelController> list)
+        {
+            foreach(var s in mSelectors)
+            {
+                list = s.GetFilterResult(list);
+            }
+            return list;
+        }
+
+    }
+
     //筛选器解析
-    public static class SelectParser
+    public static class SelectorParser
     {
         static string SelectNameSpace = "Checkmate.Game.Utils";
 
-        public static BaseSelect ParseRange(XmlNode root)
+        public static ISelector ParseSelector(XmlNode root)
         {
             //获取类名
             System.Type tp = System.Type.GetType(SelectNameSpace + root.Name);
             ConstructorInfo constructor = tp.GetConstructor(System.Type.EmptyTypes);
 
-            BaseSelect range = (BaseSelect)constructor.Invoke(null);
+            ISelector range = (ISelector)constructor.Invoke(null);
             range.Parse(root);
 
             return range;

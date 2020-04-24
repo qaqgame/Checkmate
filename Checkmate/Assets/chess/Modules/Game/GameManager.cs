@@ -61,6 +61,11 @@ namespace Checkmate.Modules.Game
             Debug.Log("extra:" + RoleManager.Instance.GetRole(1).GetValue("Current.test"));
             RemoveRole(0);
 
+            RoleController role = RoleManager.Instance.GetRole(1);
+            CellController cell = MapManager.Instance.GetCell(role.Position);
+            Debug.Log(cell.Terrain);
+
+            Debug.Log(role.CanStand(cell.Terrain));
         }
 
 

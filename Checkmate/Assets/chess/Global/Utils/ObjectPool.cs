@@ -8,7 +8,7 @@ using UnityEngine;
 using Newtonsoft.Json;
 using System.IO;
 
-namespace Checkmate.Modules.Game.Utils
+namespace Checkmate.Game.Utils
 {
     internal class PrefabMap
     {

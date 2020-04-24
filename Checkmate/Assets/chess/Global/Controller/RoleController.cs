@@ -55,7 +55,7 @@ namespace Checkmate.Game.Controller
 
         //角色id
         [GetProperty]
-        public int Id
+        public int RoleId
         {
             get;
             private set;
@@ -121,7 +121,7 @@ namespace Checkmate.Game.Controller
 
         public RoleController(RoleData data,GameObject obj):base(data.extraData)
         {
-            Id = data.id;
+            RoleId = data.id;
             Current = new RoleAttributeController(data.props);
             Current.onAttributeChanged = OnAttributeChanged;
             Origin = new RoleAttributeController(data.props);

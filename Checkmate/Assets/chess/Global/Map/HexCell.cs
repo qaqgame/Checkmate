@@ -769,7 +769,7 @@ namespace Checkmate.Game
             data.terrain = (byte)terrainTypeIndex;
             data.elevation =(byte)elevation;
             data.waterLevel = (byte)waterLevel;
-            data.feature = (byte)feature;
+            data.feature = feature;
             data.featureLevel = (byte)featureLevel;
             //写入河流
             if (hasIncomingRiver)

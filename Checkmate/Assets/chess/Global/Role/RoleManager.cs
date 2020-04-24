@@ -2,7 +2,7 @@
 using Checkmate.Game.Controller;
 using Checkmate.Global.Data;
 using Checkmate.Game.Map;
-using Checkmate.Modules.Game.Utils;
+using Checkmate.Game.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;

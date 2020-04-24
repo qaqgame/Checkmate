@@ -12,10 +12,11 @@ namespace Checkmate.Game.Utils
     //环境变量
     public class EnvVariable
     {
-        public BaseController Obj;//当前对象
-        public BaseController Src;//来源
-        public BaseController Dst;//目标
+        public ModelController Obj;//当前对象
+        public ModelController Src;//来源
+        public ModelController Dst;//目标
         public BaseController Main;//主体(技能、buff等)
+        public Position Center=null;//中心（仅技能时发挥作用）
         public object Data;
     }
 
@@ -45,7 +46,7 @@ namespace Checkmate.Game.Utils
 
         }
 
-        public void PushEnv(BaseController src,BaseController dst,BaseController main,object data = null)
+        public void PushEnv(ModelController src,ModelController dst,BaseController main,object data = null)
         {
             EnvVariable variable = new EnvVariable();
             variable.Src = src;

@@ -56,7 +56,7 @@ namespace Checkmate.Global.Data
         [ProtoMember(4)] public byte terrain;//地形类型(此处为idx）
         [ProtoMember(5)] public byte elevation;//海拔
         [ProtoMember(6)] public byte waterLevel;//水平面
-        [ProtoMember(7)] public byte feature;//特征（idx）
+        [ProtoMember(7)] public int feature;//特征（idx）
         [ProtoMember(8)] public byte featureLevel;//特征级别
         [ProtoMember(9)] public byte inRiver;//进入的河流
         [ProtoMember(10)] public byte outRiver;//流出的河流

@@ -23,7 +23,7 @@ namespace Checkmate.Game.Utils
         //解析方式,返回生成id
         public abstract void Parse(XmlNode node);
 
-        public abstract List<BaseController> GetSearchResult(Position Start,Position Center);
+        public abstract List<ModelController> GetSearchResult(Position Start,Position Center);
     }
 
     //默认的搜索类
@@ -53,7 +53,7 @@ namespace Checkmate.Game.Utils
 
         }
 
-        public override List<BaseController> GetSearchResult(Position Start, Position Center)
+        public override List<ModelController> GetSearchResult(Position Start, Position Center)
         {
             mTempResult.Clear();
             foreach(var range in ranges)
@@ -66,14 +66,14 @@ namespace Checkmate.Game.Utils
             return FilterController(mTempResult, type,limit);
         }
 
-        private List<BaseController> FilterController(List<CellController> cells,ControllerType filter,int limit=int.MaxValue)
+        private List<ModelController> FilterController(List<CellController> cells,ControllerType filter,int limit=int.MaxValue)
         {
-            List<BaseController> result = new List<BaseController>();
+            List<ModelController> result = new List<ModelController>();
 
             int cnt = 0;
             foreach(var cell in cells)
             {
-                BaseController temp;
+                ModelController temp;
                 switch (type)
                 {
                     case ControllerType.Cell:temp = cell;

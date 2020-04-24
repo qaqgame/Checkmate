@@ -73,17 +73,23 @@ namespace Checkmate.Game.Controller
                 {
                     return 0;
                 }
+                int tidx = mCell.TerrainTypeIndex;
                 //获取特征
-                int fid = HexGrid.Features.GetFeatureId(mCell.Feature);
-                IFeature temp = HexGrid.Features.GetFeature(fid);
-                //如果特征覆盖了地形
-                if (temp.OverwriteTerrain)
+                if (mCell.Feature >= 0)
                 {
-                    return fid;
+                    int fid = HexGrid.Features.GetFeatureId(mCell.Feature);
+                    IFeature temp = HexGrid.Features.GetFeature(fid);
+                    //如果特征覆盖了地形
+                    if (temp.OverwriteTerrain)
+                    {
+
+                        return fid;
+                    }
                 }
 
                 //不然就返回地形
-                return HexGrid.GetTerrainId(mCell.TerrainTypeIndex);
+                
+                return HexGrid.GetTerrainId(tidx);
 
             }
         }
@@ -114,7 +120,8 @@ namespace Checkmate.Game.Controller
         //获取邻居
         public CellController GetNeighbor(HexDirection direction)
         {
-            return mCell.GetNeighbor(direction).Controller;
+            HexCell cell = mCell.GetNeighbor(direction);
+            return cell == null ? null : cell.Controller;
         }
 
         //判断邻居是否可达
