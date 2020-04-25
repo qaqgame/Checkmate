@@ -56,7 +56,9 @@ public class MoveManager : Singleton<MoveManager>
         RoleController rc = RoleManager.Instance.GetRole(Opn.OperationObjID);
 
         Opn.OperationCnt.MoveDirection = null;
-        List<Position> path = astarRoute.AstarNavigatorE(rc, Opn.OperationCnt.StartPosition, Opn.OperationCnt.EndPosition);
+        Position start = Position.Parse(Opn.OperationCnt.StartPosition);
+        Position end = Position.Parse(Opn.OperationCnt.EndPosition);
+        List<Position> path = astarRoute.AstarNavigatorE(rc, start, end);
         if (path == null)
         {
             Debug.LogError("path is null");

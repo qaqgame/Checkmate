@@ -14,15 +14,11 @@ public class AstarRoute : MonoBehaviour
     
     
 
-    public List<Position> AstarNavigatorE(RoleController rc, string start, string end)
+    public List<Position> AstarNavigatorE(RoleController rc, Position start, Position end)
     {
-        // 获取出发点和终止点的Position
-        Position starter = Position.Parse(start);
-        Position ender = Position.Parse(end);
-
         // 获取该Position的Cell的CellController
-        CellController fromCellCtrl = MapManager.Instance.GetCell(starter);
-        CellController toCellCtrl = MapManager.Instance.GetCell(ender);
+        CellController fromCellCtrl = MapManager.Instance.GetCell(start);
+        CellController toCellCtrl = MapManager.Instance.GetCell(end);
 
         return Astar(rc, fromCellCtrl, toCellCtrl);
     }
