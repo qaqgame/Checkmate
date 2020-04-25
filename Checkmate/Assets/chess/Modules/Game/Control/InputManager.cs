@@ -1,5 +1,6 @@
 ﻿using Checkmate.Game;
 using Checkmate.Game.Controller;
+using QGF.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ using UnityEngine.EventSystems;
 namespace Checkmate.Modules.Game.Control
 {
     //管理用户的输入操作
-    public class InputManager
+    public class InputManager:Singleton<InputManager>
     {
         public enum InputState
         {
@@ -30,6 +31,7 @@ namespace Checkmate.Modules.Game.Control
         public InputManager()
         {
             mObj = new ObjMonitor();
+            mouseMask = LayerMask.GetMask("Map", "Role");
         }
 
         
@@ -80,6 +82,7 @@ namespace Checkmate.Modules.Game.Control
             //左键点击
             if (key == 0)
             {
+                Debug.Log("btn left clicked");
                 Ray ray = Camera.main.ScreenPointToRay(position);
                 RaycastHit hit;
 
@@ -130,7 +133,8 @@ namespace Checkmate.Modules.Game.Control
             //右键点击,重置状态
             else if (key == 1)
             {
-
+                mState = InputState.Idle;
+                GameEvent.onResetAll.Invoke();
             }
         }
 

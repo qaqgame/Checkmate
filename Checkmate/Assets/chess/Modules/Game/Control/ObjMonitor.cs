@@ -13,8 +13,8 @@ namespace Checkmate.Modules.Game.Control
 {
     public class ObjMonitor
     {
-        private BaseController mCurObj;//当前选择对象(优先选择role）
-        private BaseController mTempObj=null;//临时点击对象
+        private ModelController mCurObj;//当前选择对象(优先选择role）
+        private ModelController mTempObj=null;//临时点击对象
 
 
         private RoleManager mRoles;//角色管理
@@ -22,7 +22,7 @@ namespace Checkmate.Modules.Game.Control
         {
         }
 
-        public BaseController CurrentObj
+        public ModelController CurrentObj
         {
             get
             {
@@ -31,7 +31,7 @@ namespace Checkmate.Modules.Game.Control
         }
 
         //外部调用的点击
-        public BaseController OnClick(Vector3 position)
+        public ModelController OnClick(Vector3 position)
         {
             CellController cell=MapManager.Instance.GetCell(position);
             //如果该位置存在cell

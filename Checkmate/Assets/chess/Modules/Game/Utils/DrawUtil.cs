@@ -17,21 +17,19 @@ namespace Checkmate.Modules.Game.Utils
         //已画的位置
         private static List<Position> mDrawed;
 
-        private static MapManager mMap;
 
         private readonly static List<Color> styles = new List<Color>{
-        Color.white,Color.red,Color.blue,Color.yellow
-    };
+            Color.white,Color.red,Color.blue,Color.yellow
+        };
 
-        public static void Init(MapManager map)
+        public static void Init()
         {
-            mMap = map;
             mDrawed = new List<Position>();
         }
 
         public static void DrawSingle(Position position, int style)
         {
-            CellController cell = mMap.GetCell(position);
+            CellController cell =MapManager.Instance.GetCell(position);
             if (cell != null)
             {
                 //已有颜色则进行混合
@@ -53,6 +51,17 @@ namespace Checkmate.Modules.Game.Utils
             list.ForEach(item => {
                 DrawSingle(item, style);
             });
+        }
+
+        public static void ClearAll()
+        {
+            mDrawed.ForEach(item =>
+            {
+                CellController cell = MapManager.Instance.GetCell(item);
+                cell.Cell.DisableHighlight();
+                cell.Cell.DisableLabel();
+            });
+            mDrawed.Clear();
         }
     }
 }

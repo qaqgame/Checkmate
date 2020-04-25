@@ -133,6 +133,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hex Grid
       objectReference: {fileID: 0}
+    - target: {fileID: 708480759329803068, guid: d691c62c39382de4791f44f4b1f3d7f1,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 708480759329803070, guid: d691c62c39382de4791f44f4b1f3d7f1,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -465,7 +470,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 724879459}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Map
   m_TagString: Untagged
   m_Icon: {fileID: 0}

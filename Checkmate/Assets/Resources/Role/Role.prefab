@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7020001721616848122}
   - component: {fileID: 6775809402574092681}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: UIPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -68,7 +68,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5485344139367324181}
   - component: {fileID: -5298044780020517374}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Role
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -112,7 +112,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3157273466196088588}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -143,7 +143,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4807261657658162032}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}

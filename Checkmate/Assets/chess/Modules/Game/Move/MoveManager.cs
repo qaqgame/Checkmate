@@ -30,6 +30,12 @@ public class MoveManager : Singleton<MoveManager>
     private MoveItem moveItem;
     private AstarRoute astarRoute;
 
+    //寻路器
+    public AstarRoute Router
+    {
+        get { return astarRoute; }
+    }
+
     public void Init()
     {
         moveItem = GameObject.Find("GameManager").GetComponent<MoveItem>();

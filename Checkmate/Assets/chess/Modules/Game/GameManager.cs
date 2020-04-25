@@ -15,6 +15,7 @@ using Checkmate.Game.Controller;
 using QGF.Network.FSPLite.Client;
 using Checkmate.Game.Utils;
 using Checkmate.Game.Skill;
+using Checkmate.Modules.Game.Control;
 
 namespace Checkmate.Modules.Game
 {
@@ -44,7 +45,7 @@ namespace Checkmate.Modules.Game
             MapManager.Instance.Init(hexGrid,Application.dataPath + "/Test/testMap.map");
 
             SkillManager.Instance.Init(Application.dataPath + "/Test");
-            DrawUtil.Init(MapManager.Instance);
+            DrawUtil.Init();
 
             RoleManager.Instance.Init();
 
@@ -52,6 +53,7 @@ namespace Checkmate.Modules.Game
 
             GameEnv.Instance.Init();//初始化环境
             //=============================
+            InitEvent();
             //测试部分
             RoleData alice = JsonConvert.DeserializeObject<RoleData>(File.ReadAllText(Application.dataPath + "/Test/Alice.json"));
             AddRole(alice);
@@ -102,6 +104,22 @@ namespace Checkmate.Modules.Game
         void Update()
         {
             MoveManager.Instance.Update();
+
+            InputManager.Instance.HandleInput();
+        }
+
+
+        private void InitEvent()
+        {
+            GameEvent.Init();
+            GameEvent.onControllerClicked.AddListener(OnControllerClick);
+        }
+
+        private void OnControllerClick(ModelController controller)
+        {
+            Debug.Log("click pos:" + controller.GetPosition().ToString());
+            DrawUtil.ClearAll();
+            DrawUtil.DrawSingle(controller.GetPosition(), 1);
         }
     }
 }
