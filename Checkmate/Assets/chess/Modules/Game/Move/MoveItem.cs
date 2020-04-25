@@ -1,6 +1,7 @@
 ﻿using Checkmate.Game;
 using Checkmate.Game.Controller;
 using Checkmate.Game.Map;
+using QGF.Common;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

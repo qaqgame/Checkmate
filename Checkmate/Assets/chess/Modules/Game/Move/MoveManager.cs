@@ -6,6 +6,7 @@ using Checkmate.Game;
 using Checkmate.Game.Controller;
 using Checkmate.Game.Map;
 using Checkmate.Game.Role;
+using QGF.Common;
 
 // 操作消息中的移动消息
 public struct MoveInfo
@@ -24,11 +25,22 @@ public struct OperateInfo<T>
 }
 
 
-public class MoveManager : MonoBehaviour
+public class MoveManager : Singleton<MoveManager>
 {
-    public static MoveManager instance;
-    // private Queue<MoveItem> moveItems = new Queue<MoveItem>();
     private MoveItem moveItem;
+    private AstarRoute astarRoute;
+
+    public void Init()
+    {
+        moveItem = GameObject.Find("GameManager").GetComponent<MoveItem>();
+        astarRoute = GameObject.Find("GameManager").GetComponent<AstarRoute>();
+    }
+
+    public void Clear()
+    {
+        moveItem = null;
+        astarRoute = null;
+    }
 
     public void Move(string msg)
     {
@@ -36,7 +48,6 @@ public class MoveManager : MonoBehaviour
         OperateInfo<MoveInfo> Opn = JsonConvert.DeserializeObject<OperateInfo<MoveInfo>>(msg);
         // 获取gameobject
         RoleController rc = RoleManager.Instance.GetRole(Opn.OperationObjID);
-        AstarRoute astarRoute = GetComponent<AstarRoute>();
 
         Opn.OperationCnt.MoveDirection = null;
         List<Position> path = astarRoute.AstarNavigatorE(rc, Opn.OperationCnt.StartPosition, Opn.OperationCnt.EndPosition);
@@ -52,9 +63,7 @@ public class MoveManager : MonoBehaviour
             Opn.OperationCnt.EndPosition = MoveRangePath(path, obj);
         }*/
 
-
-        MoveItem moveitem = GetComponent<MoveItem>();
-        moveitem.SetUp(rc, path, Opn.OperationCnt.StartPosition, Opn.OperationCnt.EndPosition);
+        moveItem.SetUp(rc, path, Opn.OperationCnt.StartPosition, Opn.OperationCnt.EndPosition);
         // 
     }
 
@@ -110,24 +119,8 @@ public class MoveManager : MonoBehaviour
         }
     }
 
-    // Test move
-    public void TestMoveObj()
-    {
-        RoleController rc = RoleManager.Instance.GetRole(1);
-        string test = "{\"OperationType\":\"Move\",\"OperationCnt\":{\"StartPosition\":\"" + "(2,-1,-1)" + "\",\"MoveDirection\":[0,0,0,2,3],\"EndPosition\":\"" + "(2,2,2)" + "\"},\"OperationObjID\":1}";
-        MoveManager.instance.Move(test);
-    }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        // init instance;
-        instance = GetComponent<MoveManager>();
-        moveItem = GetComponent<MoveItem>();
-    }
-
-    // Update is called once per frame
-    void Update()
+    public void Update()
     {
         while (moveItem.moveitems.Count > 0)
         {

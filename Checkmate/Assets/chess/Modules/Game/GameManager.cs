@@ -48,6 +48,8 @@ namespace Checkmate.Modules.Game
 
             RoleManager.Instance.Init();
 
+            MoveManager.Instance.Init();
+
             GameEnv.Instance.Init();//初始化环境
             //=============================
             //测试部分
@@ -85,6 +87,21 @@ namespace Checkmate.Modules.Game
         public void RemoveRole(int id)
         {
             RoleManager.Instance.RemoveRole(id);
+        }
+
+        // Test move
+        public void TestMoveObj()
+        {
+            RoleController rc = RoleManager.Instance.GetRole(1);
+            string test = "{\"OperationType\":\"Move\",\"OperationCnt\":{\"StartPosition\":\"" + "(2,-1,-1)" + "\",\"MoveDirection\":[0,0,0,2,3],\"EndPosition\":\"" + "(2,2,2)" + "\"},\"OperationObjID\":1}";
+            MoveManager.Instance.Move(test);
+        }
+
+
+        // Update: Update is Called pear frame
+        void Update()
+        {
+            MoveManager.Instance.Update();
         }
     }
 }
