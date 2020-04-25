@@ -61,6 +61,8 @@ namespace Checkmate.Game.Role
             //设置角色的实际位置
             Position pos = new Position(role.position.x, role.position.y, role.position.z);
             controller.GetGameObject().transform.position = MapManager.Instance.GetCellWorldPosition(pos);
+            CellController cell = MapManager.Instance.GetCell(pos);
+            cell.Role = id;
             return controller;
         }
 
@@ -70,6 +72,9 @@ namespace Checkmate.Game.Role
             if (mActiveRoles.Contains(id))
             {
                 RoleController controller = mRolePool[id];
+                //从地图移除
+                CellController cell = MapManager.Instance.GetCell(controller.Position);
+                cell.Role = -1;
                 //将其隐藏
                 controller.GetGameObject().SetActive(false);
                 //从激活列表中移除
@@ -94,6 +99,9 @@ namespace Checkmate.Game.Role
                 mActiveRoles.Add(key);
                 //设置位置
                 controller.GetGameObject().transform.position =MapManager.Instance.GetCellWorldPosition(position);
+                //加至地图
+                CellController cell = MapManager.Instance.GetCell(position);
+                cell.Role = id;
             }
         }
 

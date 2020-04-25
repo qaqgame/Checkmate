@@ -16,6 +16,7 @@ using QGF.Network.FSPLite.Client;
 using Checkmate.Game.Utils;
 using Checkmate.Game.Skill;
 using Checkmate.Modules.Game.Control;
+using Checkmate.Game.Player;
 
 namespace Checkmate.Modules.Game
 {
@@ -52,9 +53,14 @@ namespace Checkmate.Modules.Game
             MoveManager.Instance.Init();
 
             GameEnv.Instance.Init();//初始化环境
-            //=============================
+
+            GameNetManager.Instance.Init(PlayerManager.Instance.PID);//初始化网络管理器
+
             InitEvent();
+            //=============================
             //测试部分
+            GameNetManager.Instance.Start(true);
+
             RoleData alice = JsonConvert.DeserializeObject<RoleData>(File.ReadAllText(Application.dataPath + "/Test/Alice.json"));
             AddRole(alice);
             alice.id = 1;
@@ -101,11 +107,24 @@ namespace Checkmate.Modules.Game
 
 
         // Update: Update is Called pear frame
+        float last=0;
         void Update()
         {
+            
             MoveManager.Instance.Update();
 
             InputManager.Instance.HandleInput();
+
+            GameNetManager.Instance.Update();
+
+            //===================================
+            //测试部分
+            if (Time.time - last > 5)
+            {
+                RoleController role = RoleManager.Instance.GetRole(1);
+                role.Current.Hp -= 10;
+                last = Time.time;
+            }
         }
 
 
@@ -113,6 +132,8 @@ namespace Checkmate.Modules.Game
         {
             GameEvent.Init();
             GameEvent.onControllerClicked.AddListener(OnControllerClick);
+            GameEvent.onRoleClicked.AddListener(OnRoleClicked);
+            GameEvent.onResetAll.AddListener(OnResetState);
         }
 
         private void OnControllerClick(ModelController controller)
@@ -120,6 +141,16 @@ namespace Checkmate.Modules.Game
             Debug.Log("click pos:" + controller.GetPosition().ToString());
             DrawUtil.ClearAll();
             DrawUtil.DrawSingle(controller.GetPosition(), 1);
+        }
+
+        private void OnRoleClicked(RoleController role)
+        {
+            Debug.Log("clicked role:" + role.Name);
+        }
+
+        private void OnResetState()
+        {
+            DrawUtil.ClearAll();
         }
     }
 }

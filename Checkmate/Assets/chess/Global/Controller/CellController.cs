@@ -24,6 +24,7 @@ namespace Checkmate.Game.Controller
         public int Role
         {
             get { return mRole; }
+            set { mRole = value; }
         }
 
         public bool HasRole

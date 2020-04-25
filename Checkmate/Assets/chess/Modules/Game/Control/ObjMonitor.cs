@@ -17,7 +17,6 @@ namespace Checkmate.Modules.Game.Control
         private ModelController mTempObj=null;//临时点击对象
 
 
-        private RoleManager mRoles;//角色管理
         public ObjMonitor()
         {
         }
@@ -45,7 +44,8 @@ namespace Checkmate.Modules.Game.Control
             //如果存在角色
             if (cell.HasRole)
             {
-                RoleController role = mRoles.GetRole(cell.Role);
+                Debug.Log("should have role");
+                RoleController role = RoleManager.Instance.GetRole(cell.Role);
                 if (role != null)
                 {
                     mTempObj = role;

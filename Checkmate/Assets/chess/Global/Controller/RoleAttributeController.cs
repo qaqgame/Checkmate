@@ -32,7 +32,7 @@ namespace Checkmate.Game.Controller
             get { return _hp; }
             set 
             {
-                _hp = value;
+                _hp = value<0?0:value;
                 onAttributeChanged("Hp", value);
             }
         }

@@ -193,9 +193,10 @@ namespace Checkmate.Game.Controller
                 mPanel.SetHP((int)value);
             }
             //通知外部
-            onRoleChanged(this);
-
-
+            if (onRoleChanged != null)
+            {
+                onRoleChanged(this);
+            }
         }
     }
 }

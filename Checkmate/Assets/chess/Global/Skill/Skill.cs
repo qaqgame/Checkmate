@@ -109,7 +109,7 @@ namespace Checkmate.Game.Skill
 
         private bool FilteRole(RoleController role,List<TeamType> teams)
         {
-            int src = PlayerManager.Instance.PID;
+            int src = (int)PlayerManager.Instance.PID;
             int dst = role.Team;
 
             foreach(var team in teams) {

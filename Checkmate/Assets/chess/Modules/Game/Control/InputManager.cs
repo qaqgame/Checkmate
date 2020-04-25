@@ -1,5 +1,7 @@
 ﻿using Checkmate.Game;
 using Checkmate.Game.Controller;
+using Checkmate.Game.Map;
+using Checkmate.Modules.Game.Utils;
 using QGF.Common;
 using System;
 using System.Collections.Generic;
@@ -109,15 +111,17 @@ namespace Checkmate.Modules.Game.Control
                     else
                     {
                         //如果是角色
-                        if (temp.Type == 2)
+                        if (temp!=null&&temp.Type == 2)
                         {
                             RoleController role = temp as RoleController;
                             if (role.CanOperate)
                             {
                                 if (role.CurrentState == RoleState.PreMove && target.Type == 1)
                                 {
+                                    DrawUtil.ClearAll();
                                     //移动
                                     role.SetState(RoleState.Move);
+                                    
                                 }
                                 else if (role.CurrentState == RoleState.PreSpell)
                                 {
@@ -125,6 +129,11 @@ namespace Checkmate.Modules.Game.Control
                                     role.SetState(RoleState.Spell);
                                 }
                             }
+                        }
+                        //是地面
+                        else
+                        {
+                            mState = InputState.Idle;
                         }
                     }
                 }
@@ -166,13 +175,19 @@ namespace Checkmate.Modules.Game.Control
                 //与地图有交点
                 if (Physics.Raycast(ray, out hit, 500, mouseMask))
                 {
-                    Position target = HexMapUtil.GetRoundPosition(hit.point);
+                    Position target = MapManager.Instance.GetCell(hit.point).Position;
                     if (temp.Type == 2)
                     {
                         RoleController role = temp as RoleController;
-                        if (role.CurrentState == RoleState.PreMove)
+                        if (role.CurrentState == RoleState.PreMove&&!MapManager.Instance.GetCell(target).HasRole)
                         {
                             //预览移动
+                            List<Position> positions = MoveManager.Instance.Router.AstarNavigatorE(role, role.GetPosition(), target);
+                            if (positions != null)
+                            {
+                                DrawUtil.ClearAll();
+                                DrawUtil.DrawList(positions, 0);
+                            }
                         }
                         else if (role.CurrentState == RoleState.PreSpell)
                         {

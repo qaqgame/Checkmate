@@ -11,7 +11,7 @@ namespace Checkmate.Game.Player
     //玩家管理的类
     public class PlayerManager:Singleton<PlayerManager>
     {
-        public int PID { get; set; }
+        public uint PID { get; set; }
 
         private Dictionary<uint, uint> mFriends;//友军标识
         private Dictionary<uint, uint> mEnemys;//敌军标识
