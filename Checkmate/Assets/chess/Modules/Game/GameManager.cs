@@ -67,8 +67,8 @@ namespace Checkmate.Modules.Game
             alice.model = "Bob";
             alice.name = "Bob";
             alice.position.x = 2;
-            alice.position.y = -1;
-            alice.position.z = -1;
+            alice.position.y = -4;
+            alice.position.z = 2;
             AddRole(alice);
             Debug.Log("extra:" + RoleManager.Instance.GetRole(1).GetValue("Current.test"));
             RemoveRole(0);

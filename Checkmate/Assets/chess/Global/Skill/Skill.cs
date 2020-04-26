@@ -76,8 +76,8 @@ namespace Checkmate.Game.Skill
         private bool CheckPosition(Position pos,List<ControllerType> typeFilter,List<TeamType> teamFilter=null)
         {
             CellController cell = MapManager.Instance.GetCell(pos);
-            //该位置不存在
-            if (cell == null)
+            //该位置不存在或在视野外
+            if (cell == null||!cell.Visible)
             {
                 return false;
             }

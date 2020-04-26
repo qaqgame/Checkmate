@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using Checkmate.Game.Feature;
+using Checkmate.Game.Role;
+using Checkmate.Game.Map;
 
 namespace Checkmate.Game.Controller
 {
@@ -24,7 +26,19 @@ namespace Checkmate.Game.Controller
         public int Role
         {
             get { return mRole; }
-            set { mRole = value; }
+            set {
+                if (mRole != -1)
+                {
+                    RoleController role = RoleManager.Instance.GetRole(mRole);
+                    MapManager.Instance.DecreaseVisibility(role);
+                }
+                if (value != -1)
+                {
+                    RoleController role = RoleManager.Instance.GetRole(value);
+                    MapManager.Instance.IncreaseVisibility(role);
+                }
+                mRole = value;
+            }
         }
 
         public bool HasRole
@@ -56,6 +70,16 @@ namespace Checkmate.Game.Controller
         public bool Available
         {
             get { return _available; }
+        }
+
+        //是否在视野内
+        [GetProperty]
+        public bool Visible
+        {
+            get
+            {
+                return mCell.IsVisible;
+            }
         }
 
         [GetProperty]

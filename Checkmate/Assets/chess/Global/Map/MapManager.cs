@@ -69,13 +69,15 @@ namespace Checkmate.Game.Map
         //获取逻辑坐标的单元格
         public CellController GetCell(Position position)
         {
-            return hexGrid.GetCell(position).Controller;
+            HexCell cell = hexGrid.GetCell(position);
+            return cell == null ? null : cell.Controller;
         }
 
         //获取世界坐标的单元格
         public CellController GetCell(Vector3 position)
         {
-            return hexGrid.GetCell(position).Controller;
+            HexCell cell = hexGrid.GetCell(position);
+            return cell == null ? null : cell.Controller;
         }
 
         //获取单元格列表
@@ -98,6 +100,85 @@ namespace Checkmate.Game.Map
         {
             List<Position> positions = range.GetResult(start, center);
             return GetCells(positions);
+        }
+
+        //获取视野范围内的方格
+        public List<CellController> GetVisibleCells(RoleController role)
+        {
+            int viewRange = role.Current.ViewRange;
+            int viewHeight = role.Current.ViewHeight;
+
+            Position center = role.Position;
+
+            List<CellController> result = new List<CellController>();
+
+            //获取范围内的坐标
+            List<Position> temp = HexMapUtil.GetSingleRing(center, viewRange);
+
+            //遍历连线进行搜索
+            foreach(Position border in temp)
+            {
+                //获取连线
+                List<Position> tempLine = HexMapUtil.GetLine(center, border);
+                int maxCost = viewRange;
+                //获取可见的最大高度
+                int maxHeight = GetCell(tempLine[0]).Cell.Elevation + viewHeight;
+
+                //大于1时，沿该线遍历
+                if (tempLine.Count > 1)
+                {
+                    int cost = 1;
+                    foreach(Position pos in tempLine)
+                    {
+                        CellController cell = GetCell(pos);
+                        //无单元格或海拔过高则结束
+                        if (cell == null || cell.Cell.Elevation > maxHeight+1)
+                        {
+                            break;
+                        }
+
+                        if (cell.Cell.Elevation - maxHeight == 1)
+                        {
+                            cost = 2;
+                        }
+
+                        //判断是否够cost
+                        if (maxCost < cost)
+                        {
+                            //不够结束
+                            break;
+                        }
+
+                        //不存在则加入
+                        if (!result.Contains(cell))
+                        {
+                            result.Add(cell);
+                            maxCost -= cost;
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+        //提高可见度
+        public void IncreaseVisibility(RoleController role)
+        {
+            List<CellController> cells = GetVisibleCells(role);
+            foreach(var cell in cells)
+            {
+                cell.Cell.IncreaseVisibility();
+            }
+        }
+
+        //减少可见度
+        public void DecreaseVisibility(RoleController role)
+        {
+            List<CellController> cells = GetVisibleCells(role);
+            foreach (var cell in cells)
+            {
+                cell.Cell.DecreaseVisibility();
+            }
         }
     }
 }

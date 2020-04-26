@@ -41,6 +41,8 @@ namespace Checkmate.Game
         private static FeatureManager mFeatureMng;//特征管理（列表管理）
         private static EffectManager mEffectMng;//效果管理（列表管理)
 
+        private Material mFeatureMat;//特征的着色材质
+        private const string MainTexVariableName = "_MainTex";
         public static FeatureManager Features
         {
             get
@@ -89,6 +91,7 @@ namespace Checkmate.Game
             HexMetrics.featurePrefabs = new List<Transform>();
             HexMetrics.featureEffects = new Dictionary<int, string>();
             cellShaderData = gameObject.AddComponent<HexCellShaderData>();
+            mFeatureMat = Resources.Load<Material>("Map/Basic/Materials/Feature");
         }
 
         public void CreateNewWorld(int cellX, int cellZ)
@@ -314,10 +317,36 @@ namespace Checkmate.Game
             foreach (var f in features)
             {
                 Debug.Log("load features:" + f.name + f.file);
-
-                Transform prefab= (Resources.Load(path + f.file) as GameObject).transform;
-                
+                ;
+                Transform prefab = Instantiate((Resources.Load(path + f.file) as GameObject)).transform;
+                SetPrefabMaterial(prefab);
                 HexMetrics.featurePrefabs.Add(prefab);
+            }
+        }
+
+        private void SetPrefabMaterial(Transform prefab)
+        {
+            var renders = prefab.GetComponentsInChildren<Renderer>();
+
+
+            foreach (var render in renders)
+            {
+                var originalMaterial = render.sharedMaterial;
+                if (originalMaterial == null)
+                {
+                    Debug.LogError("cannot load material of " + render.gameObject.name);
+                    Debug.LogError("ERROR Mat:" + render.material.name);
+                }
+                var currentRender = render;
+
+                var newMat = new Material(mFeatureMat);
+
+
+                newMat.mainTexture = originalMaterial.mainTexture;
+                newMat.SetFloat("_Glossiness", originalMaterial.GetFloat("_Glossiness"));
+                newMat.SetFloat("_Metallic", originalMaterial.GetFloat("_Metallic"));
+                currentRender.material = newMat;
+
             }
         }
         //创建地形
