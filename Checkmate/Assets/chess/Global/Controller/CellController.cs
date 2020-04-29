@@ -9,6 +9,7 @@ using UnityEngine;
 using Checkmate.Game.Feature;
 using Checkmate.Game.Role;
 using Checkmate.Game.Map;
+using Checkmate.Game.Effect;
 
 namespace Checkmate.Game.Controller
 {
@@ -17,6 +18,7 @@ namespace Checkmate.Game.Controller
         private HexCell mCell;
 
         private int mRole=-1;//当前的角色
+
 
         public HexCell Cell
         {

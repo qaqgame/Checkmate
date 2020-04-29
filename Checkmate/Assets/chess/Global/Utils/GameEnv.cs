@@ -115,8 +115,12 @@ namespace Checkmate.Game.Utils
                     flagList = i;
                     continue;
                 }
-                param[i] = GetParam(info.parameters[i].type, info.parameters[i].value);
-
+                object p= GetParam(info.parameters[i].type, info.parameters[i].value);
+                if (p == null)
+                {
+                    return;
+                }
+                param[i] = p;
             }
 
             //检查有没有包含controllerList
@@ -235,7 +239,12 @@ namespace Checkmate.Game.Utils
                     cname = cname.Substring(0, idx1);
                 }
                 
-                BaseController controller = ControllerPool[cname][idx];
+                List<ModelController> tempList = ControllerPool[cname];
+                BaseController controller = null;
+                if (tempList.Count > idx)
+                {
+                    controller = tempList[idx];
+                }
                 return tempValue == null ? controller : controller.GetValue(tempValue);
 
             }

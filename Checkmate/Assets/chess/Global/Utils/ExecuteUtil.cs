@@ -204,5 +204,65 @@ namespace Checkmate.Game.Utils
         public string returnValue;//返回值
     }
 
+    //具体活动
+    public class SkillAction
+    {
+        public const int SearchType = 0;
+        public const int SelectType = 1;
+        public class TargetTrack
+        {
+            public int type;//操作类型
+            public int idx;//操作序列
+            public TargetTrack(int t, int i)
+            {
+                type = t;
+                idx = i;
+            }
+        }
+
+
+        public List<TargetTrack> TargetTracks;//执行目标搜索的顺序
+        public List<BaseSearch> Searches;//所有搜索操作
+        public List<Selects> Selectors;//所有筛选操作
+
+        public List<ExecuteInfo> Executes;//所有的脚本操作
+
+        public SkillAction(XmlNode node)
+        {
+
+            //解析目标部分
+            XmlNode target = node.SelectSingleNode("Targets");
+            XmlNodeList tl = target.ChildNodes;
+            TargetTracks = new List<TargetTrack>();
+            Searches = new List<BaseSearch>();
+            Selectors = new List<Selects>();
+            foreach (XmlNode l in tl)
+            {
+                //解析Selects
+                if (l.Name == "Selects")
+                {
+                    Selects s = new Selects(l);
+                    TargetTracks.Add(new TargetTrack(SelectType, Selectors.Count));
+                    Selectors.Add(s);
+                }
+                else
+                {
+                    BaseSearch bs = SearchParser.Parse(l);
+                    TargetTracks.Add(new TargetTrack(SearchType, Searches.Count));
+                    Searches.Add(bs);
+                }
+            }
+
+            //解析脚本部分
+            Executes = new List<ExecuteInfo>();
+            XmlNode exRoot = node.SelectSingleNode("Executes");
+            XmlNodeList el = exRoot.ChildNodes;
+            foreach (XmlNode l in el)
+            {
+                ExecuteInfo info = ExecuteUtil.ParseExecute(l);
+                Executes.Add(info);
+            }
+        }
+    }
 
 }

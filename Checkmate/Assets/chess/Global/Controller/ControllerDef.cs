@@ -12,6 +12,7 @@ namespace Checkmate.Game.Controller
         Cell=1,
         Role=2,
         RoleAttribute=3,
-        Skill=4
+        Skill=4,
+        Effect
     }
 }

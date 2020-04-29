@@ -149,7 +149,11 @@ namespace Checkmate.Game.Controller
             }
         }
 
-       
+       //克隆对象
+        public  virtual BaseController Clone()
+        {
+            return null;
+        }
 
         public BaseController(string extraData=null)
         {
