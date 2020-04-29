@@ -8,7 +8,7 @@
     </EffectRange>
     <Data>
         <value name="level" type="Int">3</value>
-        <value name="Damage" type="Int">30</value>
+        <value name="Damage" type="Int">10</value>
     </Data>
 
     <Content>
@@ -18,13 +18,13 @@
                     <DefaultRange type="Range" limit="1"/>
                 </DefaultSearch>
                 <Selects id="2" src="1">
-                    <DefaultTeamSelector team="Enemy"/>
+                    <DefaultTeamSelector team="Enemy|Self"/>
                 </Selects>
             </Targets>
             <Executes>
                 <Execute src="Standard.Damage">
                     <Params>
-                        <Param type="Controller" value="%Src"/>
+                        <Param type="Controller" value="#2"/>
                         <Param type="Int" value="$Damage"/>
                     </Params>
                 </Execute>

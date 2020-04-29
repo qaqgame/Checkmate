@@ -1,4 +1,5 @@
-﻿using Checkmate.Game.UI;
+﻿using Checkmate.Game.Skill;
+using Checkmate.Game.UI;
 using Checkmate.Global.Data;
 using FairyGUI;
 using System;
@@ -39,6 +40,7 @@ namespace Checkmate.Game.Controller
             get { return mCurState; }
         }
 
+
         public void SetState(RoleState state)
         {
             mCurState = state;
@@ -49,8 +51,15 @@ namespace Checkmate.Game.Controller
         {
             get
             {
-                return mCurState == RoleState.Idle||mCurState==RoleState.PreMove;
+                return mCurState == RoleState.Idle||mCurState==RoleState.PreMove||mCurState==RoleState.PreSpell;
             }
+        }
+
+        [GetProperty]
+        public List<int> Skills
+        {
+            get;
+            private set;
         }
 
         //角色id
@@ -137,6 +146,14 @@ namespace Checkmate.Game.Controller
 
             //初始化面板
             mPanel = new RolePanel(obj.GetComponentInChildren<UIPanel>(), Origin.Hp, Current.Hp,Name);
+
+            Skills = new List<int>();
+            //添加技能
+            foreach(var skill in data.skills)
+            {
+                int sid = SkillManager.Instance.GetSkill(skill);
+                Skills.Add(sid);
+            }
         }
 
         //=============================
@@ -166,6 +183,8 @@ namespace Checkmate.Game.Controller
             return (mStandMask[idx] & (1 << offset)) != 0;
         }
 
+
+        
 
         //==========================
         //继承的接口

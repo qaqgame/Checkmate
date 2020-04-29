@@ -205,11 +205,33 @@ namespace Checkmate.Game.Controller
             }
             else
             {
+                int idx = 0;
+                //表示为数组
+                if (param.Contains('['))
+                {
+                    int idx1 = param.IndexOf('[');
+                    int idx2 = idx1 + 1;
+                    while (param[idx2] != ']')
+                    {
+                        idx2++;
+                    }
+                    //获取数组索引
+                    idx= int.Parse(param.Substring(idx1 + 1, idx2 - idx1-1));
+
+                    param = param.Substring(0, idx1);
+                }
                 var property = mPropertyController.FindProperty(this, param);
                 //内部存在该属性
                 if (property != null&&property.IsDefined(typeof(GetPropertyAttribute)))
                 {
+                    //如果是数组
+                    if (typeof(IList).IsAssignableFrom(property.PropertyType))
+                    {
+                        IList list = property.GetValue(this) as IList;
+                        return list[idx];
+                    }
                     return property.GetValue(this);
+                    
                 }
                 //否则从字典读取
                 else

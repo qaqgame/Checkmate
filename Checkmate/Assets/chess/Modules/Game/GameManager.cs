@@ -54,11 +54,14 @@ namespace Checkmate.Modules.Game
 
             GameEnv.Instance.Init();//初始化环境
 
+            ExecuteUtil.Instance.Init(Application.dataPath + "/Test");
+
             GameNetManager.Instance.Init(PlayerManager.Instance.PID);//初始化网络管理器
 
             InitEvent();
             //=============================
             //测试部分
+            InitTestPlayer();
             GameNetManager.Instance.Start(true);
 
             RoleData alice = JsonConvert.DeserializeObject<RoleData>(File.ReadAllText(Application.dataPath + "/Test/Alice.json"));
@@ -85,16 +88,19 @@ namespace Checkmate.Modules.Game
         }
 
 
-        public void AddRole(RoleData data)
+        //============================
+        public void InitTestPlayer()
         {
-            RoleController controller =RoleManager.Instance.AddRole(data);
-            Debug.Log(data.name + ",data:"+controller.GetValue("Id"));
-            
-        }
+            MaskData data = new MaskData();
+            data.pid = 1;
+            data.enemyMask = 0x00ff;
+            data.friendMask = 0xff00;
+            PlayerTeamData pd = new PlayerTeamData();
+            pd.masks = new List<MaskData>();
+            pd.masks.Add(data);
 
-        public void RemoveRole(int id)
-        {
-            RoleManager.Instance.RemoveRole(id);
+            PlayerManager.Instance.Init(pd);
+            PlayerManager.Instance.PID = 1;
         }
 
         // Test move
@@ -119,14 +125,26 @@ namespace Checkmate.Modules.Game
 
             //===================================
             //测试部分
-            if (Time.time - last > 5)
-            {
-                RoleController role = RoleManager.Instance.GetRole(1);
-                role.Current.Hp -= 10;
-                last = Time.time;
-            }
+            //if (Time.time - last > 5)
+            //{
+            //    RoleController role = RoleManager.Instance.GetRole(1);
+            //    role.Current.Hp -= 10;
+            //    last = Time.time;
+            //}
+        }
+        //=================================
+
+        public void AddRole(RoleData data)
+        {
+            RoleController controller = RoleManager.Instance.AddRole(data);
+            Debug.Log(data.name + ",data:" + controller.GetValue("Id"));
+
         }
 
+        public void RemoveRole(int id)
+        {
+            RoleManager.Instance.RemoveRole(id);
+        }
 
         private void InitEvent()
         {

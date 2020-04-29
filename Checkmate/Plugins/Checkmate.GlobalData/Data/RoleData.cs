@@ -66,8 +66,9 @@ namespace Checkmate.Global.Data
         public Dictionary<int, int> extraMove;//额外的行动力
         [ProtoMember(9)]
         public RoleProperty props;//初始属性
-
         [ProtoMember(10)]
+        public List<string> skills;//技能
+        [ProtoMember(11)]
         public string extraData;//额外数据
     }
 }

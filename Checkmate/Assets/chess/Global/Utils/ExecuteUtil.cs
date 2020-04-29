@@ -34,6 +34,7 @@ namespace Checkmate.Game.Utils
             {
                 //报错
                 Debug.LogError("load error:" + path);
+                return null;
             }
             DllInfo result = new DllInfo();
             XmlNode config = document.SelectSingleNode("Config");
@@ -42,7 +43,7 @@ namespace Checkmate.Game.Utils
             XmlNode main = config.SelectSingleNode("Main");
             //获取main
             result.main = main.InnerText;
-            result.mainClassName = main.Attributes["namespace"].Value + main.Attributes["class"].Value;
+            result.mainClassName = main.Attributes["namespace"].Value +"."+ main.Attributes["class"].Value;
 
             return result;
         }
@@ -114,18 +115,21 @@ namespace Checkmate.Game.Utils
         {
 
             DllInfo info = DllLoader.GetInfo(path);
+            if (info != null)
+            {
+                string name = info.name;
 
-            string name = info.name;
-
-            //加载主dll
-            var assembly = Assembly.LoadFrom(path + "/" + info.main);
-            object instance = assembly.CreateInstance(info.mainClassName);
-            //执行初始化
-            Type type = instance.GetType();
-            MethodInfo init = type.GetMethod("Init");
-            init.Invoke(instance,null);
-            //加入缓存
-            mClassCache.Add(name, instance);
+                //加载主dll
+                var assembly = Assembly.LoadFrom(path + "/" + info.main);
+                object instance = assembly.CreateInstance(info.mainClassName);
+                //执行初始化
+                Type type = instance.GetType();
+                MethodInfo init = type.GetMethod("Init");
+                init.Invoke(instance, null);
+                //加入缓存
+                mClassCache.Add(name, instance);
+                Debug.Log("Load dll:" + name);
+            }
 
         }
         ////加载某个方法

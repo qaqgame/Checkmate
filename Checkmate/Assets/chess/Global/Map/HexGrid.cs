@@ -42,6 +42,7 @@ namespace Checkmate.Game
         private static EffectManager mEffectMng;//效果管理（列表管理)
 
         private Material mFeatureMat;//特征的着色材质
+        private GameObject mFeatureRoot;//存储feature实例的根
         private const string MainTexVariableName = "_MainTex";
         public static FeatureManager Features
         {
@@ -92,6 +93,7 @@ namespace Checkmate.Game
             HexMetrics.featureEffects = new Dictionary<int, string>();
             cellShaderData = gameObject.AddComponent<HexCellShaderData>();
             mFeatureMat = Resources.Load<Material>("Map/Basic/Materials/Feature");
+            mFeatureRoot = GameObject.Find("Features");
         }
 
         public void CreateNewWorld(int cellX, int cellZ)
@@ -319,9 +321,11 @@ namespace Checkmate.Game
                 Debug.Log("load features:" + f.name + f.file);
                 ;
                 Transform prefab = Instantiate((Resources.Load(path + f.file) as GameObject)).transform;
+                prefab.SetParent(mFeatureRoot.transform);
                 SetPrefabMaterial(prefab);
                 HexMetrics.featurePrefabs.Add(prefab);
             }
+            mFeatureRoot.SetActive(false);
         }
 
         private void SetPrefabMaterial(Transform prefab)

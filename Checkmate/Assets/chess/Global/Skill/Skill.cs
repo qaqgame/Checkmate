@@ -161,6 +161,66 @@ namespace Checkmate.Game.Skill
         
     }
 
+    //技能活动
+    public class SkillAction
+    {
+        public const int SearchType = 0;
+        public const int SelectType = 1;
+        public class TargetTrack
+        {
+            public int type;//操作类型
+            public int idx;//操作序列
+            public TargetTrack(int t, int i)
+            {
+                type = t;
+                idx = i;
+            }
+        }
+
+
+        public List<TargetTrack> TargetTracks;//执行目标搜索的顺序
+        public List<BaseSearch> Searches;//所有搜索操作
+        public List<Selects> Selectors;//所有筛选操作
+
+        public List<ExecuteInfo> Executes;//所有的脚本操作
+
+        public SkillAction(XmlNode node)
+        {
+
+            //解析目标部分
+            XmlNode target = node.SelectSingleNode("Targets");
+            XmlNodeList tl = target.ChildNodes;
+            TargetTracks = new List<TargetTrack>();
+            Searches = new List<BaseSearch>();
+            Selectors = new List<Selects>();
+            foreach (XmlNode l in tl)
+            {
+                //解析Selects
+                if (l.Name == "Selects")
+                {
+                    Selects s = new Selects(l);
+                    TargetTracks.Add(new TargetTrack(SelectType, Selectors.Count));
+                    Selectors.Add(s);
+                }
+                else
+                {
+                    BaseSearch bs = SearchParser.Parse(l);
+                    TargetTracks.Add(new TargetTrack(SearchType, Searches.Count));
+                    Searches.Add(bs);
+                }
+            }
+
+            //解析脚本部分
+            Executes = new List<ExecuteInfo>();
+            XmlNode exRoot = node.SelectSingleNode("Executes");
+            XmlNodeList el = exRoot.ChildNodes;
+            foreach (XmlNode l in el)
+            {
+                ExecuteInfo info = ExecuteUtil.ParseExecute(l);
+                Executes.Add(info);
+            }
+        }
+    }
 
     public abstract class BaseSkill:BaseController
     {
@@ -170,7 +230,7 @@ namespace Checkmate.Game.Skill
 
         private SkillRange mMouseRange;//鼠标的可选范围
 
-        private List<Position> tempResult;//临时存储结果
+        private List<Position> tempResult = new List<Position>();//临时存储结果
 
         //获取鼠标范围
         public List<Position> GetMousePositions(Position Start)
@@ -333,69 +393,8 @@ namespace Checkmate.Game.Skill
             CoolBegin,//进入冷却时
             Execute//执行时
         }
-        public const int SearchType = 0;
-        public const int SelectType = 1;
-        internal class SkillAction
-        {
-            
-            internal class TargetTrack
-            {
-                public int type;//操作类型
-                public int idx;//操作序列
-                public TargetTrack(int t,int i)
-                {
-                    type = t;
-                    idx = i;
-                }
-            }
-
-
-            public List<ActionTrigger> Trigger;//触发方式
-            public List<TargetTrack> TargetTracks;//执行目标搜索的顺序
-            public List<BaseSearch> Searches;//所有搜索操作
-            public List<Selects> Selectors;//所有筛选操作
-
-            public List<ExecuteInfo> Executes;//所有的脚本操作
-
-            public SkillAction(XmlNode node)
-            {
-                string trigger = node.Attributes["trigger"].Value;
-                Trigger = ObjectParser.ParseEnums<ActionTrigger>(trigger);
-
-                //解析目标部分
-                XmlNode target = node.SelectSingleNode("Targets");
-                XmlNodeList tl = target.ChildNodes;
-                TargetTracks = new List<TargetTrack>();
-                Searches = new List<BaseSearch>();
-                Selectors = new List<Selects>();
-                foreach(XmlNode l in tl)
-                {
-                    //解析Selects
-                    if (l.Name == "Selects")
-                    {
-                        Selects s = new Selects(l);
-                        TargetTracks.Add(new TargetTrack(SelectType, Selectors.Count));
-                        Selectors.Add(s);
-                    }
-                    else
-                    {
-                        BaseSearch bs = SearchParser.Parse(l);
-                        TargetTracks.Add(new TargetTrack(SearchType, Searches.Count));
-                        Searches.Add(bs);
-                    }
-                }
-
-                //解析脚本部分
-                Executes = new List<ExecuteInfo>();
-                XmlNode exRoot = node.SelectSingleNode("Executes");
-                XmlNodeList el = exRoot.ChildNodes;
-                foreach(XmlNode l in el)
-                {
-                    ExecuteInfo info = ExecuteUtil.ParseExecute(l);
-                    Executes.Add(info);
-                }
-            }
-        }
+        
+        
         #endregion
 
         //=======================================
@@ -409,7 +408,10 @@ namespace Checkmate.Game.Skill
             foreach(XmlNode l in cl)
             {
                 SkillAction action = new SkillAction(l);
-                foreach(var trigger in action.Trigger)
+                string triggers = l.Attributes["trigger"].Value;
+                List<ActionTrigger> tempTrigger = ObjectParser.ParseEnums < ActionTrigger>(triggers);
+
+                foreach(var trigger in tempTrigger)
                 {
                     //不包含则创建
                     if (!mActions.ContainsKey(trigger))
@@ -426,7 +428,7 @@ namespace Checkmate.Game.Skill
         {
             foreach (var action in mActions[ActionTrigger.Load])
             {
-                ExecuteAction(action);
+                GameEnv.Instance.Current.ExecuteAction(action);
             }
 
         }
@@ -435,264 +437,9 @@ namespace Checkmate.Game.Skill
         {
             foreach (var action in mActions[ActionTrigger.Execute])
             {
-                ExecuteAction(action);
+                GameEnv.Instance.Current.ExecuteAction(action);
             }
         }
-
-        #region 功能函数
-        private void ExecuteAction(SkillAction action)
-        {
-            ExecuteTargets(action);
-            foreach(var info in action.Executes)
-            {
-                ExecuteMain(info);
-            }
-        }
-
-        private void ExecuteTargets(SkillAction action)
-        {
-            foreach(var track in action.TargetTracks)
-            {
-                //执行搜索
-                if (track.type == SearchType)
-                {
-                    BaseSearch search = action.Searches[track.idx];
-                    List<ModelController> temp;
-                    Position start, center;
-                    if(TryGetSearchParam(search.start,out start)&&TryGetSearchParam(search.center,out center))
-                    {
-                        temp = search.GetSearchResult(start,center);
-                    }
-                    //如果存在列表
-                    else if(search.start.Contains('#')||search.center.Contains('#'))
-                    {
-                        temp = new List<ModelController>();
-                        List<ModelController> controllers;
-                        //如果相同，则取等值
-                        if (search.start == search.center)
-                        {
-                            
-                            controllers= ControllerPool[search.start.Substring(1)];
-                            foreach(var c in controllers)
-                            {
-                                temp.AddRange(search.GetSearchResult(c.GetPosition(), c.GetPosition()));
-                            }
-                        }
-                        //起点为列表
-                        else if (search.start.Contains('#'))
-                        {
-                            controllers = ControllerPool[search.start.Substring(1)];
-                            TryGetSearchParam(search.center, out center);
-                            foreach(var c in controllers)
-                            {
-                                temp.AddRange(search.GetSearchResult(c.GetPosition(), center));
-                            }
-                        }
-                        //中心为列表
-                        else
-                        {
-                            controllers = ControllerPool[search.center.Substring(1)];
-                            TryGetSearchParam(search.start, out start);
-                            foreach (var c in controllers)
-                            {
-                                temp.AddRange(search.GetSearchResult(start, c.GetPosition()));
-                            }
-                        }
-                        temp = temp.Distinct().ToList();
-                    }
-                    else
-                    {
-                        Debug.LogError("error execute search:cannot build id:" + search.id);
-                        return;
-                    }
-                    ControllerPool.Add(search.id, temp);
-                }
-                //执行筛选
-                else
-                {
-                    Selects selects = action.Selectors[track.idx];
-                    List<ModelController> src = ControllerPool[selects.src];
-                    List<ModelController> temp = selects.ExecuteFilter(src);
-                    ControllerPool.Add(selects.id, temp);
-                }
-            }
-        }
-
-
-        private void ExecuteMain(ExecuteInfo info)
-        {
-            object returnValue=null;
-            object[] param = new object[info.parameters.Count];
-            int flagList=-1;//标识ControllerList位置
-            //解析非controllerList参数
-            for(int i=0;i<info.parameters.Count;++i)
-            {
-                if (info.parameters[i].type == ParamType.ControllerList)
-                {
-                    flagList = i;
-                    continue;
-                }
-                param[i] = GetParam(info.parameters[i].type, info.parameters[i].value);
-            }
-
-            //检查有没有包含controllerList
-            //如果有包含
-            if (flagList!=-1)
-            {
-                string cl = info.parameters[flagList].value;
-                string tempVariable=null;
-                //如果有.代表是变量
-                if (cl.Contains('.'))
-                {
-                    tempVariable = cl.Substring(cl.IndexOf('.') + 1);
-                    cl = cl.Substring(1, cl.IndexOf('.'));
-                }
-                List<ModelController> list = ControllerPool[cl.Substring(1)];
-                foreach(ModelController l in list)
-                {
-                    object temp=l;
-                    if (tempVariable != null)
-                    {
-                        temp = l.GetValue(tempVariable);
-                    }
-                    param[flagList] = temp;
-                    returnValue=ExecuteUtil.Instance.Execute(info.method, param);
-                }
-            }
-            else
-            {
-                returnValue = ExecuteUtil.Instance.Execute(info.method, param);
-            }
-            //处理返回值
-            if (info.returnValue != null)
-            {
-                HandleReturn(info.returnValue, returnValue);
-            }
-
-        }
-
-        #endregion
-
-        #region 工具函数
-
-        /// <summary>
-        /// 获取搜索参数
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="pos"></param>
-        /// <returns>判断是否是内置变量</returns>
-        private bool TryGetSearchParam(string value,out Position pos)
-        {
-            switch (value)
-            {
-                case "Src":
-                    {
-                        ModelController c = GameEnv.Instance.Current.Src as ModelController;
-                        if (c != null)
-                        {
-                            pos= c.GetPosition();
-                        }
-                        pos= null;
-                        return true;
-                    }
-                case "Center":
-                    {
-                        pos= GameEnv.Instance.Current.Center;
-                        return true;
-                    }
-            }
-            pos=null;
-            return false;
-        }
-
-
-        private object GetParam(ParamType type,string value)
-        {
-            //如果value是内部变量，直接获取
-            if (value.Contains('$'))
-            {
-                return GetValue(value.Substring(1));
-            }
-            //外部变量
-            else if (value.Contains('%'))
-            {
-                //如果是获取controller
-                if (type == ParamType.Controller)
-                {
-                    return GetController(value.Substring(1));
-                }
-                //获取变量
-                string cn = value.Substring(1, value.IndexOf('.'));
-                string v = value.Substring(value.IndexOf('.') + 1);
-                BaseController controller = GetController(cn);
-                return controller.GetValue(v);
-            }
-            //代表取列表的单个控制器
-            else if (value.Contains('#') && type == ParamType.Controller)
-            {
-                string cname = value.Substring(1);
-                string tempValue = null;
-                if (value.Contains('.'))
-                {
-                    cname = value.Substring(1, value.IndexOf('.'));
-                    tempValue = value.Substring(value.IndexOf('.') + 1);
-                }
-                BaseController controller = ControllerPool[cname][0];
-                return tempValue == null ? controller : controller.GetValue(tempValue);
-
-            }
-            //代表直接解析
-            else
-            {
-                switch (type)
-                {
-                    case ParamType.Int:return int.Parse(value);
-                    case ParamType.Float:return float.Parse(value);
-                    case ParamType.String:return value;
-                }
-            }
-            return null;
-        }
-
-        private BaseController GetController(string value)
-        {
-            switch (value)
-            {
-                case "Src": return GameEnv.Instance.Current.Src;
-                case "Dst": return GameEnv.Instance.Current.Dst;
-                case "Main": return GameEnv.Instance.Current.Main;
-            }
-            return null;
-        }
-
-        //
-        private void HandleReturn(string target,object value)
-        {
-            //如果target是内部变量，直接设置
-            if (target.Contains('$'))
-            {
-                SetValue(target.Substring(1), value);
-            }
-            //外部变量
-            else if (target.Contains('%'))
-            {
-                
-            }
-            //代表取列表的变量
-            else if (target.Contains('#'))
-            {
-                string cname = target.Substring(1, target.IndexOf('.'));
-                string tempValue = target.Substring(target.IndexOf('.') + 1);
-                List<ModelController> controllers = ControllerPool[cname];
-                
-                foreach(var model in controllers)
-                {
-                    model.SetValue(tempValue, value);
-                }
-
-            }
-        }
-        #endregion
     }
 
     //技能解析类

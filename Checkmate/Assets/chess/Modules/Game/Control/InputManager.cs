@@ -1,6 +1,7 @@
 ﻿using Checkmate.Game;
 using Checkmate.Game.Controller;
 using Checkmate.Game.Map;
+using Checkmate.Game.Skill;
 using Checkmate.Modules.Game.Utils;
 using QGF.Common;
 using System;
@@ -30,6 +31,8 @@ namespace Checkmate.Modules.Game.Control
 
         private int mouseMask;//鼠标操作遮罩
 
+        private int mCurrentSkill;//当前预览技能
+
         public InputManager()
         {
             mObj = new ObjMonitor();
@@ -40,6 +43,15 @@ namespace Checkmate.Modules.Game.Control
         public void HandleInput()
         {
             HandleMouse();
+            if (Input.GetKeyDown(KeyCode.K))
+            {
+                if (mObj.CurrentObj.Type == 2)
+                {
+                    RoleController role = mObj.CurrentObj as RoleController;
+                    role.SetState(RoleState.PreSpell);
+                    mCurrentSkill = role.Skills[0];
+                }
+            }
         }
 
 
@@ -91,8 +103,8 @@ namespace Checkmate.Modules.Game.Control
                 //与地图有交点
                 if(Physics.Raycast(ray,out hit, 500, mouseMask))
                 {
-                    BaseController temp = mObj.CurrentObj;//当前对象
-                    BaseController target = mObj.OnClick(hit.point);
+                    ModelController temp = mObj.CurrentObj;//当前对象
+                    ModelController target = mObj.OnClick(hit.point);
                     //如果是idle状态
                     if (mState == InputState.Idle)
                     {
@@ -121,12 +133,23 @@ namespace Checkmate.Modules.Game.Control
                                     DrawUtil.ClearAll();
                                     //移动
                                     role.SetState(RoleState.Move);
-                                    
+                                    mState = InputState.Idle;
+                                    GameEvent.onResetAll.Invoke();
                                 }
-                                else if (role.CurrentState == RoleState.PreSpell)
+                                else if (role.CurrentState == RoleState.PreSpell&&target!=null)
                                 {
-                                    //施法
-                                    role.SetState(RoleState.Spell);
+                                    List<Position> borders = SkillManager.Instance.GetBorderRange(mCurrentSkill, role.Position);
+                                    if (borders.Contains(target.GetPosition()))
+                                    {
+                                        //施法
+                                        role.SetState(RoleState.Spell);
+
+                                        SkillManager.Instance.ExecuteSkill(mCurrentSkill, role, target.GetPosition());
+
+                                        role.SetState(RoleState.Idle);
+                                        mState = InputState.Idle;
+                                        GameEvent.onResetAll.Invoke();
+                                    }
                                 }
                             }
                         }
@@ -167,7 +190,7 @@ namespace Checkmate.Modules.Game.Control
             //操作状态下
             if (mState == InputState.Operate)
             {
-                BaseController temp = mObj.CurrentObj;//获取当前角色
+                ModelController temp = mObj.CurrentObj;//获取当前角色
 
                 Ray ray = Camera.main.ScreenPointToRay(position);
                 RaycastHit hit;
@@ -192,6 +215,22 @@ namespace Checkmate.Modules.Game.Control
                         else if (role.CurrentState == RoleState.PreSpell)
                         {
                             //预览施法
+                            List<Position> borders = SkillManager.Instance.GetBorderRange(mCurrentSkill, role.Position);
+                            
+
+                            DrawUtil.ClearAll();
+                            if (borders != null)
+                            {
+                                DrawUtil.DrawList(borders, 0);
+                            }
+                            if (borders.Contains(target))
+                            {
+                                List<Position> effects = SkillManager.Instance.GetEffectRange(mCurrentSkill, role.Position, target);
+                                if (effects != null)
+                                {
+                                    DrawUtil.DrawList(effects, 2);
+                                }
+                            }
                         }
                     }
                 }

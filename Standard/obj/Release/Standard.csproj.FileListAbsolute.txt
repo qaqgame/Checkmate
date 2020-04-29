@@ -1,0 +1,6 @@
+F:\Checkmate\Standard\Libs\Standard.dll
+F:\Checkmate\Standard\Libs\Standard.pdb
+F:\Checkmate\Standard\obj\Release\Standard.csprojAssemblyReference.cache
+F:\Checkmate\Standard\obj\Release\Standard.csproj.CopyComplete
+F:\Checkmate\Standard\obj\Release\Standard.dll
+F:\Checkmate\Standard\obj\Release\Standard.pdb
