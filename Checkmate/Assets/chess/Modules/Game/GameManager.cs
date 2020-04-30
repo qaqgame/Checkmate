@@ -58,6 +58,8 @@ namespace Checkmate.Modules.Game
 
             GameNetManager.Instance.Init(PlayerManager.Instance.PID);//初始化网络管理器
 
+            APManager.Instance.Init();
+
             InitEvent();
             //=============================
             //测试部分

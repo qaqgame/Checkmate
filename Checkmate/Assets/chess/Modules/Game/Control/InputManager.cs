@@ -132,7 +132,11 @@ namespace Checkmate.Modules.Game.Control
                                 {
                                     DrawUtil.ClearAll();
                                     //移动
-                                    role.SetState(RoleState.Move);
+                                    //
+                                    string msg = MoveManager.Instance.CreateMoveMsg(role, role.GetPosition(), target.GetPosition());
+                                    MoveManager.Instance.Move(msg);
+                                    //
+                                    // role.SetState(RoleState.Move);
                                     mState = InputState.Idle;
                                     GameEvent.onResetAll.Invoke();
                                 }

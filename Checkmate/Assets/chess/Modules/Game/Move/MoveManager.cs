@@ -116,6 +116,12 @@ public class MoveManager : Singleton<MoveManager>
         return null;
     }
 
+    public string CreateMoveMsg(RoleController rc, Position start, Position end)
+    {
+        string msg = "{\"OperationType\":\"Move\",\"OperationCnt\":{\"StartPosition\":\"" + start.ToString() + "\",\"MoveDirection\":[0,0,0,2,3],\"EndPosition\":\"" + end.ToString() + "\"},\"OperationObjID\":"+rc.RoleId+"}";
+        return msg;
+    }
+
     private void DoMove(Item item)
     {
         if(item != null && item.Path != null)

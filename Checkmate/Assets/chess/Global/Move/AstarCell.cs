@@ -7,7 +7,7 @@ using UnityEngine;
 public class AstarCell : MonoBehaviour
 {
     // Astar算法的G,H,F值。
-    public CellController Cellctrl;
+    // public CellController Cellctrl;
     public int Gvalue; 
     public int Hvalue;
     public int Fvalue {
@@ -27,12 +27,12 @@ public class AstarCell : MonoBehaviour
     public float pathmark = 0f; // 从出发地到此地的float类型的消耗
     public float mark = 0f;  // 当前格子需要的消耗
     public int label = 0;    // 从出发地到达此地的int类型消耗
-    public AstarCell nextWithSameFvalue { get; set; } = null;
+    public CellController nextWithSameFvalue { get; set; } = null;
     public AstarCell pathFrom = null;  // 指向前一位置
 
     public AstarCell(CellController _cellctrl, int gvalue, int hvalue)
     {
-        Cellctrl = _cellctrl;
+        // Cellctrl = _cellctrl;
         Gvalue = gvalue;
         Hvalue = hvalue;
     }

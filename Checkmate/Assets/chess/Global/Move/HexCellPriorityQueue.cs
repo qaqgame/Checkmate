@@ -34,10 +34,12 @@ public class HexCellPriorityQueue
             list.Add(null);
         }
 
-        if(list[priority] != null)
+        cell.Cell.GetComponent<AstarCell>().nextWithSameFvalue = list[priority];
+
+        /*if(list[priority] != null)
         {
             cell.Cell.GetComponent<AstarCell>().nextWithSameFvalue = list[priority].Cell.GetComponent<AstarCell>();
-        }
+        }*/
         list[priority] = cell;
     }
 
@@ -49,14 +51,17 @@ public class HexCellPriorityQueue
             CellController cell = list[minimum];
             if (cell != null)
             {
-                AstarCell next = cell.Cell.GetComponent<AstarCell>().nextWithSameFvalue;
-                if (next == null)
+                CellController next = cell.Cell.GetComponent<AstarCell>().nextWithSameFvalue;
+
+                /*if (next == null)
                 {
                     list[minimum] = null;
                 } else
                 {
-                    list[minimum] = next.Cellctrl;
-                }
+                    list[minimum] = next;
+                }*/
+
+                list[minimum] = next;
                 // list[minimum] = cell.Cell.GetComponent<AstarCell>().nextWithSameFvalue.Cellctrl;
                 return cell;
             }
@@ -67,7 +72,7 @@ public class HexCellPriorityQueue
     public void Change(CellController cell, int oldFvalue)
     {
         CellController current = list[oldFvalue];
-        CellController next = current.Cell.GetComponent<AstarCell>().nextWithSameFvalue.Cellctrl;
+        CellController next = current.Cell.GetComponent<AstarCell>().nextWithSameFvalue;
         if (current == cell)
         {
             list[oldFvalue] = next;
@@ -77,7 +82,7 @@ public class HexCellPriorityQueue
             while (next != cell)
             {
                 current = next;
-                next = current.Cell.GetComponent<AstarCell>().nextWithSameFvalue.Cellctrl;
+                next = current.Cell.GetComponent<AstarCell>().nextWithSameFvalue;
             }
             current.Cell.GetComponent<AstarCell>().nextWithSameFvalue = cell.Cell.GetComponent<AstarCell>().nextWithSameFvalue;
         }

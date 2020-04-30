@@ -11,7 +11,8 @@ using UnityEngine;
 public class AstarRoute : MonoBehaviour
 {
     public int[] directions = {0,1,2,3,4,5};
-    
+    public static HexCellPriorityQueue searchFrontier = new HexCellPriorityQueue();
+    public static List<HexCell> closeList = new List<HexCell>();
     
 
     public List<Position> AstarNavigatorE(RoleController rc, Position start, Position end)
@@ -25,18 +26,16 @@ public class AstarRoute : MonoBehaviour
 
     private List<Position> Astar(RoleController rc, CellController fromCellCtrl, CellController toCellCtrl)
     {
-        // new一个优先级队列
-        HexCellPriorityQueue searchFrontier = new HexCellPriorityQueue();
+        // clear
+        searchFrontier.Clear();
+        closeList.Clear();
 
-        List<HexCell> closeList = new List<HexCell>();
-        
         // 获取Cell的Position信息
         Position fromPos = fromCellCtrl.Position;
         Position endPos = toCellCtrl.Position;
-
+        
         AstarCell fromAstarCell = fromCellCtrl.Cell.GetComponent<AstarCell>();
         fromAstarCell.Gvalue = 0;
-        fromAstarCell.Cellctrl = fromCellCtrl;
         fromAstarCell.Hvalue = HexMapUtil.GetDistance(fromPos, endPos);
 
         searchFrontier.Enqueue(fromCellCtrl);
@@ -47,12 +46,11 @@ public class AstarRoute : MonoBehaviour
             CellController currentCtrl = searchFrontier.Dequeue();
             AstarCell currentAstarCell = currentCtrl.Cell.GetComponent<AstarCell>();
             HexCell current = currentCtrl.Cell;
-
+            
             if (currentCtrl.Cell == toCellCtrl.Cell)
             {
                 // retrace path
-                // TODO: 是否需要使用AstarCell作为参数
-                return RetracePath(currentCtrl.Cell.GetComponent<AstarCell>(), fromCellCtrl.Cell.GetComponent<AstarCell>());
+                return RetracePath(currentCtrl, fromCellCtrl);
             }
             for (int i = 0; i < 6; i++)
             {
@@ -60,15 +58,9 @@ public class AstarRoute : MonoBehaviour
                 {
                     continue;
                 }
-                // Debug.LogError(i);
                 CellController neighborCtrl = currentCtrl.GetNeighbor((HexDirection)i);
                 AstarCell neighborAstarCell = neighborCtrl.Cell.GetComponent<AstarCell>();
-                neighborAstarCell.Cellctrl = neighborCtrl;
                 
-                
-
-                // TerrainType terrain = neighborCtrl.TerrainType;
-                // int terrain = neighborCtrl.Terrain;
                 int terrain = neighborCtrl.Terrain;
 
                 int extra = rc.GetExtraMove(terrain);
@@ -88,11 +80,7 @@ public class AstarRoute : MonoBehaviour
                     neighborAstarCell.Gvalue = tmpGvalue;
                     neighborAstarCell.Hvalue = HexMapUtil.GetDistance(neighborCtrl.Position, endPos);
                     neighborAstarCell.pathFrom = currentAstarCell;
-
-                    // neighborCell.mark = (float)(neighborCell.Gvalue - neighborCell.pathFrom.Gvalue) / (float)(rc.role.basicProps.MovingRange + extra);
-                    // neighborCell.pathmark = neighborCell.pathFrom.pathmark + neighborCell.mark;
-                    // neighborCell.SetLable();
-
+                    
                     searchFrontier.Enqueue(neighborCtrl);
                     closeList.Add(neighborCtrl.Cell);
                 }
@@ -103,13 +91,9 @@ public class AstarRoute : MonoBehaviour
                         int oldFvalue = neighborAstarCell.Fvalue;
                         neighborAstarCell.Gvalue = tmpGvalue;
                         neighborAstarCell.pathFrom = currentAstarCell;
-
-                        // neighborCell.mark = (float)(neighborCell.Gvalue - neighborCell.pathFrom.Gvalue) / (float)(rc.role.basicProps.MovingRange + extra);
-                        // neighborCell.pathmark = neighborCell.pathFrom.pathmark + neighborCell.mark;
-                        // neighborCell.SetLable();
-
+                        
                         searchFrontier.Change(neighborCtrl, oldFvalue);
-                        // change
+            
                     }
                 }
             }
@@ -117,16 +101,16 @@ public class AstarRoute : MonoBehaviour
         return null;
     }
 
-    private List<Position> RetracePath(AstarCell currentCell, AstarCell fromCell)
+    private List<Position> RetracePath(CellController currentCell, CellController fromCell)
     {
-        List<Position> path = new List<Position>();
-        while (currentCell != fromCell)
+        List<Position> path = new List<Position>();path.Add(currentCell.Position);
+        AstarCell cell = currentCell.Cell.GetComponent<AstarCell>();
+        while (cell != fromCell.Cell.GetComponent<AstarCell>())
         {
-            path.Add(currentCell.Cellctrl.Position);
-            
-            currentCell = currentCell.pathFrom;
+            path.Add(cell.GetComponent<HexCell>().coordinates.ToPosition());
+            cell = cell.pathFrom;
         }
-        path.Add(fromCell.Cellctrl.Position);
+        path.Add(fromCell.Position);
 
         path.Reverse();
         return path;
@@ -136,8 +120,6 @@ public class AstarRoute : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // Init Map here
-        // map = GameObject.Find("Map").GetComponent<MapManager>();
         
     }
 

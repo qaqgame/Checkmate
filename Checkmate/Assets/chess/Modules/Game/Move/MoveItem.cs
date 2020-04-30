@@ -51,7 +51,7 @@ public class Item
         rc = _rc;
 
         // 准备移动状态
-        rc.SetState(RoleState.PreMove);
+        // rc.SetState(RoleState.PreMove);
     }
 }
 
@@ -78,7 +78,7 @@ public class MoveItem : MonoBehaviour
         for (int i = 1; i < item.Path.Count; i++)
         {
             // TODO: 移除当前位置的人物信息 : moveutil.RemoveCurRole()
-
+            // MapManager.Instance.GetCell(item.Path[i - 1]).Role = -1;
             Vector3 a = MapManager.Instance.GetCellWorldPosition(item.Path[i - 1]);
             Vector3 b = MapManager.Instance.GetCellWorldPosition(item.Path[i]);
             for (float t = 0f; t < 1f; t += Time.deltaTime * item.travelSpeed)
@@ -86,8 +86,9 @@ public class MoveItem : MonoBehaviour
                 item.rc.GetGameObject().transform.position = Vector3.Lerp(a, b, t);
                 yield return null;
             }
-            // TODO: 是否需要在移动时进行行动点消耗和战争迷雾的刷新
+            MapManager.Instance.GetCell(item.rc.Position).Role = -1;
             item.rc.Position = item.Path[i];
+            MapManager.Instance.GetCell(item.rc.Position).Role = item.rc.RoleId;
         }
         // 移动结束
         item.rc.SetState(RoleState.EndMove);
