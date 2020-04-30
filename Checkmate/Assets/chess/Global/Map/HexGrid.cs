@@ -35,30 +35,14 @@ namespace Checkmate.Game
         public int seed;//随机数种子
 
         private static List<FeatureData> mFeatureData;//特征的名称
+        private static List<EffectData> mEffectData;//所有已读取的效果
         private static List<Checkmate.Global.Data.TerrainData> mTerrainData;//地形数据
         private static Texture2DArray mTerrainTextures;//地形的贴图
 
-        private static FeatureManager mFeatureMng;//特征管理（列表管理）
-        private static EffectManager mEffectMng;//效果管理（列表管理)
 
         private Material mFeatureMat;//特征的着色材质
         private GameObject mFeatureRoot;//存储feature实例的根
         private const string MainTexVariableName = "_MainTex";
-        public static FeatureManager Features
-        {
-            get
-            {
-                return mFeatureMng;
-            }
-        }
-
-        public static EffectManager Effects
-        {
-            get
-            {
-                return mEffectMng;
-            }
-        }
 
         //获取目标索引地形的id
         public static int GetTerrainId(int idx)
@@ -87,10 +71,9 @@ namespace Checkmate.Game
             // hexMesh=GetComponentInChildren<HexMesh>();
             HexMetrics.noiseSource = noiseSource;
             mFeatureData = new List<FeatureData>();
+            mEffectData = new List<EffectData>();
             mTerrainData = new List<Global.Data.TerrainData>();
-            mFeatureMng = new FeatureManager();
             HexMetrics.featurePrefabs = new List<Transform>();
-            HexMetrics.featureEffects = new Dictionary<int, string>();
             cellShaderData = gameObject.AddComponent<HexCellShaderData>();
             mFeatureMat = Resources.Load<Material>("Map/Basic/Materials/Feature");
             mFeatureRoot = GameObject.Find("Features");
@@ -141,6 +124,7 @@ namespace Checkmate.Game
             DestroyAll();
             LoadFeatures(features);
             LoadTerrains(terrains);
+            LoadEffects(effects);
             HexMetrics.InitializeHashGrid(randomSeed);
             chunkCountX = chunkX;
             chunkCountZ = chunkZ;
@@ -291,18 +275,23 @@ namespace Checkmate.Game
                 }
             }
         }
-        //创建特征
+        //创建特征与效果
         private void CreateFeatures()
         {
             string path = Application.dataPath + "/Config/Features.json";
-            string ePath = Application.dataPath + "/Config/FeatureEffect.json";
+            string ePath = Application.dataPath + "/Config/Effects.json";
             HexMetrics.featurePrefabs.Clear();
-            HexMetrics.featureEffects.Clear();
             mFeatureData.Clear();
+            mEffectData.Clear();
             //创建时从配置文件中读取
             List<FeatureData> features = MapUtils.ParseFeatures(path);
+            List<EffectData> effects = MapUtils.ParseEffects(ePath);
             InitializeFeatures(features);
+            InitializeEffects(effects);
         }
+
+        //=============================
+        //特征相关
         private void LoadFeatures(List<FeatureData> features)
         {
             mFeatureData= features;
@@ -313,7 +302,7 @@ namespace Checkmate.Game
         private void InitializeFeatures(List<FeatureData> features)
         {
            
-            mFeatureMng.Init(features);
+            FeatureManager.Instance.Init(features);
             mFeatureData = features;
             string path = "Map/Features/";
             foreach (var f in features)
@@ -353,6 +342,23 @@ namespace Checkmate.Game
 
             }
         }
+
+        //==========================
+        //效果相关
+        private void LoadEffects(List<EffectData> effects)
+        {
+            mEffectData.Clear();
+            InitializeEffects(effects);
+        }
+
+        private void InitializeEffects(List<EffectData> effects)
+        {
+
+            EffectManager.Instance.Init(effects);
+            mEffectData = effects;
+        }
+        //===================================
+        //地形相关
         //创建地形
         private void CreateTerrains()
         {
@@ -448,6 +454,11 @@ namespace Checkmate.Game
             return mTerrainData;
         }
 
+        private List<EffectData> SaveEffect()
+        {
+            return mEffectData;
+        }
+
         //private void SaveTerrain(BinaryWriter writer)
         //{
         //    List<TerrainFormat> formats = new List<TerrainFormat>();
@@ -486,7 +497,7 @@ namespace Checkmate.Game
             data.terrains = SaveTerrain();
             data.features = SaveFeatures();
             Debug.Log("saved features:"+data.features.Count);
-            data.effects = new List<EffectData>();
+            data.effects = SaveEffect();
 
             List<MapCellData> tempCellData = new List<MapCellData>();
             for (int i = 0; i < cells.Length; ++i)
@@ -509,10 +520,11 @@ namespace Checkmate.Game
             Debug.Log("load features:"+features.Count);
             List<Checkmate.Global.Data.TerrainData> terrains = data.terrains;
             List<EffectData> effects = data.effects;
+            Debug.Log("load effects:" + effects.Count);
             //开始加载效果和地形列表
-            LoadData(features, effects);
+            //LoadData(features, effects);
 
-            CreateWorld(chunkX, chunkZ, seed,features,terrains,null );
+            CreateWorld(chunkX, chunkZ, seed,features,terrains,effects );
             for (int i = 0; i < cells.Length; ++i)
             {
                 cells[i].Load(data.cells[i]);
@@ -527,12 +539,11 @@ namespace Checkmate.Game
         //加载非渲染数据
         private void LoadData(List<FeatureData> features,List<EffectData> effects)
         {
-            mEffectMng = new EffectManager();
-            mFeatureMng = new FeatureManager();
+            
             //加载效果
-            mEffectMng.Init(effects);
+            EffectManager.Instance.Init(effects);
             //加载特征
-            mFeatureMng.Init(features);
+            FeatureManager.Instance.Init(features);
             
         }
     }

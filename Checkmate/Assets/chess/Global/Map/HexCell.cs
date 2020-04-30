@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using System.IO;
 using Checkmate.Global.Data;
 using Checkmate.Game.Controller;
+using Checkmate.Game.Feature;
 
 namespace Checkmate.Game
 {
@@ -855,6 +856,8 @@ namespace Checkmate.Game
             bool available = data.available;
             string extra = data.extraData;
             mController = new CellController(cost, available, this, extra);
+
+
         }
     }
 }

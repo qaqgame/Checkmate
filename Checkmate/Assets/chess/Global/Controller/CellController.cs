@@ -20,6 +20,8 @@ namespace Checkmate.Game.Controller
         private int mRole=-1;//当前的角色
 
 
+        private List<EffectTrack> effects=null;//该方格存在的效果
+
         public HexCell Cell
         {
             get { return mCell; }
@@ -29,17 +31,37 @@ namespace Checkmate.Game.Controller
         {
             get { return mRole; }
             set {
+                //原始存在角色，触发移除事件
                 if (mRole != -1)
                 {
                     RoleController role = RoleManager.Instance.GetRole(mRole);
                     MapManager.Instance.DecreaseVisibility(role);
+                    ExecuteEffect(EffectTrigger.Leave, role);
                 }
+                //角色进入.触发进入事件
                 if (value != -1)
                 {
                     RoleController role = RoleManager.Instance.GetRole(value);
                     MapManager.Instance.IncreaseVisibility(role);
+                    ExecuteEffect(EffectTrigger.Enter, role);
                 }
                 mRole = value;
+            }
+        }
+
+        private void ExecuteEffect(EffectTrigger trigger,RoleController role)
+        {
+            //遍历所有，如果满足触发以及回合冷却则执行
+            if (effects != null && effects.Count > 0)
+            {
+                foreach (var track in effects)
+                {
+                    if (track.Trigger == trigger && track.Cur >= track.Interval)
+                    {
+                        EffectManager.Instance.ExecuteEffect(track.Id, this, role);
+                        track.Cur = 0;
+                    }
+                }
             }
         }
 
@@ -53,6 +75,21 @@ namespace Checkmate.Game.Controller
             _cost = cost;
             _available = available;
             mCell = cell;
+
+            //如果存在特征加载效果
+            if (mCell.Feature >= 0)
+            {
+                FeatureData fd = FeatureManager.Instance.GetFeatureData(mCell.Feature);
+                if (fd.effectIdx != null && fd.effectIdx.Count > 0)
+                {
+                    effects = new List<EffectTrack>();
+                    foreach (var idx in fd.effectIdx)
+                    {
+                        EffectTrack track = EffectManager.Instance.InstanceEffect(idx);
+                        effects.Add(track);
+                    }
+                }
+            }
         }
 
         //控制器类别：地板
@@ -104,8 +141,8 @@ namespace Checkmate.Game.Controller
                 //获取特征
                 if (mCell.Feature >= 0)
                 {
-                    int fid = HexGrid.Features.GetFeatureId(mCell.Feature);
-                    IFeature temp = HexGrid.Features.GetFeature(fid);
+                    int fid = FeatureManager.Instance.GetFeatureId(mCell.Feature);
+                    IFeature temp = FeatureManager.Instance.GetFeature(fid);
                     //如果特征覆盖了地形
                     if (temp.OverwriteTerrain)
                     {

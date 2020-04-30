@@ -17,6 +17,12 @@ namespace Checkmate.Game
             return JsonConvert.DeserializeObject<List<FeatureData>>(content);
         }
 
+        public static List<EffectData> ParseEffects(string path)
+        {
+            string content = File.ReadAllText(path);
+            return JsonConvert.DeserializeObject<List<EffectData>>(content);
+        }
+
         public static List<TerrainData> ParseTerrains(string path)
         {
             string content = File.ReadAllText(path);

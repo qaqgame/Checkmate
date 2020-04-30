@@ -59,8 +59,7 @@ namespace Checkmate.Game
             0.4f,0.7f,1.0f
         };
         //特征的集合
-        public static List<Transform> featurePrefabs;//[第几个特征][第几级]
-        public static Dictionary<int, string> featureEffects;//特征对应的效果集合
+        public static List<Transform> featurePrefabs;//[第几个特征]
         public static float GetFeatureThresholds(int level)
         {
             return featureThresholds[level];

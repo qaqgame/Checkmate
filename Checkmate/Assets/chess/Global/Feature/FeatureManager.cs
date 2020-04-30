@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Checkmate.Game.Feature
 {
     //此类用于管理单元格的特征
-    public class FeatureManager
+    public class FeatureManager:Singleton<FeatureManager>
     {
         List<FeatureData> mUsedFeatures;//所有在当前地图中使用的feature
         DictionarySafe<int, IFeature> mLoadedFeatures;//所有要加载的feature
@@ -23,6 +23,16 @@ namespace Checkmate.Game.Feature
                 mLoadedFeatures.Add(f.id, LoadFeature(f.file));
             }
             return true;
+        }
+
+        /// <summary>
+        /// 获取feature的数据
+        /// </summary>
+        /// <param name="idx">索引</param>
+        /// <returns></returns>
+        public FeatureData GetFeatureData(int idx)
+        {
+            return mUsedFeatures[idx];
         }
 
         //根据当前的features索引获取对应的featuer的id

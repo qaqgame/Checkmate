@@ -21,7 +21,7 @@ namespace Checkmate.Game.Effect
         public int Id;//id
     }
     //该类用于管理所有的effect
-    public class EffectManager
+    public class EffectManager:Singleton<EffectManager>
     {
         List<Effect> mLoadedEffects;//所有加载过后的效果
         List<string> mLoadedEffectFile;//加载的效果文件
@@ -31,7 +31,7 @@ namespace Checkmate.Game.Effect
 
 
 
-        private string RootPath=Application.dataPath+"/Test";
+        private string RootPath=Application.dataPath+"/Test/TestEffect";
         //使用一个所有effect的列表进行初始化
         public bool Init(List<EffectData> effects)
         {
@@ -45,7 +45,7 @@ namespace Checkmate.Game.Effect
                 {
                     EffectTrack track = new EffectTrack();
                     track.Cur = track.Interval = e.cd;
-                    track.Trigger = (EffectTrigger)e.trigger;
+                    track.Trigger = (EffectTrigger)Enum.Parse(typeof(EffectTrigger),e.trigger);
 
                     //加载效果
                     //未包含则加载
@@ -86,14 +86,21 @@ namespace Checkmate.Game.Effect
             return result;
         }
 
-        public void ExecuteEffect(int id,CellController src)
+        public void ExecuteEffect(int id,CellController src,RoleController role=null)
         {
             EnvVariable env = new EnvVariable();
             env.Src = env.Obj = src;
             env.Center = src.Position;
-            if (src.HasRole)
+            if (role != null)
             {
-                env.Dst = RoleManager.Instance.GetRole(src.Role);
+                env.Dst = role;
+            }
+            else
+            {
+                if (src.HasRole)
+                {
+                    env.Dst = RoleManager.Instance.GetRole(src.Role);
+                }
             }
             
             Effect target = mAllEffects[id];

@@ -12,7 +12,7 @@ namespace Checkmate.Global.Data
     [ProtoContract]
     public class EffectData
     {
-        [ProtoMember(1)] public int trigger;//触发类型
+        [ProtoMember(1)] public string trigger;//触发类型
         [ProtoMember(2)] public int cd;//冷却时间
         [ProtoMember(3)] public string effect;//效果文件
     }

@@ -22,22 +22,6 @@ namespace Checkmate.Game.Map
         private HexGrid hexGrid;
 
 
-        public FeatureManager Features
-        {
-            get
-            {
-                return HexGrid.Features;
-            }
-        }
-
-        public EffectManager Effects
-        {
-            get
-            {
-                return HexGrid.Effects;
-            }
-        }
-
         //加载指定位置的地图文件
         public bool Init(HexGrid grid,string mapPath)
         {
