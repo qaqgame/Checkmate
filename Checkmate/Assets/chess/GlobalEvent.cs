@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Checkmate.Global.Data;
 using QGF.Event;
+using QGF.Network.FSPLite;
 
 namespace Assets.Chess
 {
@@ -15,5 +17,7 @@ namespace Assets.Chess
 
         public static QGFEvent onLoginSuccess = new QGFEvent();//登录事件
         public static QGFEvent<int, string> onLoginFailed = new QGFEvent<int, string>();//登录失败
+
+        public static QGFEvent<PlayerTeamData, uint,FSPParam> onGameStart = new QGFEvent<PlayerTeamData, uint,FSPParam>();//游戏开始事件
     }
 }

@@ -99,7 +99,8 @@ namespace QGF.Network.FSPLite.Client
         public void VerifyAuth()
         {
             Debuger.Log();
-            SendFSP(FSPCommand.AUTH,mPlayerId,0,mAuthId.ToString());
+            byte[] data=PBSerializer.NSerialize(mAuthId);
+            SendFSP(FSPCommand.AUTH,mPlayerId,0,data);
         }
 
 
@@ -282,12 +283,12 @@ namespace QGF.Network.FSPLite.Client
             mSystemSocket.SendTo(bytes, 0, len, SocketFlags.None, mRemoteEndPoint);
         }
         //发送
-        public bool SendFSP(int cmd,int curFrame,string content)
+        public bool SendFSP(int cmd,int curFrame,byte[] content)
         {
             return SendFSP(cmd, mPlayerId, curFrame, content);
         }
         //发送
-        public bool SendFSP(int cmd,uint playerId,int frame,string content)
+        public bool SendFSP(int cmd,uint playerId,int frame,byte[] content)
         {
 
             if (mIsRunning)

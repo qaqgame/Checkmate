@@ -142,6 +142,7 @@ namespace QGF.Unity.FGUI
         //==============
         //场景
         //===============
+        
         public void LoadScene<T>(string scene, Action onLoadComplete,string loadingPkg=null,string loadingCom=null) where T:FGUILoading,new()
         {
             ClearView();
@@ -167,7 +168,7 @@ namespace QGF.Unity.FGUI
                     if (loadingBar.HasBar)
                     {
                         double value = (loadingBar.MaxValue - loadingBar.MinValue) * progress + loadingBar.MinValue;
-                        loadingBar.SetValue(value, 0.3f);
+                        loadingBar.SetValue(value, 0.5f);
                     }
                 };
             }
@@ -303,6 +304,11 @@ namespace QGF.Unity.FGUI
                     {
                         //打开后将其从显示序列中移除
                         panel.Open(GRoot.inst,mCacheOpenPanel[i].arg);
+                        mCacheOpenPanel.RemoveAt(i);
+                    }
+                    //已打开则移除
+                    else if (panel.IsOpened)
+                    {
                         mCacheOpenPanel.RemoveAt(i);
                     }
                 }

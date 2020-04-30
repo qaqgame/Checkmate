@@ -1,8 +1,10 @@
-﻿using Checkmate.Global.Data;
+﻿using Assets.Chess;
+using Checkmate.Global.Data;
 using Checkmate.Services.Online;
 using QGF;
 using QGF.Event;
 using QGF.Network.Core.RPCLite;
+using QGF.Network.FSPLite;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -249,9 +251,11 @@ namespace Checkmate.Module
 
 
         [RPCNotify]
-        private void NotifyGameStart(GameStartParam param)
+        private void NotifyGameStart(PlayerTeamData team,uint pid,FSPParam param)
         {
-            Debuger.LogWarning("start game:{0}",param.ToString());
+            Debuger.LogWarning("start game:{0}",pid);
+            GlobalEvent.onGameStart.Invoke(team, pid,param);
+            
 
             //for (int i = 0; i < param.players.Count; i++)
             //{

@@ -17,7 +17,7 @@ namespace Checkmate.Module.UI
         GButton mReadyBtn, mExitBtn;
         PlayerList mPlayerList;//玩家列表ui
         GComboBox mTeamSelector;//队伍选择
-        GTextField mRoomTitle, mMapTitle, mModeInfo;
+        GTextField mRoomTitle, mMapTitle, mModeInfo,mCountInfo;
 
         RoomManager mManager;
         List<string> teamItems;//队伍选择项
@@ -35,6 +35,9 @@ namespace Checkmate.Module.UI
             mRoomTitle = mCtrlTarget.GetChild("Title").asTextField;
             mMapTitle = mCtrlTarget.GetChild("Map").asTextField;
             mModeInfo = mCtrlTarget.GetChild("Mode").asTextField;
+            mCountInfo = mCtrlTarget.GetChild("Count").asTextField;
+
+            mCountInfo.visible = false;
 
             mReadyBtn.onClick.Add(OnBtnReadyClicked);
             mExitBtn.onClick.Add(OnBtnExitClicked);
@@ -74,6 +77,16 @@ namespace Checkmate.Module.UI
             mTeamSelector.items = teamItems.ToArray();
 
             mTeamSelector.selectedIndex = (int)mManager.TeamId;
+
+            if (data.ready)
+            {
+                mCountInfo.visible = true;
+                mCountInfo.text = data.time.ToString();
+            }
+            else
+            {
+                mCountInfo.visible = false;
+            }
         }
 
         //准备按钮

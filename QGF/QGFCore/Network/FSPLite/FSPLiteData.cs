@@ -69,7 +69,7 @@ namespace QGF.Network.FSPLite
     {
         [ProtoMember(1)] public int cmd;//该消息类型
         [ProtoMember(2)] public uint playerId;//玩家id
-        [ProtoMember(3)] public string content;//操作内容
+        [ProtoMember(3)] public byte[] content;//操作内容
         [ProtoMember(4)] public int frameId;//当前帧
 
         public uint PlayerId
@@ -86,7 +86,7 @@ namespace QGF.Network.FSPLite
 
         public override string ToString()
         {
-            return string.Format("player:{0}, content:{1}, frame:{2}", playerId, content, frameId);
+            return string.Format("player:{0}, content:{1}, frame:{2}", playerId, content.Length, frameId);
         }
 
     }

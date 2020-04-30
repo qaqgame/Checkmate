@@ -4,6 +4,7 @@ using Checkmate.Game.Map;
 using Checkmate.Game.Role;
 using Checkmate.Modules.Game.Utils;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,33 +18,46 @@ using Checkmate.Game.Utils;
 using Checkmate.Game.Skill;
 using Checkmate.Modules.Game.Control;
 using Checkmate.Game.Player;
+using QGF.Network.General.Client;
+using Checkmate.Services.Online;
+using Checkmate.Services.Game;
+using QGF.Codec;
+using QGF.Network.FSPLite;
 
 namespace Checkmate.Modules.Game
 {
     public class GameManager:MonoBehaviour
     {
-        public FSPManager fsp;
-        public FSPClient client;
         public static GameManager Instance;
 
+        private static Action onInitFinished;
 
-
+        
 
         static readonly List<string> types = new List<string>()
         {
             RoleManager.prefabType
         };
 
-        private void Awake()
+        //初始化函数
+        public void Init(Action onInitComplete)
         {
-            Instance = this;
-            ObjectPool.Instance.Init(10, types);
+            onInitFinished = onInitComplete;
+            StartCoroutine(InitAll());
         }
-
-        private void Start()
+        private void OnInitFinished()
         {
+            if (onInitFinished != null)
+            {
+                onInitFinished.Invoke();
+            }
+        }
+        //初始化所有的协程
+        public IEnumerator InitAll()
+        {
+            ObjectPool.Instance.Init(10, types);
             HexGrid hexGrid = GameObject.Find("Map").GetComponentInChildren<HexGrid>();
-            MapManager.Instance.Init(hexGrid,Application.dataPath + "/Test/testMap.map");
+            MapManager.Instance.Init(hexGrid, Application.dataPath + "/Test/testMap.map");
 
             SkillManager.Instance.Init(Application.dataPath + "/Test");
             DrawUtil.Init();
@@ -56,15 +70,29 @@ namespace Checkmate.Modules.Game
 
             ExecuteUtil.Instance.Init(Application.dataPath + "/Test");
 
-            GameNetManager.Instance.Init(PlayerManager.Instance.PID);//初始化网络管理器
 
             APManager.Instance.Init();
 
             InitEvent();
+
+            OnInitFinished();
+            yield return true;
+        }
+
+
+        private void Awake()
+        {
+            Instance = this;
+            
+        }
+
+        private void Start()
+        {
+            
             //=============================
             //测试部分
-            InitTestPlayer();
-            GameNetManager.Instance.Start(true);
+            //InitTestPlayer();
+            
 
             RoleData alice = JsonConvert.DeserializeObject<RoleData>(File.ReadAllText(Application.dataPath + "/Test/Alice.json"));
             AddRole(alice);
@@ -93,16 +121,27 @@ namespace Checkmate.Modules.Game
         //============================
         public void InitTestPlayer()
         {
-            MaskData data = new MaskData();
-            data.pid = 1;
-            data.enemyMask = 0x00ff;
-            data.friendMask = 0xff00;
-            PlayerTeamData pd = new PlayerTeamData();
-            pd.masks = new List<MaskData>();
-            pd.masks.Add(data);
+            //MaskData data = new MaskData();
+            //data.pid = 1;
+            //data.enemyMask = 0x00ff;
+            //data.friendMask = 0xff00;
+            //PlayerTeamData pd = new PlayerTeamData();
+            //pd.masks = new List<MaskData>();
+            //pd.masks.Add(data);
 
-            PlayerManager.Instance.Init(pd);
-            PlayerManager.Instance.PID = 1;
+            //PlayerManager.Instance.Init(pd);
+            //PlayerManager.Instance.PID = 1;
+        }
+
+        //初始化player数据
+        public void InitPlayer(PlayerTeamData data,uint pid,FSPParam param)
+        {
+            PlayerManager.Instance.Init(data);
+            PlayerManager.Instance.PID = pid;
+            GameNetManager.Instance.Init(pid);//初始化网络管理器
+            GameNetManager.Instance.Start(param);
+            GameNetManager.Instance.SetActionListener(HandleAction);
+            GameNetManager.Instance.StartGame();
         }
 
         // Test move
@@ -135,6 +174,19 @@ namespace Checkmate.Modules.Game
             //}
         }
         //=================================
+
+        //消息处理分发函数
+        private void HandleAction(byte[] message)
+        {
+            GameActionData action= PBSerializer.NDeserialize<GameActionData>(message);
+            switch (action.OperationType)
+            {
+                case GameAction.Move:
+                    {
+                        return;
+                    }
+            }
+        }
 
         public void AddRole(RoleData data)
         {

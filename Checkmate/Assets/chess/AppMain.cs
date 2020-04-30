@@ -7,6 +7,9 @@ using QGF;
 using QGF.Unity.FGUI;
 using Checkmate.Services.Version;
 using Checkmate.Services.Online;
+using Checkmate.Global.Data;
+using Checkmate.Modules.Game;
+using QGF.Network.FSPLite;
 
 namespace Assets.Chess
 {
@@ -113,9 +116,33 @@ namespace Assets.Chess
             GlobalEvent.onLoginSuccess += OnLoginSuccess;
             GlobalEvent.onLoginFailed += OnLoginFailed;
 
+            //初始化游戏开始事件
+            GlobalEvent.onGameStart += OnGameSatrt;
+
             //example
             ModuleManager.Instance.CreateModule("ExampleAModule");
             ModuleManager.Instance.ShowModule("ExampleAModule");
+        }
+
+
+        //==========================================
+        //事件处理函数
+        private void OnGameSatrt(PlayerTeamData team,uint pid, FSPParam param)
+        {
+            //加载场景
+            FGUIManager.Instance.LoadScene<DefaultLoading>("Game", () =>
+            {
+                LoadGameSource();
+                GameManager.Instance.InitPlayer(team, pid, param);
+            }, "Login", "AppLoadingPanel");
+        }
+
+        private void LoadGameSource()
+        {
+            AppLoading.Show("加载资源");
+            GameManager.Instance.Init(() => {
+                AppLoading.Close();
+            });
         }
 
         private void OnLoginSuccess()
@@ -149,6 +176,8 @@ namespace Assets.Chess
             FGUIManager.Instance.CloseLoading("Login.LoadPanel");
             //显示错误信息
         }
+
+        //==========================================
 
         private void Update()
         {

@@ -1,4 +1,5 @@
-﻿using QGF.Common;
+﻿using QGF.Codec;
+using QGF.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,11 +13,11 @@ namespace QGF.Network.FSPLite.Client
         public string LOG_TAG { get; private set; }
 
         //来自帧同步服务器的事件
-        public event Action<string> onGameBegin;
-        public event Action<string> onRoundBegin;
-        public event Action<string> onControlStart;
-        public event Action<string> onRoundEnd;
-        public event Action<string> onGameEnd;
+        public event Action<byte[]> onGameBegin;
+        public event Action<byte[]> onRoundBegin;
+        public event Action<byte[]> onControlStart;
+        public event Action<byte[]> onRoundEnd;
+        public event Action<byte[]> onGameEnd;
         public event Action<uint> onGameExit;
 
         //基础参数
@@ -150,7 +151,7 @@ namespace QGF.Network.FSPLite.Client
             SendFSP(FSPCommand.GAME_BEGIN, "");
         }
 
-        private void Handle_GameBegin(string content)
+        private void Handle_GameBegin(byte[] content)
         {
             Debuger.Log(content);
             mGameState = FSPGameState.GameBegin;
@@ -166,7 +167,7 @@ namespace QGF.Network.FSPLite.Client
             SendFSP(FSPCommand.ROUND_BEGIN, "");
         }
 
-        private void Handle_RoundBegin(string content)
+        private void Handle_RoundBegin(byte[] content)
         {
             Debuger.Log(content);
             mGameState = FSPGameState.RoundBegin;
@@ -194,7 +195,7 @@ namespace QGF.Network.FSPLite.Client
             Debuger.Log();
             SendFSP(FSPCommand.CONTROL_START, "");
         }
-        private void Handle_ControlStart(string content)
+        private void Handle_ControlStart(byte[] content)
         {
             Debuger.Log(content);
             mGameState = FSPGameState.ControlStart;
@@ -209,7 +210,7 @@ namespace QGF.Network.FSPLite.Client
             Debuger.Log();
             SendFSP(FSPCommand.ROUND_END, "");
         }
-        private void Handle_RoundEnd(string content)
+        private void Handle_RoundEnd(byte[] content)
         {
             Debuger.Log(content);
             mGameState = FSPGameState.RoundEnd;
@@ -224,7 +225,7 @@ namespace QGF.Network.FSPLite.Client
             Debuger.Log();
             SendFSP(FSPCommand.GAME_END, "");
         }
-        private void Handle_GameEnd(string content)
+        private void Handle_GameEnd(byte[] content)
         {
             Debuger.Log(content);
             mGameState = FSPGameState.GameEnd;
@@ -255,25 +256,26 @@ namespace QGF.Network.FSPLite.Client
 
         //===========================
         //发送FSP
-        public void SendFSP(int cmd, string content)
+        public void SendFSP<T>(int cmd, T content)
         {
             if (!mIsRunning)
             {
                 return;
             }
+            byte[] data = PBSerializer.NSerialize(content);
 
             if (mParam.useLocal)
             {
-                SendFSPLocal(cmd, content);
+                SendFSPLocal(cmd, data);
             }
             else
             {
-                mClient.SendFSP( cmd, mCurrentFrameIndex, content);
+                mClient.SendFSP( cmd, mCurrentFrameIndex, data);
             }
         }
 
         //本地模拟发送
-        private void SendFSPLocal(int cmd, string content)
+        private void SendFSPLocal(int cmd, byte[] content)
         {
 
             if (mNextLocalFrame == null || mNextLocalFrame.frameId != mCurrentFrameIndex + 1)

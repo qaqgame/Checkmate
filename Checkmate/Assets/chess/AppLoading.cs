@@ -19,6 +19,7 @@ namespace Assets.chess
                 {
                     mLoadingPanel.SetName(name);
                 }
+                mLoadingPanel.SetValue(mLoadingPanel.MinValue, 0);
             }
         }
 

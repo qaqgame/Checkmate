@@ -28,6 +28,12 @@ namespace Checkmate.Global.Data
 
         [ProtoMember(7)]
         public List<int> teams;//每个队伍的数目 
+
+        [ProtoMember(8)]
+        public bool ready;//预备开始
+
+        [ProtoMember(9)]
+        public int time;//倒计时
         public override string ToString()
         {
             return string.Format("<id:{0},name:{1},players:{2},maxPlayers:{3}>", id, name, players.ToListString(),maxPlayerCount);

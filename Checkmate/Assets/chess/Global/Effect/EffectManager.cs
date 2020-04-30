@@ -29,12 +29,16 @@ namespace Checkmate.Game.Effect
 
         List<Effect> mAllEffects;//所有在使用的效果
 
-
+        private List<EffectTrack> mTimelyEffect;//所有需要定时执行的效果
+        private List<CellController> mTimelyCell;//需要定时执行效果的方格
 
         private string RootPath=Application.dataPath+"/Test/TestEffect";
         //使用一个所有effect的列表进行初始化
         public bool Init(List<EffectData> effects)
         {
+            mTimelyCell = new List<CellController>();
+            mTimelyEffect = new List<EffectTrack>();
+
             mLoadedEffects = new List<Effect>();
             mLoadedEffectFile = new List<string>();
             mLoadedTrack = new List<EffectTrack>();
@@ -83,7 +87,16 @@ namespace Checkmate.Game.Effect
 
             result.Id = instanceId;
 
+            
+
             return result;
+        }
+
+        //添加定时效果
+        public void AddTimelyEffect(EffectTrack track, CellController cell)
+        {
+            mTimelyEffect.Add(track);
+            mTimelyCell.Add(cell);
         }
 
         public void ExecuteEffect(int id,CellController src,RoleController role=null)
@@ -109,6 +122,23 @@ namespace Checkmate.Game.Effect
             target.Execute();
             GameEnv.Instance.Pop();
         }
+
+        //回合开始执行地面效果
+        public void NextTurn()
+        {
+            for(int i = 0; i < mTimelyEffect.Count; ++i)
+            {
+                mTimelyEffect[i].Cur++;
+                if (mTimelyEffect[i].Cur >= mTimelyEffect[i].Interval)
+                {
+                    int id = mTimelyEffect[i].Id;
+                    CellController cell = mTimelyCell[i];
+                    ExecuteEffect(id,cell);
+                    mTimelyEffect[i].Cur = 0;
+                }
+            }
+        }
+
 
         private Effect LoadEffect(string path)
         {
