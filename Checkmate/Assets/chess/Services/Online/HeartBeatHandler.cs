@@ -53,7 +53,7 @@ namespace Checkmate.Services.Online
                 mLastHeartBeatTime = current;
 
                 HeartBeatReq req = new HeartBeatReq();
-                req.ping = (ushort)mPing;
+                req.ping = mPing;
                 req.timestamp = (uint)TimeUtils.GetTotalMillisecondsSince1970();
                 mNet.Send<HeartBeatReq, HeartBeatRsp>(ProtoCmd.HeartbeatReq, req, OnHeartBeatRsp, 15, OnHeartBeatError);
             }

@@ -9,7 +9,7 @@ namespace Checkmate.Global.Proto
     [ProtoContract]
     public class HeartBeatReq
     {
-        [ProtoMember(1)] public ushort ping;
+        [ProtoMember(1)] public uint ping;
         [ProtoMember(2)] public uint timestamp;
     }
 

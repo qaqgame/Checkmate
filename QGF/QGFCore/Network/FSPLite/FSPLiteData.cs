@@ -54,6 +54,7 @@ namespace QGF.Network.FSPLite
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("\n{0}host:{1}:{2}", prefix, host, port);
+            sb.AppendFormat("\n{0}sid:{1}", prefix, sid);
             sb.AppendFormat("\n{0}serverFrameInterval:{1}", prefix, serverFrameInterval);
             sb.AppendFormat("\n{0}clientFrameRateMultiple:{1}", prefix, clientFrameRateMultiple);
             sb.AppendFormat("\n{0}serverTimeout:{1}", prefix, serverTimeout);

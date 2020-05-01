@@ -62,7 +62,7 @@ namespace QGF.Network.FSPLite.Client
             SendHandler.handler += HandleKcpSend;
 
             //初始化kcp
-            mKcp = new Kcp(1, SendHandler);
+            mKcp = new Kcp(2, SendHandler);
             mKcp.NoDelay(1, 10, 2, 1);
             mKcp.WndSize(128, 128);
         }
@@ -305,6 +305,7 @@ namespace QGF.Network.FSPLite.Client
 
 
                 int len = PBSerializer.NSerialize(mTempSendData, mSendBufferTemp);
+                Debuger.Log("send fsp with sid:{0}", mTempSendData.sid);
                 return len>0&&mKcp.Send(mSendBufferTemp) >= 0;
             }
 

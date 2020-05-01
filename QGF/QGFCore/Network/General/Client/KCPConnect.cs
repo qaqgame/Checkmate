@@ -165,6 +165,7 @@ namespace QGF.Network.General.Client
                 }
                 //取出数据
                 byte[] dst = new byte[cnt];
+                Debuger.Log("receive data size:{0}", cnt);
                 Buffer.BlockCopy(mReceiveBufferTemp, 0, dst, 0, cnt);
                 mRecvBufQueue.Push(dst);
 
@@ -179,7 +180,7 @@ namespace QGF.Network.General.Client
             while (!mRecvBufQueue.Empty())
             {
                 var recvBufferRaw = mRecvBufQueue.Pop();
-
+                Debuger.Log("into kcp size:{0}", recvBufferRaw.Length);
                 //放入kcp
                 int ret = mKcp.Input(recvBufferRaw);
                 //收到的包不正确时

@@ -23,6 +23,7 @@ using Checkmate.Services.Online;
 using Checkmate.Services.Game;
 using QGF.Codec;
 using QGF.Network.FSPLite;
+using QGF;
 
 namespace Checkmate.Modules.Game
 {
@@ -139,6 +140,7 @@ namespace Checkmate.Modules.Game
             PlayerManager.Instance.Init(data);
             PlayerManager.Instance.PID = pid;
             GameNetManager.Instance.Init(pid);//初始化网络管理器
+            Debuger.Log("pid:{0},param:{1}", pid, param.ToString());
             GameNetManager.Instance.Start(param);
             GameNetManager.Instance.SetActionListener(HandleAction);
             GameNetManager.Instance.StartGame();

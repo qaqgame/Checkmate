@@ -105,16 +105,16 @@ namespace Checkmate.Services.Online
             Connect();
 
             LoginProto req = new LoginProto();
-            req.id = 2;
+            req.id = 0;
             req.name = name;
 
-            m_net.Send<LoginProto, LoginRsp>(ProtoCmd.LoginReq, req, OnLoginRsp, 10, OnLoginErr);
+            m_net.Send<LoginProto, LoginRsp>(ProtoCmd.LoginReq, req, OnLoginRsp, 30, OnLoginErr);
         }
 
         private void OnLoginRsp(LoginRsp rsp)
         {
             Debuger.Log("ret:{0},msg:{1}", rsp.ret.ToString(), rsp.userData.ToString());
-            if (rsp.ret.code == 0)
+            if (rsp.ret.code == -1)
             {
                 //userdata赋值
                 mMainUserData = rsp.userData;

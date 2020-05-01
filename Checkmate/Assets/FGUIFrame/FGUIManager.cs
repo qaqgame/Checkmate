@@ -143,6 +143,17 @@ namespace QGF.Unity.FGUI
         //场景
         //===============
         
+        public void LoadScene(string scene,Action onStartLoad,Action onLoadComplete,Action<float> onLoading)
+        {
+            ClearView();
+            onStartLoad.Invoke();
+
+            onSceneLoadFinished = onLoadComplete;
+            onSceneLoading = onLoading;
+
+            mSceneManager.EnterSceneAsync(scene, OnSceneLoadFinished, OnSceneLoading);
+        }
+
         public void LoadScene<T>(string scene, Action onLoadComplete,string loadingPkg=null,string loadingCom=null) where T:FGUILoading,new()
         {
             ClearView();
@@ -198,17 +209,16 @@ namespace QGF.Unity.FGUI
             }
         }
 
-
-        //打开某个UI
-        public T Open<T>(string name,string package,object arg = null) where T : FGUIPanel,new()
+        //加载某个UI
+        public T LoadToMemory<T>(string name,string package) where T : FGUIPanel, new()
         {
             string realPkgName = package;
             //检查有没有加载过该包
             if (!mLoadedPkgFileName.ContainsKey(package))
             {
                 //未加载则加入
-                realPkgName=FGUIPackageManager.Instance.LoadPackage(package);
-                mLoadedPkgFileName.Add(package,realPkgName);
+                realPkgName = FGUIPackageManager.Instance.LoadPackage(package);
+                mLoadedPkgFileName.Add(package, realPkgName);
             }
             else
             {
@@ -216,15 +226,26 @@ namespace QGF.Unity.FGUI
                 realPkgName = mLoadedPkgFileName[package];
             }
             string idxName = package + "." + name;
-            Type type;
-            
+
+            //有则获取
             T ui = mListLoadedPanel[idxName] as T;
             //没有则尝试加载
             if (ui == null)
             {
                 Debuger.LogWarning("not found, start to load");
-                ui = Load<T>(package,realPkgName,name);
+                ui = Load<T>(package, realPkgName, name);
             }
+
+            return ui;
+        }
+
+        //打开某个UI
+        public T Open<T>(string name,string package,object arg = null) where T : FGUIPanel,new()
+        {
+            T ui = LoadToMemory<T>(name, package);
+
+            string idxName = package + "." + name;
+
             //有则调出
             if (ui != null)
             {

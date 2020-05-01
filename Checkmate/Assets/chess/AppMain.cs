@@ -106,6 +106,9 @@ namespace Assets.Chess
             FGUISceneManager sceneMng = GetComponent<FGUISceneManager>();
             sceneMng.Init();
             FGUIManager.Instance.Init("ui/",sceneMng);
+            //初始化加载页面
+            AppLoading.Init();
+
             //初始化在线管理
             OnlineManager.Instance.Init();
             
@@ -117,7 +120,7 @@ namespace Assets.Chess
             GlobalEvent.onLoginFailed += OnLoginFailed;
 
             //初始化游戏开始事件
-            GlobalEvent.onGameStart += OnGameSatrt;
+            GlobalEvent.onGameStart += OnGameStart;
 
             //example
             ModuleManager.Instance.CreateModule("ExampleAModule");
@@ -127,23 +130,43 @@ namespace Assets.Chess
 
         //==========================================
         //事件处理函数
-        private void OnGameSatrt(PlayerTeamData team,uint pid, FSPParam param)
+        private void OnGameStart(PlayerTeamData team,uint pid, FSPParam param)
         {
+            Debug.Log("start load game");
+
             //加载场景
-            FGUIManager.Instance.LoadScene<DefaultLoading>("Game", () =>
+            FGUIManager.Instance.LoadScene("Game", OnGameSceneLoadStart, () =>
             {
                 LoadGameSource();
                 GameManager.Instance.InitPlayer(team, pid, param);
-            }, "Login", "AppLoadingPanel");
+            }, OnGameSceneLoading);
+            ////加载场景
+            //FGUIManager.Instance.LoadScene<DefaultLoading>("Game", () =>
+            //{
+                
+            //}, "Login", "AppLoadingPanel");
         }
 
         private void LoadGameSource()
         {
-            AppLoading.Show("加载资源");
+            AppLoading.Show("加载资源中");
+            AppLoading.Update("加载资源中", 1);
             GameManager.Instance.Init(() => {
                 AppLoading.Close();
+                Debug.Log("load game finished");
             });
         }
+
+        private void OnGameSceneLoadStart()
+        {
+            AppLoading.Show("地图加载中...");
+        }
+
+        private void OnGameSceneLoading(float progress)
+        {
+            AppLoading.Update("地图加载中...", progress);
+        }
+
 
         private void OnLoginSuccess()
         {
