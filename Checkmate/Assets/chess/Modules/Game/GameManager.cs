@@ -68,11 +68,13 @@ namespace Checkmate.Modules.Game
             MoveManager.Instance.Init();
 
             GameEnv.Instance.Init();//初始化环境
+            Debuger.Log("env init");
 
             ExecuteUtil.Instance.Init(Application.dataPath + "/Test");
-
+            Debuger.Log("execute init");
 
             APManager.Instance.Init();
+            Debuger.Log("ap init");
 
             InitEvent();
 
@@ -100,12 +102,13 @@ namespace Checkmate.Modules.Game
             alice.id = 1;
             alice.model = "Bob";
             alice.name = "Bob";
+            alice.team = 0;
             alice.position.x = 2;
             alice.position.y = -4;
             alice.position.z = 2;
             AddRole(alice);
             Debug.Log("extra:" + RoleManager.Instance.GetRole(1).GetValue("Current.test"));
-            RemoveRole(0);
+ 
 
             RoleController role = RoleManager.Instance.GetRole(1);
             Debug.Log(role.Name);
@@ -140,19 +143,12 @@ namespace Checkmate.Modules.Game
             PlayerManager.Instance.Init(data);
             PlayerManager.Instance.PID = pid;
             GameNetManager.Instance.Init(pid);//初始化网络管理器
-            Debuger.Log("pid:{0},param:{1}", pid, param.ToString());
+            Debuger.Log("pid:suib{0},param:{1}", pid, param.ToString());
             GameNetManager.Instance.Start(param);
             GameNetManager.Instance.SetActionListener(HandleAction);
             GameNetManager.Instance.StartGame();
         }
 
-        // Test move
-        public void TestMoveObj()
-        {
-            RoleController rc = RoleManager.Instance.GetRole(1);
-            string test = "{\"OperationType\":\"Move\",\"OperationCnt\":{\"StartPosition\":\"" + "(2,-1,-1)" + "\",\"MoveDirection\":[0,0,0,2,3],\"EndPosition\":\"" + "(2,2,2)" + "\"},\"OperationObjID\":1}";
-            MoveManager.Instance.Move(test);
-        }
 
 
         // Update: Update is Called pear frame
@@ -185,6 +181,12 @@ namespace Checkmate.Modules.Game
             {
                 case GameAction.Move:
                     {
+                        MoveManager.Instance.Execute(action.OperationCnt);
+                        return;
+                    }
+                case GameAction.Skill:
+                    {
+                        SkillManager.Instance.Execute(action.OperationCnt);
                         return;
                     }
             }

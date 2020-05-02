@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,11 +9,16 @@ namespace Checkmate.Global.Data
 {
     public enum GameAction
     {
-        Move
+        Move,
+        Skill
     }
+
+    [ProtoContract]
     public class GameActionData
     {
+        [ProtoMember(1)]
         public GameAction OperationType;//操作类型
+        [ProtoMember(2)]
         public byte[] OperationCnt;//操作内容
     }
 }

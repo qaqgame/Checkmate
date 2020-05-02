@@ -306,7 +306,9 @@ namespace QGF.Network.FSPLite.Client
 
                 int len = PBSerializer.NSerialize(mTempSendData, mSendBufferTemp);
                 Debuger.Log("send fsp with sid:{0}", mTempSendData.sid);
-                return len>0&&mKcp.Send(mSendBufferTemp) >= 0;
+                Span<byte> memory = mSendBufferTemp;
+
+                return len>0&&mKcp.Send(memory.Slice(0,len)) >= 0;
             }
 
             return false;

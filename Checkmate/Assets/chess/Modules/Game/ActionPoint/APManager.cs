@@ -11,8 +11,7 @@ public class APManager : Singleton<APManager>
     public SinglePlayerAP elementAP;
     public void Init()
     {
-        elementAP = GameObject.Find("GameManager").GetComponent<SinglePlayerAP>();
-        elementAP.Init();
+        elementAP = new SinglePlayerAP(20, 20);
         onAPChanged = new QGFEvent<SinglePlayerAP>();
     }
 

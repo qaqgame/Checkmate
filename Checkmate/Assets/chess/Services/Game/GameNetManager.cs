@@ -1,4 +1,8 @@
-﻿using QGF.Common;
+﻿using Checkmate.Game;
+using Checkmate.Game.Controller;
+using Checkmate.Global.Data;
+using QGF.Codec;
+using QGF.Common;
 using QGF.Network.FSPLite;
 using QGF.Network.FSPLite.Client;
 using QGF.Network.General.Client;
@@ -7,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Checkmate.Game.Skill.SkillManager;
 
 namespace Checkmate.Services.Game
 {
@@ -20,6 +25,9 @@ namespace Checkmate.Services.Game
 
         const int ActionCmd = 7;
 
+
+        GameActionData mTempAction = new GameActionData();
+        v3i mTempPos = new v3i();
         public void SetActionListener(Action<byte[]> actionHandler)
         {
             onActionRecv = actionHandler;
@@ -49,7 +57,35 @@ namespace Checkmate.Services.Game
             mFSP.SendGameBegin();
         }
 
-        //
+        //移动
+        public void Move(RoleController role,Position target)
+        {
+            byte[] content = MoveManager.Instance.CreateMoveMsg(role, role.Position, target);
+            SendAction(GameAction.Move, content);
+        }
+
+        public void Skill(int skillId,RoleController role,Position center)
+        {
+            mTempPos.x = center.x;
+            mTempPos.y = center.y;
+            mTempPos.z = center.z;
+
+            SkillMessage content = new SkillMessage();
+            content.center = mTempPos;
+            content.roleId = role.RoleId;
+            content.skillId = skillId;
+
+            byte[] cnt = PBSerializer.NSerialize(content);
+            SendAction(GameAction.Skill, cnt);
+
+        }
+
+        private void SendAction(GameAction actionType,byte[] content)
+        {
+            mTempAction.OperationType = actionType;
+            mTempAction.OperationCnt = content;
+            mFSP.SendFSP(1, mTempAction);
+        }
 
         public void Stop()
         {

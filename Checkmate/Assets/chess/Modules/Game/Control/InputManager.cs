@@ -4,6 +4,7 @@ using Checkmate.Game.Map;
 using Checkmate.Game.Player;
 using Checkmate.Game.Skill;
 using Checkmate.Modules.Game.Utils;
+using Checkmate.Services.Game;
 using QGF.Common;
 using System;
 using System.Collections.Generic;
@@ -112,7 +113,7 @@ namespace Checkmate.Modules.Game.Control
                         //点击所属角色,且可操作进入operate状态
                         if (target.Type == 2)
                         {
-                            if ((target as RoleController).CanOperate&&(PlayerManager.Instance.PID==(target as RoleController).Team)
+                            if ((target as RoleController).CanOperate&&(PlayerManager.Instance.PID==(target as RoleController).Team))
                             {
                                 mState = InputState.Operate;
                                 (target as RoleController).SetState(RoleState.PreMove);
@@ -134,8 +135,7 @@ namespace Checkmate.Modules.Game.Control
                                     DrawUtil.ClearAll();
                                     //移动
                                     //
-                                    byte[] msg = MoveManager.Instance.CreateMoveMsg(role, role.GetPosition(), target.GetPosition());
-                                    MoveManager.Instance.Execute(msg);
+                                    GameNetManager.Instance.Move(role, target.GetPosition());
                                     //
                                     // role.SetState(RoleState.Move);
                                     mState = InputState.Idle;
@@ -149,7 +149,7 @@ namespace Checkmate.Modules.Game.Control
                                         //施法
                                         role.SetState(RoleState.Spell);
 
-                                        SkillManager.Instance.ExecuteSkill(mCurrentSkill, role, target.GetPosition());
+                                        GameNetManager.Instance.Skill(mCurrentSkill, role, target.GetPosition());
 
                                         role.SetState(RoleState.Idle);
                                         mState = InputState.Idle;

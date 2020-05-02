@@ -149,7 +149,6 @@ namespace Assets.Chess
 
         private void LoadGameSource()
         {
-            AppLoading.Show("加载资源中");
             AppLoading.Update("加载资源中", 1);
             GameManager.Instance.Init(() => {
                 AppLoading.Close();
