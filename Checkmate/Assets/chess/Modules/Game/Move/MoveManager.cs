@@ -7,22 +7,27 @@ using Checkmate.Game.Controller;
 using Checkmate.Game.Map;
 using Checkmate.Game.Role;
 using QGF.Common;
+using ProtoBuf;
+using QGF.Codec;
 
 // 操作消息中的移动消息
+[ProtoContract]
 public struct MoveInfo
 {
-    public string StartPosition;
-    public int[] MoveDirection;
-    public string EndPosition;
+    [ProtoMember(1)] public string StartPosition;
+    [ProtoMember(2)] public string EndPosition;
+    [ProtoMember(3)] public int OperationObjID;
 }
 
 // 发送过来的操作消息
+
+/*[ProtoContract]
 public struct OperateInfo<T>
 {
-    public string OperationType;
-    public T OperationCnt;
-    public int OperationObjID;
-}
+    [ProtoMember(1)]public string OperationType;
+    [ProtoMember(2)] public T OperationCnt;
+    [ProtoMember(3)] public int OperationObjID;
+}*/
 
 
 public class MoveManager : Singleton<MoveManager>
@@ -48,16 +53,18 @@ public class MoveManager : Singleton<MoveManager>
         astarRoute = null;
     }
 
-    public void Move(string msg)
+    public void Execute(byte[] msg)
     {
         // 解析json
-        OperateInfo<MoveInfo> Opn = JsonConvert.DeserializeObject<OperateInfo<MoveInfo>>(msg);
+        // OperateInfo<MoveInfo> Opn = JsonConvert.DeserializeObject<OperateInfo<MoveInfo>>(msg);
+        MoveInfo Opn = PBSerializer.NDeserialize<MoveInfo>(msg);
+
         // 获取gameobject
         RoleController rc = RoleManager.Instance.GetRole(Opn.OperationObjID);
 
-        Opn.OperationCnt.MoveDirection = null;
-        Position start = Position.Parse(Opn.OperationCnt.StartPosition);
-        Position end = Position.Parse(Opn.OperationCnt.EndPosition);
+        // Opn.OperationCnt.MoveDirection = null;
+        Position start = Position.Parse(Opn.StartPosition);
+        Position end = Position.Parse(Opn.EndPosition);
         List<Position> path = astarRoute.AstarNavigatorE(rc, start, end);
         if (path == null)
         {
@@ -71,7 +78,7 @@ public class MoveManager : Singleton<MoveManager>
             Opn.OperationCnt.EndPosition = MoveRangePath(path, obj);
         }*/
 
-        moveItem.SetUp(rc, path, Opn.OperationCnt.StartPosition, Opn.OperationCnt.EndPosition);
+        moveItem.SetUp(rc, path, Opn.StartPosition, Opn.EndPosition);
         // 
     }
 
@@ -116,9 +123,16 @@ public class MoveManager : Singleton<MoveManager>
         return null;
     }
 
-    public string CreateMoveMsg(RoleController rc, Position start, Position end)
+    public byte[] CreateMoveMsg(RoleController rc, Position start, Position end)
     {
-        string msg = "{\"OperationType\":\"Move\",\"OperationCnt\":{\"StartPosition\":\"" + start.ToString() + "\",\"MoveDirection\":[0,0,0,2,3],\"EndPosition\":\"" + end.ToString() + "\"},\"OperationObjID\":"+rc.RoleId+"}";
+        MoveInfo opn = new MoveInfo();
+        opn.OperationObjID = rc.RoleId;
+        opn.StartPosition = start.ToString();
+        opn.EndPosition = end.ToString();
+
+        byte[] msg = PBSerializer.NSerialize(opn);
+
+        // string msg = "{\"OperationType\":\"Move\",\"OperationCnt\":{\"StartPosition\":\"" + start.ToString() + "\",\"MoveDirection\":[0,0,0,2,3],\"EndPosition\":\"" + end.ToString() + "\"},\"OperationObjID\":"+rc.RoleId+"}";
         return msg;
     }
 
