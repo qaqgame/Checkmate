@@ -43,10 +43,13 @@ namespace Checkmate.Services.Game
             mFSP.SetFrameListener(OnRecv);
         }
 
+        //开始游戏
         public void StartGame()
         {
             mFSP.SendGameBegin();
         }
+
+        //
 
         public void Stop()
         {

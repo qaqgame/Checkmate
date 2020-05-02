@@ -1,5 +1,9 @@
 ﻿using Checkmate.Game.Controller;
+using Checkmate.Game.Role;
 using Checkmate.Game.Utils;
+using Checkmate.Global.Data;
+using ProtoBuf;
+using QGF.Codec;
 using QGF.Common;
 using System;
 using System.Collections.Generic;
@@ -38,6 +42,8 @@ namespace Checkmate.Game.Skill
             mSkills.Add(id, skill);
             return id;
         }
+
+        
 
         public void ExecuteSkill(int id,RoleController src,Position center)
         {
@@ -79,5 +85,30 @@ namespace Checkmate.Game.Skill
             }
             return mSkills[id].GetMousePositions(start);
         }
+
+
+        //=========================
+        [ProtoContract]
+        internal class SkillMessage
+        {
+            [ProtoMember(1)]
+            public int skillId;//技能id
+
+            [ProtoMember(2)]
+            public int roleId;//角色id
+
+            [ProtoMember(3)]
+            public v3i center;//施放位置
+        }
+
+        public void Execute(byte[] msg)
+        {
+            SkillMessage message = PBSerializer.NDeserialize<SkillMessage>(msg);
+            RoleController role = RoleManager.Instance.GetRole(message.roleId);
+            Position center = new Position(message.center.x, message.center.y, message.center.z);
+
+            ExecuteSkill(message.skillId, role, center);
+        }
+
     }
 }

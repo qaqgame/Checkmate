@@ -1,6 +1,7 @@
 ﻿using Checkmate.Game;
 using Checkmate.Game.Controller;
 using Checkmate.Game.Map;
+using Checkmate.Game.Player;
 using Checkmate.Game.Skill;
 using Checkmate.Modules.Game.Utils;
 using QGF.Common;
@@ -108,10 +109,10 @@ namespace Checkmate.Modules.Game.Control
                     //如果是idle状态
                     if (mState == InputState.Idle)
                     {
-                        //点击角色,且可操作进入operate状态
+                        //点击所属角色,且可操作进入operate状态
                         if (target.Type == 2)
                         {
-                            if ((target as RoleController).CanOperate)
+                            if ((target as RoleController).CanOperate&&(PlayerManager.Instance.PID==(target as RoleController).Team)
                             {
                                 mState = InputState.Operate;
                                 (target as RoleController).SetState(RoleState.PreMove);
