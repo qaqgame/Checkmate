@@ -7,6 +7,11 @@ public class SinglePlayerAP : MonoBehaviour
     public   int totalAP;
     private  int currentAP;
 
+    public void Init()
+    {
+        totalAP = 20;
+        currentAP = 20;
+    }
 
     public void changeCurrAP(int num)
     {
