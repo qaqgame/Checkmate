@@ -63,7 +63,7 @@ namespace Checkmate.Services.Online
         private void OnHeartBeatRsp(HeartBeatRsp rsp)
         {
             //Debuger.Log();
-            if (rsp.ret.code == 0)
+            if (rsp.ret.code == -1)
             {
                 uint current = (uint)TimeUtils.GetTotalMillisecondsSince1970();
                 uint dt = current - rsp.timestamp;

@@ -32,7 +32,11 @@ namespace Checkmate.Game.Effect
         private List<EffectTrack> mTimelyEffect;//所有需要定时执行的效果
         private List<CellController> mTimelyCell;//需要定时执行效果的方格
 
+#if UNITY_EDITOR
         private string RootPath=Application.dataPath+"/Test/TestEffect";
+#else
+        private string RootPath = Application.streamingAssetsPath + "/Effects";
+#endif
         //使用一个所有effect的列表进行初始化
         public bool Init(List<EffectData> effects)
         {

@@ -278,8 +278,13 @@ namespace Checkmate.Game
         //创建特征与效果
         private void CreateFeatures()
         {
+#if UNITY_EDITOR
             string path = Application.dataPath + "/Config/Features.json";
             string ePath = Application.dataPath + "/Config/Effects.json";
+#else
+            string path = Application.persistentDataPath+ "/Config/Features.json";
+            string ePath = Application.persistentDataPath + "/Config/Effects.json";
+#endif
             HexMetrics.featurePrefabs.Clear();
             mFeatureData.Clear();
             mEffectData.Clear();
@@ -362,7 +367,11 @@ namespace Checkmate.Game
         //创建地形
         private void CreateTerrains()
         {
+#if UNITY_EDITOR
             string path = Application.dataPath + "/Config/Terrains.json";
+#else
+            string path = Application.persistentDataPath + "/Config/Terrains.json";
+#endif
             mTerrainData.Clear();
             List<Checkmate.Global.Data.TerrainData> terrains = MapUtils.ParseTerrains(path);
             InitializeTerrains(terrains);
@@ -378,7 +387,11 @@ namespace Checkmate.Game
         {
             mTerrainData = terrains;
             List<Texture2D> textures = new List<Texture2D>();
+#if UNITY_EDITOR
             string path = Application.dataPath + "/Resources/Map/Terrains/";
+#else
+            string path = Application.streamingAssetsPath + "/Resources/Map/Terrains/";
+#endif
             for (int i = 0; i < terrains.Count; ++i)
             {
                 textures.Add(AssetUtil.LoadPicture(path + terrains[i].file, 1024));

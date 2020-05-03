@@ -32,6 +32,13 @@ namespace Checkmate.Game.Player
         {
 
         }
+        
+
+        public bool Operating
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// 判断dst是否是src的友方

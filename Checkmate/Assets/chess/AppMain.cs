@@ -108,7 +108,7 @@ namespace Assets.Chess
             FGUIManager.Instance.Init("ui/",sceneMng);
             //初始化加载页面
             AppLoading.Init();
-
+            ModuleManager.Instance.CreateModule("ExampleAModule");
             //初始化在线管理
             OnlineManager.Instance.Init();
             
@@ -123,7 +123,7 @@ namespace Assets.Chess
             GlobalEvent.onGameStart += OnGameStart;
 
             //example
-            ModuleManager.Instance.CreateModule("ExampleAModule");
+            
             ModuleManager.Instance.ShowModule("ExampleAModule");
         }
 
@@ -135,7 +135,7 @@ namespace Assets.Chess
             Debug.Log("start load game");
 
             //加载场景
-            FGUIManager.Instance.LoadScene("Game", OnGameSceneLoadStart, () =>
+            FGUIManager.Instance.LoadSceneWithClearAll("Game", OnGameSceneLoadStart, () =>
             {
                 LoadGameSource();
                 GameManager.Instance.InitPlayer(team, pid, param);
@@ -173,13 +173,15 @@ namespace Assets.Chess
             Debuger.Log("login success:{0}", OnlineManager.Instance.MainUserData.name);
 
             FGUIManager.Instance.CloseLoading("Login.LoadPanel");
-            
 
+            
+            AppLoading.Show("加载页面...");
             FGUIManager.Instance.LoadScene<FGUILoading>("Main", () => {
                 Debuger.Log("create home page");
                 ModuleManager.Instance.CreateModule("HomeModule");
                 ModuleManager.Instance.CreateModule("RoomModule");
                 ModuleManager.Instance.ShowModule("HomeModule");
+                AppLoading.Close();
             });
             //隐藏登录界面
             //通过ILR启动业务模块

@@ -33,12 +33,24 @@ namespace Checkmate.Modules.Game
 
         private static Action onInitFinished;
 
-        
 
+//#if UNITY_EDITOR
+        string mTestMapPath;
+        string mSkillPath;
+        string mScriptPath;
+        string mTestRolePath;
+//#else
+//        string mTestMapPath = Application.streamingAssetsPath + "/Test/testMap.map";
+//        string mSkillPath = Application.streamingAssetsPath+ "/Skills";
+//        string mScriptPath = Application.streamingAssetsPath + "/Scripts";
+//        string mTestRolePath = Application.streamingAssetsPath + "/Test/Alice.json";
+//#endif
         static readonly List<string> types = new List<string>()
         {
             RoleManager.prefabType
         };
+
+
 
         //初始化函数
         public void Init(Action onInitComplete)
@@ -58,9 +70,9 @@ namespace Checkmate.Modules.Game
         {
             ObjectPool.Instance.Init(10, types);
             HexGrid hexGrid = GameObject.Find("Map").GetComponentInChildren<HexGrid>();
-            MapManager.Instance.Init(hexGrid, Application.dataPath + "/Test/testMap.map");
+            MapManager.Instance.Init(hexGrid, mTestMapPath);
 
-            SkillManager.Instance.Init(Application.dataPath + "/Test");
+            SkillManager.Instance.Init(mSkillPath);
             DrawUtil.Init();
 
             RoleManager.Instance.Init();
@@ -70,7 +82,7 @@ namespace Checkmate.Modules.Game
             GameEnv.Instance.Init();//初始化环境
             Debuger.Log("env init");
 
-            ExecuteUtil.Instance.Init(Application.dataPath + "/Test");
+            ExecuteUtil.Instance.Init(mScriptPath);
             Debuger.Log("execute init");
 
             APManager.Instance.Init();
@@ -86,18 +98,29 @@ namespace Checkmate.Modules.Game
         private void Awake()
         {
             Instance = this;
-            
+#if UNITY_EDITOR
+            mTestMapPath=Application.dataPath + "/Test/testMap.map";
+            mSkillPath=Application.dataPath + "/Test";
+            mScriptPath=Application.dataPath + "/Test";
+            mTestRolePath= Application.dataPath + "/Test/Alice.json";
+#else
+            mTestMapPath = Application.streamingAssetsPath + "/Test/testMap.map";
+            mSkillPath = Application.streamingAssetsPath + "/Skills";
+            mScriptPath = Application.streamingAssetsPath + "/Scripts";
+            mTestRolePath = Application.streamingAssetsPath + "/Test/Alice.json";
+#endif
+
         }
 
         private void Start()
         {
-            
+            GameNetManager.Instance.StartGame();
             //=============================
             //测试部分
             //InitTestPlayer();
-            
 
-            RoleData alice = JsonConvert.DeserializeObject<RoleData>(File.ReadAllText(Application.dataPath + "/Test/Alice.json"));
+
+            RoleData alice = JsonConvert.DeserializeObject<RoleData>(File.ReadAllText(mTestRolePath));
             AddRole(alice);
             alice.id = 1;
             alice.model = "Bob";
@@ -142,13 +165,18 @@ namespace Checkmate.Modules.Game
         {
             PlayerManager.Instance.Init(data);
             PlayerManager.Instance.PID = pid;
+            PlayerManager.Instance.Operating = false;
             GameNetManager.Instance.Init(pid);//初始化网络管理器
             Debuger.Log("pid:suib{0},param:{1}", pid, param.ToString());
             GameNetManager.Instance.Start(param);
             GameNetManager.Instance.SetActionListener(HandleAction);
-            GameNetManager.Instance.StartGame();
+            GameNetManager.Instance.onControlStart = OnControlStart;
         }
 
+        private void OnControlStart(byte[] content)
+        {
+            PlayerManager.Instance.Operating = true;
+        }
 
 
         // Update: Update is Called pear frame
@@ -176,6 +204,7 @@ namespace Checkmate.Modules.Game
         //消息处理分发函数
         private void HandleAction(byte[] message)
         {
+            Debuger.Log("recv action");
             GameActionData action= PBSerializer.NDeserialize<GameActionData>(message);
             switch (action.OperationType)
             {

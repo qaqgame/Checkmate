@@ -148,7 +148,7 @@ namespace QGF.Network.FSPLite.Client
         public void SendGameBegin()
         {
             Debuger.Log();
-            SendFSP(FSPCommand.GAME_BEGIN, "");
+            SendFSP(FSPCommand.GAME_BEGIN, "begin");
         }
 
         private void Handle_GameBegin(byte[] content)
@@ -223,7 +223,7 @@ namespace QGF.Network.FSPLite.Client
         public void SendGameEnd()
         {
             Debuger.Log();
-            SendFSP(FSPCommand.GAME_END, "");
+            SendFSP(FSPCommand.GAME_END, "end");
         }
         private void Handle_GameEnd(byte[] content)
         {
@@ -239,7 +239,7 @@ namespace QGF.Network.FSPLite.Client
         public void SendGameExit()
         {
             Debuger.Log();
-            SendFSP(FSPCommand.GAME_EXIT, "");
+            SendFSP(FSPCommand.GAME_EXIT, "exit");
         }
 
         private void Handle_GameExit(uint playerId)

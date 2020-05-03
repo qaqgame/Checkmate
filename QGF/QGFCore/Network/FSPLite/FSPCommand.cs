@@ -11,21 +11,21 @@ namespace QGF.Network.FSPLite
         /// <summary>
         /// PVP战斗结束
         /// </summary>
-        public const int GAME_BEGIN = 1000;
+        public const int NONE = 1000;
 
         /// <summary>
         /// 对局开始
         /// </summary>
-        public const int ROUND_BEGIN = 1001;
+        public const int CREATE = 1001;
 
         /// <summary>
         /// 开始加载
         /// </summary>
-        public const int LOAD_START = 1002;
+        public const int GAME_BEGIN = 1002;
         /// <summary>
         /// 加载进度条
         /// </summary>
-        public const int LOAD_PROGRESS = 1003;
+        public const int ROUND_BEGIN = 1003;
 
         /// <summary>
         /// 可以开始控制...
@@ -35,17 +35,17 @@ namespace QGF.Network.FSPLite
         /// <summary>
         /// 发送中途退出
         /// </summary>
-        public const int GAME_EXIT = 1005;
+        public const int ROUND_END = 1005;
 
         /// <summary>
         /// 对局结束
         /// </summary>
-        public const int ROUND_END = 1006;
+        public const int GAME_END = 1006;
 
         /// <summary>
         /// PVP战斗结束
         /// </summary>
-        public const int GAME_END = 1007;
+        public const int GAME_EXIT = 1007;
 
         /// <summary>
         /// 鉴权身份字段

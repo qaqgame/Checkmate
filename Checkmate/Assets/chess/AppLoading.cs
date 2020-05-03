@@ -8,7 +8,7 @@ namespace Assets.chess
         public const string LoadingPkg = "Login";
         public const string LoadingCom = "AppLoadingPanel";
 
-        public static DefaultLoading mLoadingPanel;
+        public static DefaultLoading mLoadingPanel=null;
 
         //初始化界面
         public static void Init()
@@ -21,10 +21,13 @@ namespace Assets.chess
 
         public static void Show(string name = null,float progress=0)
         {
-            if (mLoadingPanel == null && !mLoadingPanel.IsOpened)
+            if (mLoadingPanel != null)
             {
-                mLoadingPanel = FGUIManager.Instance.Open<DefaultLoading>(LoadingCom, LoadingPkg);
-                if (name != null)
+                if (!mLoadingPanel.IsOpened)
+                {
+                    mLoadingPanel = FGUIManager.Instance.Open<DefaultLoading>(LoadingCom, LoadingPkg);
+                }
+                    if (name != null)
                 {
                     mLoadingPanel.SetName(name);
                 }

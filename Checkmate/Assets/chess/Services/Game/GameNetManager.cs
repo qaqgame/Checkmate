@@ -1,6 +1,7 @@
 ﻿using Checkmate.Game;
 using Checkmate.Game.Controller;
 using Checkmate.Global.Data;
+using QGF;
 using QGF.Codec;
 using QGF.Common;
 using QGF.Network.FSPLite;
@@ -24,6 +25,8 @@ namespace Checkmate.Services.Game
         Action<byte[]> onActionRecv=null;//接收到操作后的处理(发送至外部)
 
         const int ActionCmd = 7;
+
+        public Action<byte[]> onControlStart=null;//操作开始
 
 
         GameActionData mTempAction = new GameActionData();
@@ -49,12 +52,45 @@ namespace Checkmate.Services.Game
 
             mFSP.Start(param, mPid);
             mFSP.SetFrameListener(OnRecv);
+            mFSP.onGameBegin += OnGameBegin;
+            mFSP.onRoundBegin += OnRoundBegin;
+            mFSP.onControlStart += OnControlBegin;
+        }
+
+        //创建
+        public void CreateGame()
+        {
+            
         }
 
         //开始游戏
         public void StartGame()
         {
             mFSP.SendGameBegin();
+            Debuger.Log("send game beign");
+        }
+
+        //收到gamebegin的处理
+        private void OnGameBegin(byte[] content)
+        {
+            mFSP.SendRoundBegin();
+            Debuger.Log("send round begin");
+        }
+
+        private void OnRoundBegin(byte[] content)
+        {
+            mFSP.SendControlStart();
+            Debuger.Log("send control start");
+        }
+
+        //接收到可以操作的消息
+        private void OnControlBegin(byte[] content)
+        {
+            Debuger.Log("recv control begin");
+            if (onControlStart != null)
+            {
+                onControlStart.Invoke(content);
+            }
         }
 
         //移动
@@ -84,7 +120,7 @@ namespace Checkmate.Services.Game
         {
             mTempAction.OperationType = actionType;
             mTempAction.OperationCnt = content;
-            mFSP.SendFSP(1, mTempAction);
+            mFSP.SendFSP(ActionCmd, mTempAction);
         }
 
         public void Stop()

@@ -206,19 +206,6 @@ namespace QGF.Network.General.Client
             }
         }
 
-
-
-        public bool Send(byte[] bytes)
-        {
-            Debuger.Log("connect send times:{0}", sendCnt);
-            if (!Connected)
-            {
-                Debuger.LogError("kcp not connected!");
-                return false;
-            }
-            return mKcp.Send(bytes) >= 0;
-        }
-
         public bool Send(byte[] bytes, int len)
         {
             Debuger.Log("connect send times:{0}", sendCnt);

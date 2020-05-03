@@ -14,12 +14,13 @@ namespace Checkmate.Module
 {
     public class ExampleAModule:GeneralModule
     {
-        
         public override void Create(object args = null)
         {
             base.Create(args);
             Debuger.Log("created!");
             Debug.Log("example created");
+            FGUILoginPage login = FGUIManager.Instance.LoadToMemory<FGUILoginPage>("LoginPanel", "Login");
+
         }
 
 
@@ -27,7 +28,8 @@ namespace Checkmate.Module
         {
             base.Show(arg);
 
-            FGUILoginPage login= FGUIManager.Instance.OpenPage<FGUILoginPage>("LoginPanel","Login","testwindow");
+            FGUILoginPage login = FGUIManager.Instance.OpenPage<FGUILoginPage>("LoginPanel", "Login","testwindow");
+
             Debuger.Log("page opened");
         
         }

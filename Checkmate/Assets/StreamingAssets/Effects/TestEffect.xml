@@ -1,0 +1,22 @@
+<Effect name="TestEffect"  icon="damage.png">
+    <Description>TestEffect</Description>
+    <Data>
+        <value name="level" type="Int">3</value>
+        <value name="Damage" type="Int">10</value>
+    </Data>
+
+    <Content>
+        <Action>
+            <Targets>
+            </Targets>
+            <Executes>
+                <Execute src="Standard.Damage">
+                    <Params>
+                        <Param type="Controller" value="%Dst"/>
+                        <Param type="Int" value="$Damage"/>
+                    </Params>
+                </Execute>
+            </Executes>
+        </Action>
+    </Content>
+</Effect>

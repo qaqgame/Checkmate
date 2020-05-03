@@ -22,8 +22,11 @@ namespace Checkmate.Game.Utils
         private Dictionary<string, GameObject> mPrefabs;//所有预制体的缓存
 
 
-
+#if UNITY_EDITOR
         private static readonly string ConfigPath = Application.dataPath+"/Config/Prefab.json";
+#else
+        private static readonly string ConfigPath = Application.persistentDataPath + "/Config/Prefab.json";
+#endif
         /// <summary>
         /// 初始化对象池
         /// </summary>

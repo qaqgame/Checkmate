@@ -238,6 +238,7 @@ namespace QGF.Unity.FGUI
                 Debuger.Log("current progress:{0}", mAsyncOperation.progress);
                 if(mAsyncOperation.progress>=0.9f)
                 {
+                    onSceneLoading(1.0f);
                     Debuger.Log("change states called");
                     mAsyncOperation.allowSceneActivation = true;
                 }

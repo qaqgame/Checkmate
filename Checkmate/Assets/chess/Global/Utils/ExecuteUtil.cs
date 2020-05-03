@@ -58,8 +58,11 @@ namespace Checkmate.Game.Utils
         private Dictionary<string, object> mClassCache;//方法所属类的缓存
         private Dictionary<string, MethodInfo> mMethodLoaded;//加载完成的方法
 
-
+#if UNITY_EDITOR
         private static string rootPath=Application.dataPath+"/Test";
+#else
+        private static string rootPath = Application.streamingAssetsPath + "/Scripts";
+#endif
         public void Init(string path)
         {
             mClassCache = new Dictionary<string, object>();

@@ -143,7 +143,7 @@ namespace QGF.Unity.FGUI
         //场景
         //===============
         
-        public void LoadScene(string scene,Action onStartLoad,Action onLoadComplete,Action<float> onLoading)
+        public void LoadSceneWithClearAll(string scene,Action onStartLoad,Action onLoadComplete,Action<float> onLoading)
         {
             ClearView();
             onStartLoad.Invoke();
@@ -156,7 +156,6 @@ namespace QGF.Unity.FGUI
 
         public void LoadScene<T>(string scene, Action onLoadComplete,string loadingPkg=null,string loadingCom=null) where T:FGUILoading,new()
         {
-            ClearView();
             string pkgName=loadingPkg??DefaultLoadingPackageName;
             string comName = loadingCom ?? DefaultLoadingComName;
 
@@ -197,8 +196,6 @@ namespace QGF.Unity.FGUI
             }
             //取消加载中事件
             onSceneLoading = null;
-            //关闭loading
-            CloseLoading(mCurLoadingName);
             Debuger.Log("load scene complete called");
         }
         private void OnSceneLoading(float progress)
@@ -245,6 +242,23 @@ namespace QGF.Unity.FGUI
             T ui = LoadToMemory<T>(name, package);
 
             string idxName = package + "." + name;
+
+            //有则调出
+            if (ui != null)
+            {
+                AddOpenCache(idxName, arg);
+            }
+            else
+            {
+                Debuger.LogError("cannot find panel:{0}", name);
+            }
+            return ui;
+        }
+        //立即打开UI
+        public T OpenInstantly<T>(string name, string package, object arg = null) where T : FGUIPanel, new()
+        {
+            string idxName = package + "." + name;
+            T ui = mListLoadedPanel[idxName] as T;
 
             //有则调出
             if (ui != null)

@@ -54,6 +54,7 @@
             gridUV.x*=1/(2*15.0);
             gridUV.y*=1/(4*8.66025404);
 
+
             float2 cellDataCoordinates=floor(gridUV.xy)+tex2Dlod(_GridCoordinates,gridUV).rg;
             cellDataCoordinates*=2;
 

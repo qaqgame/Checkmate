@@ -1,0 +1,4 @@
+<Config name="Standard">
+    <Main namespace="Checkmate.Standard" class="Standard">Standard.dll</Main>
+    <Rely></Rely>
+</Config>

@@ -32,6 +32,7 @@
         };
 
         half _Glossiness;
+
         half _Metallic;
         fixed4 _Color;
 
