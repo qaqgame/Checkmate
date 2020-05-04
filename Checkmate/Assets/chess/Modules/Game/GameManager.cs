@@ -131,7 +131,22 @@ namespace Checkmate.Modules.Game
             alice.position.z = 2;
             AddRole(alice);
             Debug.Log("extra:" + RoleManager.Instance.GetRole(1).GetValue("Current.test"));
- 
+
+            alice.id = 2;
+            alice.name = "Frank";
+            alice.team = 2;
+            alice.position.x = 3;
+            alice.position.y = -6;
+            alice.position.z = 3;
+            AddRole(alice);
+
+            alice.id = 3;
+            alice.name = "Frank";
+            alice.team = 3;
+            alice.position.x = 4;
+            alice.position.y = -8;
+            alice.position.z = 4;
+            AddRole(alice);
 
             RoleController role = RoleManager.Instance.GetRole(1);
             Debug.Log(role.Name);

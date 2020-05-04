@@ -25,7 +25,7 @@ namespace Checkmate.Game.Utils
 #if UNITY_EDITOR
         private static readonly string ConfigPath = Application.dataPath+"/Config/Prefab.json";
 #else
-        private static readonly string ConfigPath = Application.persistentDataPath + "/Config/Prefab.json";
+        private static readonly string ConfigPath = Application.dataPath + "/Config/Prefab.json";
 #endif
         /// <summary>
         /// 初始化对象池

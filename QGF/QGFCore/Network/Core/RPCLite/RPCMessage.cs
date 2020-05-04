@@ -24,7 +24,7 @@ namespace QGF.Network.Core.RPCLite
                 var list = new List<object>();
                 for(int i = 0; i < raw_args.Count; ++i)
                 {
-                    list.Add(raw_args[i].raw_value);
+                    list.Add(raw_args[i].value);
                 }
                 return list.ToArray();
             }
@@ -89,37 +89,37 @@ namespace QGF.Network.Core.RPCLite
                 {
                     type = RPCArgType.Int;
                     raw_value = BitConverter.GetBytes((int)v);
-                    NetBuffer.ReverseOrder(raw_value);
+                    raw_value=NetBuffer.ReverseOrder(raw_value);
                 }
                 else if (v is uint)
                 {
                     type = RPCArgType.UInt;
                     raw_value = BitConverter.GetBytes((uint)v);
-                    NetBuffer.ReverseOrder(raw_value);
+                    raw_value = NetBuffer.ReverseOrder(raw_value);
                 }
                 else if (v is long)
                 {
                     type = RPCArgType.Long;
                     raw_value = BitConverter.GetBytes((long)v);
-                    NetBuffer.ReverseOrder(raw_value);
+                    raw_value = NetBuffer.ReverseOrder(raw_value);
                 }
                 else if (v is ulong)
                 {
                     type = RPCArgType.ULong;
                     raw_value = BitConverter.GetBytes((ulong)v);
-                    NetBuffer.ReverseOrder(raw_value);
+                    raw_value = NetBuffer.ReverseOrder(raw_value);
                 }
                 else if (v is short)
                 {
                     type = RPCArgType.Short;
                     raw_value = BitConverter.GetBytes((short)v);
-                    NetBuffer.ReverseOrder(raw_value);
+                    raw_value = NetBuffer.ReverseOrder(raw_value);
                 }
                 else if (v is ushort)
                 {
                     type = RPCArgType.UShort;
                     raw_value = BitConverter.GetBytes((ushort)v);
-                    NetBuffer.ReverseOrder(raw_value);
+                    raw_value = NetBuffer.ReverseOrder(raw_value);
                 }
                 else if (v is double)
                 {
@@ -130,7 +130,7 @@ namespace QGF.Network.Core.RPCLite
                 {
                     type = RPCArgType.Float;
                     raw_value = BitConverter.GetBytes((float)v);
-                    NetBuffer.ReverseOrder(raw_value);
+                    raw_value = NetBuffer.ReverseOrder(raw_value);
                 }
                 else if (v is string)
                 {

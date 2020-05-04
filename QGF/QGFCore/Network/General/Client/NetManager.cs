@@ -112,8 +112,12 @@ namespace QGF.Network.General.Client
         }
         public void HandleRPCMessage(RPCMessage msg)
         {
-            Debuger.Log("Connection[{0}]->{1}<{2}>", mConn.id, msg.name, msg.args.ToString());
-            
+            Debuger.Log("Connection[{0}]->{1}<>", mConn.id, msg.name);
+            Debuger.Log("args count:{0}",msg.args.Length);
+            foreach( RPCRawArg arg in msg.raw_args)
+            {
+                Debuger.Log("type:{0},value:{1}",arg.type,arg.value.ToString());
+            }            
             //获取方法
             var helper = mRPC.GetMethodHelper(msg.name);
             if (helper != null)

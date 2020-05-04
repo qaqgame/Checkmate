@@ -20,6 +20,8 @@ namespace Checkmate.Services.Online
         private uint mPing;
         private float mLastHeartBeatTime = 0;
 
+
+        bool mSendFlag;//是否可以发送
         public QGFEvent onTimeout = new QGFEvent();
         public void Init(NetManager net)
         {
@@ -37,6 +39,7 @@ namespace Checkmate.Services.Online
         public void Start()
         {
             GlobalEvent.onUpdate.AddListener(OnUpdate);
+            mSendFlag = true;
         }
 
         public void Stop()
@@ -48,7 +51,7 @@ namespace Checkmate.Services.Online
         {
             float current=QGFTime.GetTimeSinceStartup();
             //相隔5s
-            if (current - mLastHeartBeatTime > 5.0f)
+            if (current - mLastHeartBeatTime > 5.0f&&mSendFlag)
             {
                 mLastHeartBeatTime = current;
 

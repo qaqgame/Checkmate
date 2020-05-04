@@ -282,8 +282,8 @@ namespace Checkmate.Game
             string path = Application.dataPath + "/Config/Features.json";
             string ePath = Application.dataPath + "/Config/Effects.json";
 #else
-            string path = Application.persistentDataPath+ "/Config/Features.json";
-            string ePath = Application.persistentDataPath + "/Config/Effects.json";
+            string path = Application.dataPath+ "/Config/Features.json";
+            string ePath = Application.dataPath + "/Config/Effects.json";
 #endif
             HexMetrics.featurePrefabs.Clear();
             mFeatureData.Clear();
@@ -370,7 +370,7 @@ namespace Checkmate.Game
 #if UNITY_EDITOR
             string path = Application.dataPath + "/Config/Terrains.json";
 #else
-            string path = Application.persistentDataPath + "/Config/Terrains.json";
+            string path = Application.dataPath + "/Config/Terrains.json";
 #endif
             mTerrainData.Clear();
             List<Checkmate.Global.Data.TerrainData> terrains = MapUtils.ParseTerrains(path);
