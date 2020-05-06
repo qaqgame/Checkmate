@@ -137,7 +137,7 @@ namespace Checkmate.Modules.Game.Control
                                     //
                                     GameNetManager.Instance.Move(role, target.GetPosition());
                                     //
-                                    // role.SetState(RoleState.Move);
+                                    role.SetState(RoleState.Move);
                                     mState = InputState.Idle;
                                     GameEvent.onResetAll.Invoke();
                                 }
@@ -147,11 +147,11 @@ namespace Checkmate.Modules.Game.Control
                                     if (borders.Contains(target.GetPosition()))
                                     {
                                         //施法
-                                        role.SetState(RoleState.Spell);
+                                        
 
                                         GameNetManager.Instance.Skill(mCurrentSkill, role, target.GetPosition());
 
-                                        role.SetState(RoleState.Idle);
+                                        role.SetState(RoleState.Spell);
                                         mState = InputState.Idle;
                                         GameEvent.onResetAll.Invoke();
                                     }

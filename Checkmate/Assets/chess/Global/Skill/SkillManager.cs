@@ -63,7 +63,7 @@ namespace Checkmate.Game.Skill
             //执行
             mSkills[id].OnExecute();
             //清除环境
-            GameEnv.Instance.Pop();
+            GameEnv.Instance.PopEnv();
         }
 
         //获取效果的范围

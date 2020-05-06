@@ -10,6 +10,7 @@ using UnityEngine;
 using System.Xml;
 using Checkmate.Game.Controller;
 using Checkmate.Game.Utils;
+using QGF;
 
 namespace Checkmate.Game.Utils
 {
@@ -102,6 +103,15 @@ namespace Checkmate.Game.Utils
             if (mMethodLoaded.ContainsKey(method))
             {
                 MethodInfo instance = mMethodLoaded[method];
+                if (instance == null)
+                {
+                    Debuger.LogError("error get method:{0}", method);
+                }
+                if (!mClassCache.ContainsKey(className))
+                {
+                    Debuger.LogError("error get class of {0}", className);
+
+                }
                 result = instance.Invoke(mClassCache[className], param);
                 return result;
             }
@@ -188,7 +198,8 @@ namespace Checkmate.Game.Utils
         Int,
         Float,
         String,
-        ControllerList
+        ControllerList,
+        Bool
     }
 
 

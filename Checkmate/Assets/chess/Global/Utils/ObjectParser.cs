@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -29,6 +30,7 @@ namespace Checkmate.Game.Utils
                 case "Int": return int.Parse(value);
                 case "Float": return float.Parse(value);
                 case "String": return value;
+                case "Bool":return bool.Parse(value);
             }
             return null;
         }
@@ -56,6 +58,15 @@ namespace Checkmate.Game.Utils
                 result.Add(ct);
             }
             return result;
+        }
+
+        public static object Clone(object obj)
+        {
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryFormatter formatter = new BinaryFormatter();
+            formatter.Serialize(memoryStream, obj);
+            memoryStream.Position = 0;
+            return formatter.Deserialize(memoryStream);
         }
     }
 }

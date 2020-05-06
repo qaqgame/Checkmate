@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Checkmate.Game.Effect
 {
-    public class Effect : BaseController
+    public class Effect : EffectController
     {
         public override int Type { get { return (int)ControllerType.Effect; } }
 
@@ -40,6 +40,11 @@ namespace Checkmate.Game.Effect
             {
                 GameEnv.Instance.Current.ExecuteAction(action);
             }
+            foreach (var r in Temp.mUsedRoles)
+            {
+                r.TempMap.RemoveTrack(Temp);
+            }
+            Temp.Clear();
         }
 
 

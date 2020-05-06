@@ -124,7 +124,12 @@ namespace Checkmate.Game.Effect
             env.Main = target;
             GameEnv.Instance.PushEnv(env);
             target.Execute();
-            GameEnv.Instance.Pop();
+            GameEnv.Instance.PopEnv();
+        }
+
+        public Effect GetEffect(int id)
+        {
+            return mAllEffects[id];
         }
 
         //回合开始执行地面效果

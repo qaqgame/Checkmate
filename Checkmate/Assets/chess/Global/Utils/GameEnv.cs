@@ -1,5 +1,6 @@
 ﻿using Checkmate.Game.Controller;
 using Checkmate.Game.Skill;
+using QGF;
 using QGF.Common;
 using System;
 using System.Collections.Generic;
@@ -18,9 +19,21 @@ namespace Checkmate.Game.Utils
         public ModelController Obj;//当前对象
         public ModelController Src;//来源
         public ModelController Dst;//目标
-        public BaseController Main;//主体(技能、buff等)
+        public EffectController Main;//主体(技能、buff等)
         public Position Center=null;//中心（仅技能时发挥作用）
         public object Data;
+
+
+        private List<RoleController> mUsedRoles;//所有在该环境下使用的角色
+        public void Copy(EnvVariable target)
+        {
+            Obj = target.Obj;
+            Src = target.Src;
+            Dst = target.Dst;
+            Main = target.Main;
+            Center = target.Center;
+            Data = target.Data;
+        }
 
         public void ExecuteAction(SkillAction action)
         {
@@ -118,6 +131,7 @@ namespace Checkmate.Game.Utils
                 object p= GetParam(info.parameters[i].type, info.parameters[i].value);
                 if (p == null)
                 {
+                    Debuger.LogError("skip execute {0}, as {1}:{2} missed", info.method, info.parameters[i].value, info.parameters[i].type);
                     return;
                 }
                 param[i] = p;
@@ -167,7 +181,7 @@ namespace Checkmate.Game.Utils
         /// </summary>
         /// <param name="value"></param>
         /// <param name="pos"></param>
-        /// <returns>判断是否是内置变量</returns>
+        /// <returns>判断是否成功获取</returns>
         private bool TryGetSearchParam(string value, out Position pos)
         {
             switch (value)
@@ -256,6 +270,9 @@ namespace Checkmate.Game.Utils
                     case ParamType.Int: return int.Parse(value);
                     case ParamType.Float: return float.Parse(value);
                     case ParamType.String: return value;
+                    case ParamType.Bool:return bool.Parse(value);
+                    default:Debuger.LogError("cannot get value:{0} of type:{1}", value, type);
+                        break;
                 }
             }
             Debug.LogError("error get param:" + value);
@@ -267,6 +284,12 @@ namespace Checkmate.Game.Utils
             switch (value)
             {
                 case "Src": return Src;
+                case "Obj":
+                    if (Obj == null)
+                    {
+                        Debuger.LogError("error get %Obj,null");
+                    }
+                    return Obj;
                 case "Dst": return Dst;
                 case "Main": return Main;
             }
@@ -309,7 +332,7 @@ namespace Checkmate.Game.Utils
     public class GameEnv:Singleton<GameEnv>
     {
         private Stack<EnvVariable> mEnvStacks;//环境变量栈
-
+        private Stack<BaseController> mEnvEffectStack;//效果环境栈
         //private Dictionary<string, List<BaseController>> mTempTargets;//临时搜索/筛选得到的对象
         
         public EnvVariable Current
@@ -323,6 +346,7 @@ namespace Checkmate.Game.Utils
         public void Init()
         {
             mEnvStacks = new Stack<EnvVariable>();
+            mEnvEffectStack = new Stack<BaseController>();
         }
 
         public void Clear()
@@ -334,7 +358,7 @@ namespace Checkmate.Game.Utils
         {
             mEnvStacks.Push(value);
         }
-        public void PushEnv(ModelController src,ModelController dst,BaseController main,object data = null)
+        public void PushEnv(ModelController src,ModelController dst,EffectController main,object data = null)
         {
             EnvVariable variable = new EnvVariable();
             variable.Src = src;
@@ -344,13 +368,15 @@ namespace Checkmate.Game.Utils
             mEnvStacks.Push(variable);
         }
 
-        public void Pop()
+        public void PopEnv()
         {
             if (mEnvStacks.Count > 0)
             {
                 mEnvStacks.Pop();
             }
         }
+
+
 
     }
 }

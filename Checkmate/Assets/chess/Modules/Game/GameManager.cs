@@ -24,6 +24,7 @@ using Checkmate.Services.Game;
 using QGF.Codec;
 using QGF.Network.FSPLite;
 using QGF;
+using Checkmate.Game.Buff;
 
 namespace Checkmate.Modules.Game
 {
@@ -88,6 +89,8 @@ namespace Checkmate.Modules.Game
             APManager.Instance.Init();
             Debuger.Log("ap init");
 
+            BuffManager.Instance.Init();
+
             InitEvent();
 
             OnInitFinished();
@@ -150,6 +153,10 @@ namespace Checkmate.Modules.Game
 
             RoleController role = RoleManager.Instance.GetRole(1);
             Debug.Log(role.Name);
+            GameEnv.Instance.PushEnv(null, null, null);
+            role.AddBuff("TestBuff");
+            GameEnv.Instance.PopEnv();
+            Debuger.Log("{0} physicRes:{1},current:{2}", role.Name, role.Temp.GetValue("PhysicalRes"),role.Current.GetValue("PhysicalRes"));
             CellController cell = MapManager.Instance.GetCell(role.Position);
             Debug.Log(cell.Terrain);
 

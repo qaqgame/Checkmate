@@ -163,7 +163,7 @@ namespace Checkmate.Game.Skill
 
 
 
-    public abstract class BaseSkill:BaseController
+    public abstract class BaseSkill:EffectController
     {
         public override int Type { get { return (int)ControllerType.Skill; } }
 
@@ -368,7 +368,11 @@ namespace Checkmate.Game.Skill
             {
                 GameEnv.Instance.Current.ExecuteAction(action);
             }
-
+            foreach (var r in Temp.mUsedRoles)
+            {
+                r.TempMap.RemoveTrack(Temp);
+            }
+            Temp.Clear();
         }
 
         public override void OnExecute()
@@ -377,6 +381,11 @@ namespace Checkmate.Game.Skill
             {
                 GameEnv.Instance.Current.ExecuteAction(action);
             }
+            foreach (var r in Temp.mUsedRoles)
+            {
+                r.TempMap.RemoveTrack(Temp);
+            }
+            Temp.Clear();
         }
     }
 

@@ -1,7 +1,10 @@
-﻿using Checkmate.Game.Skill;
+﻿using Checkmate.Game.Buff;
+using Checkmate.Game.Skill;
 using Checkmate.Game.UI;
+using Checkmate.Game.Utils;
 using Checkmate.Global.Data;
 using FairyGUI;
+using QGF;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,12 +32,13 @@ namespace Checkmate.Game.Controller
         private RoleState mCurState = RoleState.Idle;//当前状态
 
         private Action<RoleController> onRoleChanged;//角色属性发生改变的事件
+        private Action<RoleController,List<int>> onBuffChanged;//buff栏发生改变的事件
 
         public void SetRoleChangeListener(Action<RoleController> listener)
         {
             onRoleChanged = listener;
         }
-
+        //当前状态
         public RoleState CurrentState
         {
             get { return mCurState; }
@@ -55,6 +59,10 @@ namespace Checkmate.Game.Controller
             }
         }
 
+        //数据改变的列表（current为持续，temp为临时）
+        public DataMap CurrentMap, TempMap;
+
+        //技能
         [GetProperty]
         public List<int> Skills
         {
@@ -70,13 +78,20 @@ namespace Checkmate.Game.Controller
             private set;
         }
 
+        //该部分为战斗临时属性
+        [GetProperty]
+        public RoleAttributeController Temp
+        {
+            get;
+        }
 
+        //该部分为直接使用属性（buff修改后）
         [GetProperty]
         public RoleAttributeController Current
         {
             get;
         }
-
+        //该部分为原始属性（基础值）
         [GetProperty]
         public RoleAttributeController Origin
         {
@@ -132,8 +147,10 @@ namespace Checkmate.Game.Controller
         {
             RoleId = data.id;
             Current = new RoleAttributeController(data.props);
-            Current.onAttributeChanged = OnAttributeChanged;
+            
             Origin = new RoleAttributeController(data.props);
+            Temp = new RoleAttributeController(data.props);
+            Temp.onAttributeChanged = OnAttributeChanged;
             Position = new Position(data.position.x, data.position.y, data.position.z);
             Team = data.team;
             Status = data.status;
@@ -143,6 +160,11 @@ namespace Checkmate.Game.Controller
             Model = data.model;
 
             mObj = obj;
+
+            CurrentMap = new DataMap();
+            CurrentMap.onChanged = OnCurrentAttrChanged;
+            TempMap = new DataMap();
+            TempMap.onChanged = OnTempAttrChanged;
 
             //初始化面板
             mPanel = new RolePanel(obj.GetComponentInChildren<UIPanel>(), Origin.Hp, Current.Hp,Name);
@@ -154,6 +176,54 @@ namespace Checkmate.Game.Controller
                 int sid = SkillManager.Instance.GetSkill(skill);
                 Skills.Add(sid);
             }
+        }
+
+
+        //===================================
+        //buff部分
+        public List<int> Buffs=new List<int>();//所有的buff
+
+        //添加buff
+        public void AddBuff(string file)
+        {
+            int bid = BuffManager.Instance.InstanceBuff(file);
+            Checkmate.Game.Buff.Buff buff = BuffManager.Instance.GetBuff(bid);
+            //调用onAddBuff
+            OnAddBuff(ref buff);
+            Buffs.Add(bid);
+
+            Debuger.Log("buff {0} added to {1}", buff.Name, Name);
+
+            //检测该buff是否还能存在，不能存在直接移除
+            if (buff.ReserveTime == 0 || buff.ReserveTurn == 0)
+            {
+                RemoveBuff(bid);
+            }
+            
+        }
+
+        //移除buff
+        public void RemoveBuff(int id)
+        {
+            //移除前执行buff的OnRemove
+            Checkmate.Game.Buff.Buff buff = BuffManager.Instance.GetBuff(id);
+            EnvVariable env = new EnvVariable();
+            env.Src = buff.Src;
+            env.Obj = buff.Obj;
+            env.Main = buff;
+            env.Center = Position;
+            env.Dst = null;
+            GameEnv.Instance.PushEnv(env);
+            buff.Execute(TriggerType.OnRemoved);
+            GameEnv.Instance.PopEnv();
+            Buffs.Remove(id);
+
+            //移除buff的所有temp属性加成
+            foreach (var role in buff.Current.mUsedRoles)
+            {
+                role.CurrentMap.RemoveTrack(buff.Current);
+            }
+            buff.Current.Clear();
         }
 
         //=============================
@@ -204,7 +274,33 @@ namespace Checkmate.Game.Controller
 
         //========================
         //内置处理
-        private void OnAttributeChanged(string param,object value)
+
+        //临时属性的增减变化
+        private void OnTempAttrChanged()
+        {
+            Debuger.Log("{0} temp attr update", Name);
+            Temp.Copy(Current);
+            DataUtil.Execute(Temp, TempMap.Tracks);
+            //通知外部
+            if (onRoleChanged != null)
+            {
+                onRoleChanged(this);
+            }
+        }
+
+        //当前属性的增减发生了变化
+        private void OnCurrentAttrChanged()
+        {
+            Debuger.Log("{0} current attr update", Name);
+            //赋予原值
+            Current.Copy(Origin);
+            //进行更改
+            DataUtil.Execute(Current, CurrentMap.Tracks);
+            //更改临时值
+            OnTempAttrChanged();
+        }
+
+        private void OnAttributeChanged(string param,ref object value,object origin)
         {
             if (param == "Hp")
             {
@@ -215,6 +311,50 @@ namespace Checkmate.Game.Controller
             if (onRoleChanged != null)
             {
                 onRoleChanged(this);
+            }
+        }
+        //添加buff时的回调
+        private void OnAddBuff(ref Checkmate.Game.Buff.Buff buff)
+        {
+            
+            //设置环境变量
+            EnvVariable env = new EnvVariable();
+            env.Copy(GameEnv.Instance.Current);
+            env.Data = buff;
+            GameEnv.Instance.PushEnv(env);
+            //调用源的OnBuff
+            //前提是角色（只有角色拥有buff)
+            if (GameEnv.Instance.Current.Src!=null&&GameEnv.Instance.Current.Src.Type == (int)ControllerType.Role)
+            {
+                RoleController src = GameEnv.Instance.Current.Src as RoleController;
+                BuffManager.Instance.Execute(TriggerType.OnBuff, src);
+            }
+            //调用现有buff的OnBuffed
+            BuffManager.Instance.Execute(TriggerType.OnBeBuffed, this);
+            GameEnv.Instance.PopEnv();
+
+            //绑定至该角色
+            buff.AttachTo(this);
+            //调用该buff的onAttach
+            env.Src = buff.Src;
+            env.Obj = buff.Obj;
+            env.Main = buff;
+            env.Center = Position;
+            env.Dst = null;
+            GameEnv.Instance.PushEnv(env);
+            Debuger.Log("buff execute env:obj:{0}", GameEnv.Instance.Current.Obj == null ? "null" :GameEnv.Instance.Current.Obj.GetGameObject().name);
+            buff.Execute(TriggerType.OnAttached);
+            Debuger.Log("buff {0} attached execute:{1}", buff.Name,buff.GetCount(TriggerType.OnAttached));
+            GameEnv.Instance.PopEnv();
+        }
+
+        //buff改变时的回调
+        public void OnBuffUpdate()
+        {            
+            //调用外部传入的事件（用于更新显示部分）
+            if (onBuffChanged != null)
+            {
+                onBuffChanged.Invoke(this, Buffs);
             }
         }
     }

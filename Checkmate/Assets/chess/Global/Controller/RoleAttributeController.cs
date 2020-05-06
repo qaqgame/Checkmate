@@ -1,4 +1,5 @@
 ﻿using Checkmate.Global.Data;
+using QGF.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,9 @@ namespace Checkmate.Game.Controller
         private int _viewRange;//视距
         private int _viewHeight;//视高
 
-        public Action<string, object> onAttributeChanged;//属性改变事件 
+        public delegate void AttributeListener(string param, ref object value, object origin);
+
+        public AttributeListener onAttributeChanged;//属性改变事件 
 
         [GetProperty]
         [SetProperty]
@@ -32,8 +35,13 @@ namespace Checkmate.Game.Controller
             get { return _hp; }
             set 
             {
-                _hp = value<0?0:value;
-                onAttributeChanged("Hp", value);
+                object v = value;
+                if (onAttributeChanged != null)
+                {
+                    onAttributeChanged("Hp", ref v, _hp);
+                }
+                _hp = (int)v<0?0:(int)v;
+                
             }
         }
 
@@ -42,7 +50,14 @@ namespace Checkmate.Game.Controller
         public int Mp
         {
             get { return _mp; }
-            set { _mp = value; onAttributeChanged("Mp", value); }
+            set {
+                object v = value;
+                if (onAttributeChanged != null)
+                {
+                    onAttributeChanged("Mp", ref v, _mp);
+                }
+                _mp = (int)v; 
+            }
         }
 
         [GetProperty]
@@ -50,7 +65,15 @@ namespace Checkmate.Game.Controller
         public float Miss
         {
             get { return _miss; }
-            set { _miss = value > 1.0f ? 1.0f : value; onAttributeChanged("Miss", _miss); }
+            set
+            {
+                object v = value;
+                if (onAttributeChanged != null)
+                {
+                    onAttributeChanged("Miss", ref v, _miss);
+                }
+                _miss = (float)v > 1.0f ? 1.0f : (float)v;
+            }
         }
 
         [GetProperty]
@@ -58,7 +81,14 @@ namespace Checkmate.Game.Controller
         public int PhysicalRes
         {
             get { return _phyRes; }
-            set { _phyRes = value; onAttributeChanged("PhysicalRes", value); }
+            set {
+                object v = value;
+                if (onAttributeChanged != null)
+                {
+                    onAttributeChanged("PhysicalRes", ref v, _phyRes);
+                }
+                _phyRes = (int)v; 
+            }
         }
 
         [GetProperty]
@@ -66,7 +96,14 @@ namespace Checkmate.Game.Controller
         public int MagicRes
         {
             get { return _magicRes; }
-            set { _magicRes = value; onAttributeChanged("MagicRes", value); }
+            set {
+                object v = value;
+                if (onAttributeChanged != null)
+                {
+                    onAttributeChanged("MagicRes", ref v, _magicRes);
+                }
+                _magicRes =(int)v; 
+            }
         }
 
         [GetProperty]
@@ -74,7 +111,14 @@ namespace Checkmate.Game.Controller
         public int Attack
         {
             get { return _attack; }
-            set { _attack = value; onAttributeChanged("Attack", value); }
+            set {
+                object v = value;
+                if (onAttributeChanged != null)
+                {
+                    onAttributeChanged("Attack", ref v, _attack);
+                }
+                _attack = (int)v;
+            }
         }
 
         [GetProperty]
@@ -82,7 +126,14 @@ namespace Checkmate.Game.Controller
         public int MoveRange
         {
             get { return _moveRange; }
-            set { _moveRange = value>10?10:value; onAttributeChanged("MoveRange", _moveRange); }
+            set {
+                object v = value;
+                if (onAttributeChanged != null)
+                {
+                    onAttributeChanged("MoveRange", ref v, _moveRange);
+                }
+                _moveRange = (int)v>10?10:(int)v; 
+            }
         }
 
         [GetProperty]
@@ -90,7 +141,14 @@ namespace Checkmate.Game.Controller
         public float AttackSpeed
         {
             get { return _atkSpeed; }
-            set { _atkSpeed = value>3.0f?3.0f:value; onAttributeChanged("AttackSpeed", _atkSpeed); }
+            set {
+                object v = value;
+                if (onAttributeChanged != null)
+                {
+                    onAttributeChanged("AttackSpeed", ref v, _atkSpeed);
+                }
+                _atkSpeed = (float)v>3.0f?3.0f:(float)v; 
+            }
         }
 
         [GetProperty]
@@ -98,7 +156,14 @@ namespace Checkmate.Game.Controller
         public float PhysicalIgnore
         {
             get { return _phyIgn; }
-            set { _phyIgn= value>1.0f?1.0f:value; onAttributeChanged("PhysicalIgnore", _phyIgn); }
+            set {
+                object v = value;
+                if (onAttributeChanged != null)
+                {
+                    onAttributeChanged("PhysicalIgnore", ref v, _phyIgn);
+                }
+                _phyIgn = (float)v > 1.0f ? 1.0f : (float)v;
+            }
         }
 
         [GetProperty]
@@ -106,7 +171,14 @@ namespace Checkmate.Game.Controller
         public float MagicIgnore
         {
             get { return _magicIgn; }
-            set { _magicIgn = value > 1.0f ? 1.0f : value; onAttributeChanged("MagicIgnore", _magicIgn); }
+            set {
+                object v = value;
+                if (onAttributeChanged != null)
+                {
+                    onAttributeChanged("MagicIgnore", ref v, _magicIgn);
+                }
+                _magicIgn = (float)v > 1.0f ? 1.0f : (float)v;
+            }
         }
 
         [GetProperty]
@@ -114,7 +186,14 @@ namespace Checkmate.Game.Controller
         public int ViewRange
         {
             get { return _viewRange; }
-            set { _viewRange = value > 5 ? 5 : value; onAttributeChanged("ViewRange", _viewRange); }
+            set {
+                object v = value;
+                if (onAttributeChanged != null)
+                {
+                    onAttributeChanged("ViewRange", ref v, _viewRange);
+                }
+                _viewRange = (int)v > 5 ? 5 : (int)v; 
+            }
         }
 
         [GetProperty]
@@ -122,7 +201,14 @@ namespace Checkmate.Game.Controller
         public int ViewHeight
         {
             get { return _viewHeight; }
-            set { _viewHeight = value > 3 ? 3 : value; onAttributeChanged("ViewHeight", _viewHeight); }
+            set {
+                object v = value;
+                if (onAttributeChanged != null)
+                {
+                    onAttributeChanged("ViewHeight", ref v, _viewHeight);
+                }
+                _viewHeight = (int)v > 3 ? 3 : (int)v;
+            }
         }
 
         public RoleAttributeController(RoleProperty data):base(data.extraData)
@@ -157,6 +243,24 @@ namespace Checkmate.Game.Controller
             _viewHeight = data.viewHeight;
 
             SetExtra(data.extraData);
+        }
+
+        public void Copy(RoleAttributeController data)
+        {
+            _hp = data._hp;
+            _mp = data._mp;
+            _miss = data._miss;
+            _phyRes = data._phyRes;
+            _magicRes = data._magicRes;
+            _attack = data._attack;
+            _moveRange = data._moveRange;
+            _atkSpeed = data._atkSpeed;
+            _phyIgn = data._phyIgn;
+            _magicIgn = data._magicIgn;
+            _viewRange = data._viewRange;
+            _viewHeight = data._viewHeight;
+
+            mExtraData = new Dictionary<string, object>(data.mExtraData);
         }
 
 

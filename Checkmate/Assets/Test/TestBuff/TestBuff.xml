@@ -1,0 +1,45 @@
+<Buff name="TestBuff" turn="1" times="5" icon="test.png">
+    <Description>TestEffect</Description>
+    <Data>
+        <value name="level" type="Int">3</value>
+        <value name="Damage" type="Int">10</value>
+    </Data>
+
+    <Content>
+        <Action trigger="OnAttached">
+            <Targets>
+            </Targets>
+            <Executes>
+                <Execute src="Standard.Damage">
+                    <Params>
+                        <Param type="Controller" value="%Obj"/>
+                        <Param type="Int" value="$Damage"/>
+                    </Params>
+                </Execute>
+                <Execute src="Standard.ChangeAttribute">
+                    <Params>
+                        <Param type="Controller" value="%Obj"/>
+                        <Param type="String" value="Add"/>
+                        <Param type="String" value="PhysicalRes"/>
+                        <Param type="String" value="10"/>
+                        <Param type="String" value="Int"/>
+                        <Param type="Bool" value="false"/>
+                        <Param type="Bool" value="true"/>
+                    </Params>
+                </Execute>
+            </Executes>
+        </Action>
+        <Action trigger="OnMove">
+            <Targets>
+            </Targets>
+            <Executes>
+                <Execute src="Standard.Damage">
+                    <Params>
+                        <Param type="Controller" value="%Obj"/>
+                        <Param type="Int" value="$Damage"/>
+                    </Params>
+                </Execute>
+            </Executes>
+        </Action>
+    </Content>
+</Buff>
