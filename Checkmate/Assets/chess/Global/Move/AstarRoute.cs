@@ -103,7 +103,8 @@ public class AstarRoute : MonoBehaviour
 
     private List<Position> RetracePath(CellController currentCell, CellController fromCell)
     {
-        List<Position> path = new List<Position>();path.Add(currentCell.Position);
+        List<Position> path = new List<Position>();
+        // path.Add(currentCell.Position);
         AstarCell cell = currentCell.Cell.GetComponent<AstarCell>();
         while (cell != fromCell.Cell.GetComponent<AstarCell>())
         {

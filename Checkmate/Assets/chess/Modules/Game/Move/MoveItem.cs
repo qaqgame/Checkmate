@@ -86,8 +86,12 @@ public class MoveItem : MonoBehaviour
                 item.rc.GetGameObject().transform.position = Vector3.Lerp(a, b, t);
                 yield return null;
             }
+            // Debug.LogError("i : " + i + "curr position: " + item.rc.Position.ToString() + "count: " + item.Path.Count);
+            // Debug.LogError("count-1: " + item.Path[item.Path.Count - 2].ToString() + "count: " + item.Path[item.Path.Count - 1].ToString());
+            // Debug.LogError("Position now1: " + item.rc.Position.ToString() + " to -1");
             MapManager.Instance.GetCell(item.rc.Position).Role = -1;
             item.rc.Position = item.Path[i];
+            // Debug.LogError("Position now2: " + item.rc.Position.ToString() + " to id");
             MapManager.Instance.GetCell(item.rc.Position).Role = item.rc.RoleId;
         }
         // 移动结束
