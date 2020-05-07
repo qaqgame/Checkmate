@@ -147,10 +147,10 @@ namespace Checkmate.Game.Controller
         {
             RoleId = data.id;
             Current = new RoleAttributeController(data.props);
-            
+            Current.onAttributeChanged = OnCurrentAttributeChanged;
             Origin = new RoleAttributeController(data.props);
             Temp = new RoleAttributeController(data.props);
-            Temp.onAttributeChanged = OnAttributeChanged;
+            Temp.onAttributeChanged = OnTempAttributeChanged;
             Position = new Position(data.position.x, data.position.y, data.position.z);
             Team = data.team;
             Status = data.status;
@@ -275,16 +275,25 @@ namespace Checkmate.Game.Controller
         //========================
         //内置处理
 
+        //=============
+        //属性变化
         //临时属性的增减变化
         private void OnTempAttrChanged()
         {
             Debuger.Log("{0} temp attr update", Name);
+            Debuger.Log("temp hp:{0},Current:{1}", Temp.Hp,Current.Hp) ;
             Temp.Copy(Current);
+            Debuger.Log("temp after hp:{0}", Temp.Hp);
             DataUtil.Execute(Temp, TempMap.Tracks);
-            //通知外部
-            if (onRoleChanged != null)
+            //若未触发属性监听，手动通知外部
+            if (TempMap.Tracks.Count == 0)
             {
-                onRoleChanged(this);
+                UpdatePanel();
+                //通知外部
+                if (onRoleChanged != null)
+                {
+                    onRoleChanged(this);
+                }
             }
         }
 
@@ -292,18 +301,43 @@ namespace Checkmate.Game.Controller
         private void OnCurrentAttrChanged()
         {
             Debuger.Log("{0} current attr update", Name);
+            int hp = Current.Hp;
+            int mp = Current.Mp;
             //赋予原值
             Current.Copy(Origin);
+            Current.SetHP(hp);
+            Current.SetMP(mp);
             //进行更改
             DataUtil.Execute(Current, CurrentMap.Tracks);
-            //更改临时值
-            OnTempAttrChanged();
-        }
+            //如果大于上限
+            if (Current.Hp > Current.MaxHp)
+            {
+                //设置为上限
+                Current.SetHP(Current.MaxHp);
+            }
+            if (Current.Mp > Current.MaxMp)
+            {
+                Current.SetMP(Current.MaxMp);
+            }
 
-        private void OnAttributeChanged(string param,ref object value,object origin)
+            //如果未触发current的变化监听，则手动触发temp的执行
+            if (CurrentMap.Tracks.Count == 0)
+            {
+                OnTempAttrChanged();
+            }
+        }
+        //temp改变时通知外部改变
+        private void OnTempAttributeChanged(string param,ref object value,object origin)
         {
+            Debuger.Log("temp param {0} changed", param);
             if (param == "Hp")
             {
+                //如果低于当前生命值
+                if ((int)value < Current.Hp)
+                {
+                    Current.Hp = (int)value;
+                }
+                Debuger.Log("HP changed");
                 //通知生命值改变
                 mPanel.SetHP((int)value);
             }
@@ -313,6 +347,20 @@ namespace Checkmate.Game.Controller
                 onRoleChanged(this);
             }
         }
+        //当current值发生变化时通知temp改变
+        private void OnCurrentAttributeChanged(string param, ref object value, object origin)
+        {
+            Debuger.Log("current {0} updated:{1}", param, value.ToString());
+            OnTempAttrChanged();
+        }
+
+        //更新所有面板
+        private void UpdatePanel()
+        {
+            mPanel.SetHP(Temp.Hp);
+        }
+        //=====================
+
         //添加buff时的回调
         private void OnAddBuff(ref Checkmate.Game.Buff.Buff buff)
         {

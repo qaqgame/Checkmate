@@ -28,6 +28,7 @@ namespace QGF.Unity.FGUI
         {
             base.OnOpen(arg);
             mCtrlTarget.SetSize(mRoot.width, mRoot.height);
+            mCtrlTarget.SetPosition(0, 0, 0);
             mCtrlTarget.AddRelation(mRoot, RelationType.Size);
         }
 

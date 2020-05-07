@@ -3,6 +3,7 @@ using Checkmate.Game.Skill;
 using QGF;
 using QGF.Common;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,7 +25,6 @@ namespace Checkmate.Game.Utils
         public object Data;
 
 
-        private List<RoleController> mUsedRoles;//所有在该环境下使用的角色
         public void Copy(EnvVariable target)
         {
             Obj = target.Obj;
@@ -327,14 +327,23 @@ namespace Checkmate.Game.Utils
         #endregion
     }
 
+    //执行的trck
+    public class GameEnvTrack
+    {
+        public EnvVariable env;//脚本的环境变量
+        public List<List<SkillAction>> actions;//所要执行的脚本
+
+
+    }
+
+
     //管理游戏过程中的环境变量
     //即管理技能目标之类的变量
     public class GameEnv:Singleton<GameEnv>
     {
         private Stack<EnvVariable> mEnvStacks;//环境变量栈
-        private Stack<BaseController> mEnvEffectStack;//效果环境栈
-        //private Dictionary<string, List<BaseController>> mTempTargets;//临时搜索/筛选得到的对象
-        
+
+        private Stack<EnvVariable> mExeEnvStacks;//执行时使用的环境栈
         public EnvVariable Current
         {
             get
@@ -342,11 +351,19 @@ namespace Checkmate.Game.Utils
                 return mEnvStacks.Peek();
             }
         }
+
+        public EnvVariable CurrentExe
+        {
+            get
+            {
+                return mExeEnvStacks.Peek();
+            }
+        }
         
         public void Init()
         {
             mEnvStacks = new Stack<EnvVariable>();
-            mEnvEffectStack = new Stack<BaseController>();
+            mExeEnvStacks = new Stack<EnvVariable>();
         }
 
         public void Clear()
@@ -377,6 +394,19 @@ namespace Checkmate.Game.Utils
         }
 
 
+        public void PushExeEnv(EnvVariable value)
+        {
+            mExeEnvStacks.Push(value);
+        }
+
+        public void PopExeEnv()
+        {
+            if (mExeEnvStacks.Count > 0)
+            {
+                mExeEnvStacks.Pop();
+            }
+        }
 
     }
+
 }

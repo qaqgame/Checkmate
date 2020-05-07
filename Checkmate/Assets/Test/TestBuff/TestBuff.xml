@@ -29,17 +29,5 @@
                 </Execute>
             </Executes>
         </Action>
-        <Action trigger="OnMove">
-            <Targets>
-            </Targets>
-            <Executes>
-                <Execute src="Standard.Damage">
-                    <Params>
-                        <Param type="Controller" value="%Obj"/>
-                        <Param type="Int" value="$Damage"/>
-                    </Params>
-                </Execute>
-            </Executes>
-        </Action>
     </Content>
 </Buff>

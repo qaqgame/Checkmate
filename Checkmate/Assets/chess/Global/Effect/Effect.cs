@@ -36,15 +36,20 @@ namespace Checkmate.Game.Effect
 
         public void Execute()
         {
-            foreach(var action in mActions)
+            if (mActions == null || mActions.Count == 0)
             {
-                GameEnv.Instance.Current.ExecuteAction(action);
+                return;
             }
-            foreach (var r in Temp.mUsedRoles)
-            {
-                r.TempMap.RemoveTrack(Temp);
-            }
-            Temp.Clear();
+            GameExecuteManager.Instance.Add(mActions);
+            //foreach(var action in mActions)
+            //{
+            //    GameEnv.Instance.Current.ExecuteAction(action);
+            //}
+            //foreach (var r in Temp.mUsedRoles)
+            //{
+            //    r.TempMap.RemoveTrack(Temp);
+            //}
+            //Temp.Clear();
         }
 
 

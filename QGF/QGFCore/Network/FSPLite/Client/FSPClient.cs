@@ -280,7 +280,7 @@ namespace QGF.Network.FSPLite.Client
         //kcp发送时的回调函数
         private void HandleKcpSend(byte[] bytes, int len)
         {
-            Debuger.Log("fsp send data :{0},length:{1}", bytes,len);
+            //Debuger.Log("fsp send data :{0},length:{1}", bytes,len);
             mSystemSocket.SendTo(bytes, 0, len, SocketFlags.None, mRemoteEndPoint);
         }
         //发送
@@ -306,7 +306,7 @@ namespace QGF.Network.FSPLite.Client
 
 
                 int len = PBSerializer.NSerialize(mTempSendData, mSendBufferTemp);
-                Debuger.Log("send fsp with sid:{0}", mTempSendData.sid);
+                //Debuger.Log("send fsp with sid:{0}", mTempSendData.sid);
                 Span<byte> memory = mSendBufferTemp;
 
                 return len>0&&mKcp.Send(memory.Slice(0,len)) >= 0;

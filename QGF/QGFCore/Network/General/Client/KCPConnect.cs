@@ -126,7 +126,7 @@ namespace QGF.Network.General.Client
         private void HandleKcpSend(byte[] bytes,int len)
         {
             ++sendCnt;
-            Debuger.Log("send msg time:{0}", sendCnt);
+            //Debuger.Log("send msg time:{0}", sendCnt);
             mSysSocket.SendTo(bytes, 0, len, SocketFlags.None, mRemoteEndPoint);
         }
 
@@ -165,7 +165,7 @@ namespace QGF.Network.General.Client
                 }
                 //取出数据
                 byte[] dst = new byte[cnt];
-                Debuger.Log("receive data size:{0}", cnt);
+                //Debuger.Log("receive data size:{0}", cnt);
                 Buffer.BlockCopy(mReceiveBufferTemp, 0, dst, 0, cnt);
                 mRecvBufQueue.Push(dst);
 
@@ -180,7 +180,7 @@ namespace QGF.Network.General.Client
             while (!mRecvBufQueue.Empty())
             {
                 var recvBufferRaw = mRecvBufQueue.Pop();
-                Debuger.Log("into kcp size:{0}", recvBufferRaw.Length);
+                //Debuger.Log("into kcp size:{0}", recvBufferRaw.Length);
                 //放入kcp
                 int ret = mKcp.Input(recvBufferRaw);
                 //收到的包不正确时
@@ -208,7 +208,7 @@ namespace QGF.Network.General.Client
 
         public bool Send(byte[] bytes, int len)
         {
-            Debuger.Log("connect send times:{0}", sendCnt);
+            //Debuger.Log("connect send times:{0}", sendCnt);
             if (!Connected)
             {
                 Debuger.LogError("kcp not connected!");

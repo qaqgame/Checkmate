@@ -48,7 +48,7 @@ namespace Checkmate.Standard
         {
             if (controller != null)
             {
-                controller.Temp.Hp -= damage;
+                controller.Current.Hp -= damage;
             }
         }
 

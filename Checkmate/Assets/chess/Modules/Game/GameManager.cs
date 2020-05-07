@@ -156,7 +156,7 @@ namespace Checkmate.Modules.Game
             GameEnv.Instance.PushEnv(null, null, null);
             role.AddBuff("TestBuff");
             GameEnv.Instance.PopEnv();
-            Debuger.Log("{0} physicRes:{1},current:{2}", role.Name, role.Temp.GetValue("PhysicalRes"),role.Current.GetValue("PhysicalRes"));
+            
             CellController cell = MapManager.Instance.GetCell(role.Position);
             Debug.Log(cell.Terrain);
 
@@ -214,12 +214,14 @@ namespace Checkmate.Modules.Game
 
             //===================================
             //测试部分
-            //if (Time.time - last > 5)
-            //{
-            //    RoleController role = RoleManager.Instance.GetRole(1);
-            //    role.Current.Hp -= 10;
-            //    last = Time.time;
-            //}
+            if (Time.time - last > 3)
+            {
+                RoleController role = RoleManager.Instance.GetRole(1);
+                Debuger.Log("{0} physicRes:{1},current:{2}", role.Name, role.Temp.GetValue("PhysicalRes"), role.Current.GetValue("PhysicalRes"));
+                Debuger.Log("{0} tempHP:{1},currentHP:{2}", role.Name, role.Temp.Hp, role.Current.Hp);
+
+                last = Time.time;
+            }
         }
         //=================================
 

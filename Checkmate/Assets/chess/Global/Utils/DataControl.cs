@@ -66,6 +66,8 @@ namespace Checkmate.Game.Utils
                         break;
                     }
             }
+            string msg = result.ToString();
+            Debuger.Log("update data{0} with {1}", track.name, msg);
             controller.SetValue(track.name, result);
         }
     }

@@ -10,6 +10,7 @@ using Checkmate.Game.Feature;
 using Checkmate.Game.Role;
 using Checkmate.Game.Map;
 using Checkmate.Game.Effect;
+using QGF;
 
 namespace Checkmate.Game.Controller
 {
@@ -65,14 +66,17 @@ namespace Checkmate.Game.Controller
             //遍历所有，如果满足触发以及回合冷却则执行
             if (effects != null && effects.Count > 0)
             {
+                int cnt = 0;
                 foreach (var track in effects)
                 {
                     if (track.Trigger == trigger && track.Cur >= track.Interval)
                     {
+                        ++cnt;
                         EffectManager.Instance.ExecuteEffect(track.Id, this, role);
                         track.Cur = 0;
                     }
                 }
+                Debuger.Log("effect {0} execute {1} when {2}", Position.ToString(), cnt.ToString(),trigger.ToString());
             }
         }
 
@@ -90,7 +94,9 @@ namespace Checkmate.Game.Controller
             //如果存在特征加载效果
             if (mCell.Feature >= 0)
             {
+               
                 FeatureData fd = FeatureManager.Instance.GetFeatureData(mCell.Feature);
+                Debuger.Log("add effect cnt:{0}", fd.effectIdx.Count.ToString());
                 if (fd.effectIdx != null && fd.effectIdx.Count > 0)
                 {
                     effects = new List<EffectTrack>();

@@ -11,6 +11,8 @@ namespace Checkmate.Game.Controller
 {
     public class RoleAttributeController : BaseController
     {
+        private int _maxHp;
+        private int _maxMp;
         private int _hp;
         private int _mp;
         private float _miss;//闪避率
@@ -26,7 +28,71 @@ namespace Checkmate.Game.Controller
 
         public delegate void AttributeListener(string param, ref object value, object origin);
 
-        public AttributeListener onAttributeChanged;//属性改变事件 
+        public AttributeListener onAttributeChanging=null;//属性改变前事件
+        public AttributeListener onAttributeChanged= null;//属性改变后事件
+
+        public void SetHP(int value) { _hp = value>_maxHp?_maxHp:value; }
+        public void SetMP(int value) { _mp = value>_maxMp?_maxMp:value; }
+
+        [GetProperty]
+        [SetProperty]
+        public int MaxHp {
+            get
+            {
+                return _maxHp;
+            }
+            set
+            {
+                object v = value;
+                if (onAttributeChanging != null)
+                {
+                    onAttributeChanging("MaxHp", ref v, _maxHp);
+                }
+                int temp = _maxHp;
+                _maxHp = (int)v < 0 ? 0 : (int)v;
+                v = _maxHp;
+                if (onAttributeChanged != null)
+                {
+                    onAttributeChanged("MaxHp", ref v, temp);
+                }
+                //如果当前生命值大于上限
+                if (Hp > _maxHp)
+                {
+                    Hp = _maxHp;
+                }
+            }
+        
+        }
+
+        [GetProperty]
+        [SetProperty]
+        public int MaxMp
+        {
+            get
+            {
+                return _maxMp;
+            }
+            set
+            {
+                object v = value;
+                if (onAttributeChanging != null)
+                {
+                    onAttributeChanging("MaxMp", ref v, _maxMp);
+                }
+                int temp = _maxMp;
+                _maxMp = (int)v;
+                if (onAttributeChanged != null)
+                {
+                    onAttributeChanged("MaxMp", ref v, temp);
+                }
+                //如果当前生命值大于上限
+                if (Mp > _maxMp)
+                {
+                    Mp = _maxMp;
+                }
+            }
+
+        }
 
         [GetProperty]
         [SetProperty]
@@ -36,12 +102,17 @@ namespace Checkmate.Game.Controller
             set 
             {
                 object v = value;
+                if (onAttributeChanging != null)
+                {
+                    onAttributeChanging("Hp", ref v, _hp);
+                }
+                int temp = _hp;
+                _hp = (int)v<0?0:(int)v;
                 if (onAttributeChanged != null)
                 {
-                    onAttributeChanged("Hp", ref v, _hp);
+                    onAttributeChanged("Hp", ref v, temp);
                 }
-                _hp = (int)v<0?0:(int)v;
-                
+
             }
         }
 
@@ -52,11 +123,16 @@ namespace Checkmate.Game.Controller
             get { return _mp; }
             set {
                 object v = value;
+                if (onAttributeChanging != null)
+                {
+                    onAttributeChanging("Mp", ref v, _mp);
+                }
+                int temp = _mp;
+                _mp = (int)v;
                 if (onAttributeChanged != null)
                 {
-                    onAttributeChanged("Mp", ref v, _mp);
+                    onAttributeChanged("Mp", ref v, temp);
                 }
-                _mp = (int)v; 
             }
         }
 
@@ -68,11 +144,16 @@ namespace Checkmate.Game.Controller
             set
             {
                 object v = value;
+                if (onAttributeChanging != null)
+                {
+                    onAttributeChanging("Miss", ref v, _miss);
+                }
+                float temp = _miss;
+                _miss = (float)v > 1.0f ? 1.0f : (float)v;
                 if (onAttributeChanged != null)
                 {
-                    onAttributeChanged("Miss", ref v, _miss);
+                    onAttributeChanged("Miss", ref v, temp);
                 }
-                _miss = (float)v > 1.0f ? 1.0f : (float)v;
             }
         }
 
@@ -83,11 +164,16 @@ namespace Checkmate.Game.Controller
             get { return _phyRes; }
             set {
                 object v = value;
+                if (onAttributeChanging != null)
+                {
+                    onAttributeChanging("PhysicalRes", ref v, _phyRes);
+                }
+                int temp = _phyRes;
+                _phyRes = (int)v;
                 if (onAttributeChanged != null)
                 {
-                    onAttributeChanged("PhysicalRes", ref v, _phyRes);
+                    onAttributeChanged("PhysicalRes", ref v, temp);
                 }
-                _phyRes = (int)v; 
             }
         }
 
@@ -98,11 +184,16 @@ namespace Checkmate.Game.Controller
             get { return _magicRes; }
             set {
                 object v = value;
+                if (onAttributeChanging != null)
+                {
+                    onAttributeChanging("MagicRes", ref v, _magicRes);
+                }
+                int temp = _magicRes;
+                _magicRes =(int)v;
                 if (onAttributeChanged != null)
                 {
-                    onAttributeChanged("MagicRes", ref v, _magicRes);
+                    onAttributeChanged("MagicRes", ref v, temp);
                 }
-                _magicRes =(int)v; 
             }
         }
 
@@ -113,11 +204,16 @@ namespace Checkmate.Game.Controller
             get { return _attack; }
             set {
                 object v = value;
+                if (onAttributeChanging != null)
+                {
+                    onAttributeChanging("Attack", ref v, _attack);
+                }
+                int temp = _attack;
+                _attack = (int)v;
                 if (onAttributeChanged != null)
                 {
-                    onAttributeChanged("Attack", ref v, _attack);
+                    onAttributeChanged("Attack", ref v, temp);
                 }
-                _attack = (int)v;
             }
         }
 
@@ -128,11 +224,17 @@ namespace Checkmate.Game.Controller
             get { return _moveRange; }
             set {
                 object v = value;
+                if (onAttributeChanging != null)
+                {
+                    onAttributeChanging("MoveRange", ref v, _moveRange);
+                }
+                int temp = _moveRange;
+                _moveRange = (int)v>10?10:(int)v;
+                v = _moveRange;
                 if (onAttributeChanged != null)
                 {
-                    onAttributeChanged("MoveRange", ref v, _moveRange);
+                    onAttributeChanged("MoveRange", ref v, temp);
                 }
-                _moveRange = (int)v>10?10:(int)v; 
             }
         }
 
@@ -143,11 +245,17 @@ namespace Checkmate.Game.Controller
             get { return _atkSpeed; }
             set {
                 object v = value;
+                if (onAttributeChanging != null)
+                {
+                    onAttributeChanging("AttackSpeed", ref v, _atkSpeed);
+                }
+                float temp = _atkSpeed;
+                _atkSpeed = (float)v>3.0f?3.0f:(float)v;
+                v = _atkSpeed;
                 if (onAttributeChanged != null)
                 {
-                    onAttributeChanged("AttackSpeed", ref v, _atkSpeed);
+                    onAttributeChanged("AttackSpeed", ref v, temp);
                 }
-                _atkSpeed = (float)v>3.0f?3.0f:(float)v; 
             }
         }
 
@@ -158,11 +266,17 @@ namespace Checkmate.Game.Controller
             get { return _phyIgn; }
             set {
                 object v = value;
+                if (onAttributeChanging != null)
+                {
+                    onAttributeChanging("PhysicalIgnore", ref v, _phyIgn);
+                }
+                float temp = _phyIgn;
+                _phyIgn = (float)v > 1.0f ? 1.0f : (float)v;
+                v = _phyIgn;
                 if (onAttributeChanged != null)
                 {
-                    onAttributeChanged("PhysicalIgnore", ref v, _phyIgn);
+                    onAttributeChanged("PhysicalIgnore", ref v, temp);
                 }
-                _phyIgn = (float)v > 1.0f ? 1.0f : (float)v;
             }
         }
 
@@ -173,11 +287,17 @@ namespace Checkmate.Game.Controller
             get { return _magicIgn; }
             set {
                 object v = value;
+                if (onAttributeChanging != null)
+                {
+                    onAttributeChanging("MagicIgnore", ref v, _magicIgn);
+                }
+                float temp = _magicIgn;
+                _magicIgn = (float)v > 1.0f ? 1.0f : (float)v;
+                v = _magicIgn;
                 if (onAttributeChanged != null)
                 {
-                    onAttributeChanged("MagicIgnore", ref v, _magicIgn);
+                    onAttributeChanged("MagicIgnore", ref v, temp);
                 }
-                _magicIgn = (float)v > 1.0f ? 1.0f : (float)v;
             }
         }
 
@@ -188,11 +308,17 @@ namespace Checkmate.Game.Controller
             get { return _viewRange; }
             set {
                 object v = value;
+                if (onAttributeChanging != null)
+                {
+                    onAttributeChanging("ViewRange", ref v, _viewRange);
+                }
+                int temp = _viewRange;
+                _viewRange = (int)v > 5 ? 5 : (int)v;
+                v = _viewRange;
                 if (onAttributeChanged != null)
                 {
-                    onAttributeChanged("ViewRange", ref v, _viewRange);
+                    onAttributeChanged("ViewRange", ref v, temp);
                 }
-                _viewRange = (int)v > 5 ? 5 : (int)v; 
             }
         }
 
@@ -203,16 +329,24 @@ namespace Checkmate.Game.Controller
             get { return _viewHeight; }
             set {
                 object v = value;
+                if (onAttributeChanging != null)
+                {
+                    onAttributeChanging("ViewHeight", ref v, _viewHeight);
+                }
+                int temp = _viewHeight;
+                _viewHeight = (int)v > 3 ? 3 : (int)v;
+                v = _viewHeight;
                 if (onAttributeChanged != null)
                 {
-                    onAttributeChanged("ViewHeight", ref v, _viewHeight);
+                    onAttributeChanged("ViewHeight", ref v, temp);
                 }
-                _viewHeight = (int)v > 3 ? 3 : (int)v;
             }
         }
 
         public RoleAttributeController(RoleProperty data):base(data.extraData)
         {
+            _maxHp = data.hp;
+            _maxMp = data.mp;
             _hp = data.hp;
             _mp = data.mp;
             _miss = data.miss;
@@ -247,6 +381,8 @@ namespace Checkmate.Game.Controller
 
         public void Copy(RoleAttributeController data)
         {
+            _maxHp = data._maxHp;
+            _maxMp = data._maxMp;
             _hp = data._hp;
             _mp = data._mp;
             _miss = data._miss;

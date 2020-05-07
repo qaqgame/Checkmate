@@ -149,21 +149,18 @@ namespace Checkmate.Game.Buff
         public void Execute(TriggerType trigger)
         {
             //不包含直接返回
-            if (!mActions.ContainsKey(trigger))
+            if (!mActions.ContainsKey(trigger)||mActions[trigger].Count==0)
             {
                 return;
             }
-
-            foreach(var action in mActions[trigger])
-            {
-                GameEnv.Instance.Current.ExecuteAction(action);
-            }
-            //清除所有涉及对象的属性加成
-            foreach(var role in Temp.mUsedRoles)
-            {
-                role.TempMap.RemoveTrack(Temp);
-            }
-            Temp.Clear();
+            Debuger.Log("buff {0} execute {1}", Name, trigger.ToString());
+            GameExecuteManager.Instance.Add(mActions[trigger]);
+            ////清除所有涉及对象的属性加成
+            //foreach (var role in Temp.mUsedRoles)
+            //{
+            //    role.TempMap.RemoveTrack(Temp);
+            //}
+            //Temp.Clear();
         }
 
         //========================================

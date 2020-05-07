@@ -364,28 +364,38 @@ namespace Checkmate.Game.Skill
 
         public override void OnLoad()
         {
-            foreach (var action in mActions[ActionTrigger.Load])
+            if (!mActions.ContainsKey(ActionTrigger.Load) || mActions[ActionTrigger.Load].Count == 0)
             {
-                GameEnv.Instance.Current.ExecuteAction(action);
+                return;
             }
-            foreach (var r in Temp.mUsedRoles)
-            {
-                r.TempMap.RemoveTrack(Temp);
-            }
-            Temp.Clear();
+            GameExecuteManager.Instance.Add(mActions[ActionTrigger.Load]);
+            //foreach (var action in mActions[ActionTrigger.Load])
+            //{
+            //    GameEnv.Instance.Current.ExecuteAction(action);
+            //}
+            //foreach (var r in Temp.mUsedRoles)
+            //{
+            //    r.TempMap.RemoveTrack(Temp);
+            //}
+            //Temp.Clear();
         }
 
         public override void OnExecute()
         {
-            foreach (var action in mActions[ActionTrigger.Execute])
+            if (!mActions.ContainsKey(ActionTrigger.Execute) || mActions[ActionTrigger.Execute].Count == 0)
             {
-                GameEnv.Instance.Current.ExecuteAction(action);
+                return;
             }
-            foreach (var r in Temp.mUsedRoles)
-            {
-                r.TempMap.RemoveTrack(Temp);
-            }
-            Temp.Clear();
+            GameExecuteManager.Instance.Add(mActions[ActionTrigger.Execute]);
+            //foreach (var action in mActions[ActionTrigger.Execute])
+            //{
+            //    GameEnv.Instance.Current.ExecuteAction(action);
+            //}
+            //foreach (var r in Temp.mUsedRoles)
+            //{
+            //    r.TempMap.RemoveTrack(Temp);
+            //}
+            //Temp.Clear();
         }
     }
 
