@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Checkmate.Standard
 {
@@ -16,6 +17,61 @@ namespace Checkmate.Standard
         {
             
         }
+
+        //add
+        public void Add(RoleController role,string src,int value, bool temp = true, bool persistent = false)
+        {
+            ChangeAttribute(role, "Add", src, value.ToString(), "Int",temp, persistent);
+        }
+        public void Add(RoleController role, string src, float value, bool temp = true, bool persistent = false)
+        {
+            ChangeAttribute(role, "Add", src, value.ToString(), "Float", temp, persistent);
+        }
+        //sub
+        public void Sub(RoleController role, string src, float value, bool temp = true, bool persistent = false)
+        {
+            ChangeAttribute(role, "Sub", src, value.ToString(), "Float", temp, persistent);
+        }
+        public void Sub(RoleController role, string src, int value, bool temp = true, bool persistent = false)
+        {
+            ChangeAttribute(role, "Sub", src, value.ToString(), "Int", temp, persistent);
+        }
+        //mul
+        public void Mul (RoleController role, string src, float value, bool temp = true, bool persistent = false)
+        {
+            ChangeAttribute(role, "Mul", src, value.ToString(), "Float", temp, persistent);
+        }
+        public void Mul(RoleController role, string src, int value, bool temp = true, bool persistent = false)
+        {
+            ChangeAttribute(role, "Mul", src, value.ToString(), "Int", temp, persistent);
+        }
+        //div
+        public void Div(RoleController role, string src, int value, bool temp = true, bool persistent = false)
+        {
+            ChangeAttribute(role, "Div", src, value.ToString(), "Int", temp, persistent);
+        }
+        public void Div(RoleController role, string src, float value, bool temp = true, bool persistent = false)
+        {
+            ChangeAttribute(role, "Div", src, value.ToString(), "Float", temp, persistent);
+        }
+        //set
+        public void Set(RoleController role, string src, float value, bool temp = true, bool persistent = false)
+        {
+            ChangeAttribute(role, "Set", src, value.ToString(), "Float", temp, persistent);
+        }
+        public void Set(RoleController role, string src, int value, bool temp = true, bool persistent = false)
+        {
+            ChangeAttribute(role, "Set", src, value.ToString(), "Int", temp, persistent);
+        }
+        public void Set(RoleController role, string src, bool value, bool temp = true, bool persistent = false)
+        {
+            ChangeAttribute(role, "Set", src, value.ToString(), "Bool", temp, persistent);
+        }
+        public void Set(RoleController role, string src, string value, bool temp = true, bool persistent = false)
+        {
+            ChangeAttribute(role, "Set", src, value.ToString(), "String", temp, persistent);
+        }
+
 
         public void ChangeAttribute(RoleController role,string opt,string src,string value,string type,bool temp=true,bool persistent = false)
         {
@@ -43,6 +99,7 @@ namespace Checkmate.Standard
             }
             
         }
+        //======================
 
         public void Damage(RoleController controller,int damage)
         {
@@ -52,6 +109,61 @@ namespace Checkmate.Standard
             }
         }
 
+
+
+
+
+
+
+
+
+        //=========================
+        string currentEffectName;//当前name
+        RoleController currentRole;//当前角色
+        //控制流
+        public void Wait(float second)
+        {
+            GameExecuteManager.Instance.Wait(second);
+        }
+
+        public void PlayEffect(string name,RoleController role,float time)
+        {
+            GameObject effect = Resources.Load("Effects/" + name) as GameObject;
+            GameObject obj=GameObject.Instantiate(effect, role.GetGameObject().transform);
+            obj.transform.name = name + "_" + time.ToString();
+            currentEffectName = obj.transform.name;
+            currentRole = role;
+            GameExecuteManager.Instance.Wait(time, DestroyCurrent);
+        }
+
+        private void DestroyCurrent()
+        {
+            DestroyEffect(currentEffectName, currentRole);
+        }
+
+        private void DestroyEffect(string realname,RoleController role)
+        {
+            GameObject obj = role.GetGameObject().transform.Find(realname).gameObject;
+            GameObject.Destroy(obj);
+        }
+
+
+
+
+        public void AttachEffect(string name,RoleController role)
+        {
+            GameObject effect = Resources.Load("Effects/" + name) as GameObject;
+            GameObject.Instantiate(effect, role.GetGameObject().transform);
+        }
+
+
+
+
+
+
+
+
+        //===============================
         private object GetValue(string value,string type)
         {
             switch (type)

@@ -64,28 +64,41 @@ namespace Checkmate.Game.Utils
             StartCoroutine(Execute());
         }
 
-        public void Wait(WaitAction action)
+        public void Wait(WaitAction action,Action onFinish=null)
         {
-            StartCoroutine(WaitFor(action));
+            StartCoroutine(WaitFor(action,onFinish));
         }
 
-        public void Wait(float second)
+        public void Wait(float second,Action onFinish=null)
         {
-            StartCoroutine(WaitSecond(second));
+            StartCoroutine(WaitSecond(second,onFinish));
         }
 
 
-        IEnumerator WaitSecond(float s)
+
+        IEnumerator WaitSecond(float s,Action onFinish=null)
         {
             wait = true;
             yield return new WaitForSeconds(s);
+            if (onFinish != null)
+            {
+                onFinish();
+            }
             wait = false;
         }
 
-        IEnumerator WaitFor(WaitAction action)
+        IEnumerator WaitFor(WaitAction action,Action onFinish=null)
         {
             wait = true;
-            yield return action();
+            while (!action())
+            {
+                yield return null;
+            }
+
+            if (onFinish != null)
+            {
+                onFinish();
+            }
             wait = false;
         }
 

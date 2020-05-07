@@ -270,11 +270,13 @@ namespace Checkmate.Modules.Game
             Debug.Log("click pos:" + controller.GetPosition().ToString());
             DrawUtil.ClearAll();
             DrawUtil.DrawSingle(controller.GetPosition(), 1);
+          
         }
 
         private void OnRoleClicked(RoleController role)
         {
             Debug.Log("clicked role:" + role.Name);
+           
         }
 
         private void OnResetState()

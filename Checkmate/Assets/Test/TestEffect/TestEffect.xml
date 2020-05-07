@@ -10,6 +10,13 @@
             <Targets>
             </Targets>
             <Executes>
+                <Execute src="Standard.PlayEffect">
+                    <Params>
+                        <Param type="String" value="Fireball"/>
+                        <Param type="Controller" value="%Dst"/>
+                        <Param type="Float" value="2.0"/>
+                    </Params>
+                </Execute>
                 <Execute src="Standard.Damage">
                     <Params>
                         <Param type="Controller" value="%Dst"/>

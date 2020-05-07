@@ -10,6 +10,12 @@
             <Targets>
             </Targets>
             <Executes>
+                <Execute src="Standard.AttachEffect">
+                    <Params>
+                        <Param type="String" value="ColorfulFairyDust"/>
+                        <Param type="Controller" value="%Obj"/>
+                    </Params>
+                </Execute>
                 <Execute src="Standard.Damage">
                     <Params>
                         <Param type="Controller" value="%Obj"/>
