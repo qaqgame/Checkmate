@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Checkmate.Game.Player
 {
     //玩家管理的类
-    public class PlayerManager:Singleton<PlayerManager>
+    public class PlayerManager : Singleton<PlayerManager>
     {
         public uint PID { get; set; }
 
@@ -19,12 +19,13 @@ namespace Checkmate.Game.Player
         {
             mFriends = new Dictionary<uint, uint>();
             mEnemys = new Dictionary<uint, uint>();
-            
-            foreach(var team in data.masks)
+
+            foreach (var team in data.masks)
             {
                 mFriends.Add(team.pid, team.friendMask);
                 mEnemys.Add(team.pid, team.enemyMask);
             }
+            IsWaiting = false;
         }
 
 
@@ -32,12 +33,32 @@ namespace Checkmate.Game.Player
         {
 
         }
-        
+
+        private bool mOperating;
 
         public bool Operating
         {
-            get;
-            set;
+            get
+            {
+                return mOperating;
+            }
+            set
+            {
+                mOperating = value;
+            }
+        }
+
+        public bool CanOperate
+        {
+            get
+            {
+                return mOperating && !IsWaiting;
+            }
+        }
+
+        public bool IsWaiting
+        {
+            get;set;
         }
 
         /// <summary>

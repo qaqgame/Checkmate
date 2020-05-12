@@ -35,19 +35,29 @@ namespace Checkmate.Game.Utils
             Data = target.Data;
         }
 
-        public void ExecuteAction(SkillAction action)
-        {
-            ControllerPool.Clear();
-            ExecuteTargets(action);
-            foreach (var info in action.Executes)
-            {
-                ExecuteMain(info);
-            }
-        }
+        //public void ExecuteAction(SkillAction action)
+        //{
+        //    ExecuteTargets(action);
+        //    foreach (var info in action.Executes)
+        //    {
+        //        ExecuteMain(info);
+        //    }
+        //}
 
         #region 执行函数
-        private void ExecuteTargets(SkillAction action)
+        public bool ExecuteChecks(SkillAction action)
         {
+            //无条件限制默认返回true
+            if (action.Checks == null)
+            {
+                return true;
+            }
+            return action.Checks.Execute();
+        }
+
+        public void ExecuteTargets(SkillAction action)
+        {
+            ControllerPool.Clear();
             foreach (var track in action.TargetTracks)
             {
                 //执行搜索
@@ -115,7 +125,7 @@ namespace Checkmate.Game.Utils
             }
         }
 
-        private void ExecuteMain(ExecuteInfo info)
+        public void ExecuteMain(ExecuteInfo info)
         {
             object returnValue = null;
             object[] param = new object[info.parameters.Count];
@@ -179,7 +189,7 @@ namespace Checkmate.Game.Utils
         /// <summary>
         /// 获取搜索参数
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">搜索起始</param>
         /// <param name="pos"></param>
         /// <returns>判断是否成功获取</returns>
         private bool TryGetSearchParam(string value, out Position pos)
@@ -207,7 +217,7 @@ namespace Checkmate.Game.Utils
         }
 
 
-        private object GetParam(ParamType type, string value)
+        public object GetParam(ParamType type, string value)
         {
             //如果value是内部变量，直接获取
             if (value.Contains('$'))
@@ -223,13 +233,21 @@ namespace Checkmate.Game.Utils
                     return GetController(value.Substring(1));
                 }
                 //获取变量
-                string cn = value.Substring(1, value.IndexOf('.'));
-                string v = value.Substring(value.IndexOf('.') + 1);
-                BaseController controller = GetController(cn);
-                return controller.GetValue(v);
+                if (value.Contains('.'))
+                {
+                    string cn = value.Substring(1, value.IndexOf('.'));
+                    string v = value.Substring(value.IndexOf('.') + 1);
+                    BaseController controller = GetController(cn);
+                    return controller.GetValue(v);
+                }
+                //否则直接转换
+                else
+                {
+
+                }
             }
             //代表取列表的单个控制器
-            else if (value.Contains('#') && type == ParamType.Controller)
+            else if (value.Contains('#') && type != ParamType.ControllerList)
             {
                 string cname = value.Substring(1);
                 string tempValue = null;
@@ -249,7 +267,9 @@ namespace Checkmate.Game.Utils
                     {
                         ++idx2;
                     }
-                    idx = int.Parse(cname.Substring(idx + 1, idx2 - idx1 - 1));
+                    string idxValue = cname.Substring(idx1 + 1, idx2 - idx1 - 1);
+                    Debuger.Log("parse idx:{0}[{1}]", cname, idxValue);
+                    idx = int.Parse(idxValue);
                     cname = cname.Substring(0, idx1);
                 }
                 
@@ -271,6 +291,7 @@ namespace Checkmate.Game.Utils
                     case ParamType.Float: return float.Parse(value);
                     case ParamType.String: return value;
                     case ParamType.Bool:return bool.Parse(value);
+                    case ParamType.Position:return Position.Parse(value);
                     default:Debuger.LogError("cannot get value:{0} of type:{1}", value, type);
                         break;
                 }
@@ -292,6 +313,7 @@ namespace Checkmate.Game.Utils
                     return Obj;
                 case "Dst": return Dst;
                 case "Main": return Main;
+                case "Data":return Data as BaseController;
             }
             return null;
         }
@@ -332,7 +354,7 @@ namespace Checkmate.Game.Utils
     {
         public EnvVariable env;//脚本的环境变量
         public List<List<SkillAction>> actions;//所要执行的脚本
-
+        public Action exe=null;
 
     }
 
@@ -341,6 +363,7 @@ namespace Checkmate.Game.Utils
     //即管理技能目标之类的变量
     public class GameEnv:Singleton<GameEnv>
     {
+        public static int Damage;//当前伤害值
         private Stack<EnvVariable> mEnvStacks;//环境变量栈
 
         private Stack<EnvVariable> mExeEnvStacks;//执行时使用的环境栈

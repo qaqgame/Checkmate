@@ -70,9 +70,7 @@ namespace Checkmate.Game.Buff
             {
                 Buff buff = mBuffInstances[buffId];
                 EnvVariable env = new EnvVariable();
-                env.Src = buff.Src;
-                env.Obj = buff.Obj;
-                env.Dst = null;
+                env.Copy(GameEnv.Instance.Current);
                 env.Center = role.Position;
                 env.Main = buff;
                 env.Data = data;

@@ -1,4 +1,7 @@
-﻿using Checkmate.Game.Controller;
+﻿using Checkmate.Game;
+using Checkmate.Game.Buff;
+using Checkmate.Game.Controller;
+using Checkmate.Game.Map;
 using Checkmate.Game.Role;
 using Checkmate.Game.Utils;
 using QGF;
@@ -86,7 +89,7 @@ namespace Checkmate.Standard
                 role.TempMap.AddTrack(track);
                 if (!persistent)
                 {
-                    GameEnv.Instance.Current.Main.Temp.AddTrack(track);
+                    GameEnv.Instance.CurrentExe.Main.Temp.AddTrack(track);
                 }
             }
             else
@@ -94,14 +97,14 @@ namespace Checkmate.Standard
                 role.CurrentMap.AddTrack(track);
                 if (!persistent)
                 {
-                    GameEnv.Instance.Current.Main.Current.AddTrack(track);
+                    GameEnv.Instance.CurrentExe.Main.Current.AddTrack(track);
                 }
             }
             
         }
         //======================
 
-        public void Damage(RoleController controller,int damage)
+        public void Damage(RoleController controller, int damage)
         {
             if (controller != null)
             {
@@ -110,11 +113,33 @@ namespace Checkmate.Standard
         }
 
 
+        public int AddBuff(RoleController role,string buff)
+        {
+            if (role != null)
+            {
+                return role.AddBuff(buff);
+            }
+            return -1;
+        }
+
+        public void RemoveBuff(RoleController role,int id)
+        {
+            if (id != -1&&role!=null)
+            {
+                role.RemoveBuff(id);
+            }
+        }
 
 
 
+        public void DamagePhysically(RoleController target,int dmg,bool miss)
+        {
+            target.DamagePhysically(dmg, miss);
+        }
 
 
+
+        
 
 
         //=========================
@@ -149,16 +174,116 @@ namespace Checkmate.Standard
 
 
 
-
+        //附着效果
         public void AttachEffect(string name,RoleController role)
         {
             GameObject effect = Resources.Load("Effects/" + name) as GameObject;
             GameObject.Instantiate(effect, role.GetGameObject().transform);
         }
 
+        //播放动画
+        public void PlayAnim(string name,RoleController role)
+        {
+            //获取实例
+            GameObject model = role.GetModel();
+            Animator animator = model.GetComponent<Animator>();
+            animator.ResetTrigger("Idle");
+            animator.SetTrigger(name);
+            
+            GameExecuteManager.Instance.Wait(() => { return WaitForAnim(name, animator); });
+        }
+
+        private bool WaitForAnim(string name,Animator animator)
+        {
+            AnimatorStateInfo info = animator.GetCurrentAnimatorStateInfo(0);
+            if (info.IsName(name) && info.normalizedTime > 1.0f)
+            {
+                //播放结束，返回true
+                animator.ResetTrigger(name);
+                animator.SetTrigger("Idle");
+                return true;
+            }
+            return false;
+        }
 
 
+        //移动
+        #region 移动
 
+        /// <summary>
+        /// 移动到目标位置
+        /// </summary>
+        /// <param name="role">角色</param>
+        /// <param name="center">目标位置</param>
+        /// <param name="time">移动时间</param>
+        public void MoveTo(RoleController role,Position center,float time=1)
+        {
+            startPos = role.GetGameObject().transform.position;
+            currentTime = 0;
+            maxTime = time;
+            Vector3 target = MapManager.Instance.GetCellWorldPosition(center);
+            role.FaceTo(target);
+            moveObj = role.GetGameObject();
+            targetPos = target;
+
+            GameExecuteManager.Instance.Wait(Move);
+        }
+
+        /// <summary>
+        /// 返回到角色的本来位置
+        /// </summary>
+        /// <param name="role">角色</param>
+        /// <param name="time">时间</param>
+        public void ReturnPos(RoleController role,float time = 1)
+        {
+            Position t = role.Position;
+            MoveTo(role, t, time);
+        }
+
+        private Vector3 CalcTargetPosition(RoleController role,Position center)
+        {
+            Vector3 temp = MapManager.Instance.GetCellWorldPosition(center);
+            
+
+            //如果该方格有角色
+            if (MapManager.Instance.GetCell(center).HasRole)
+            {
+                Vector3 dir = (temp - role.GetGameObject().transform.position).normalized;
+
+                BoxCollider srcCollider = role.GetModel().GetComponent<BoxCollider>();
+                float disSrc = Vector3.Dot(srcCollider.center, dir);
+                disSrc += (srcCollider.size.z / 2);
+
+                GameObject tModel = RoleManager.Instance.GetRole(MapManager.Instance.GetCell(center).Role).GetModel();
+                BoxCollider collider = tModel.GetComponent<BoxCollider>();
+
+                float disDst = Vector3.Dot(collider.center, dir);
+                disDst += (collider.size.z / 2);
+
+                Vector3 target = temp - dir * (disSrc + disDst);
+                return target;
+            }
+
+            return temp;
+        }
+
+        Vector3 startPos;//开始位置
+        Vector3 targetPos;//目标位置
+        float currentTime = 0;
+        float maxTime = 1;
+        GameObject moveObj;
+        
+        private bool Move()
+        {
+            currentTime += Time.deltaTime;
+            moveObj.transform.position = Vector3.Lerp(startPos, targetPos, currentTime/maxTime);
+            if (currentTime >= maxTime)
+            {
+                return true;
+            }
+            return false;
+        }
+        #endregion
 
 
 

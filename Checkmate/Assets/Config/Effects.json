@@ -1,7 +1,5 @@
 [
     {
-        "trigger":"Enter",
-        "cd":0,
         "effect":"TestEffect"
     }
 ]

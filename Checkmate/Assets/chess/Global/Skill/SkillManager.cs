@@ -1,4 +1,5 @@
-﻿using Checkmate.Game.Controller;
+﻿using Checkmate.Game.Buff;
+using Checkmate.Game.Controller;
 using Checkmate.Game.Role;
 using Checkmate.Game.Utils;
 using Checkmate.Global.Data;
@@ -60,6 +61,8 @@ namespace Checkmate.Game.Skill
             env.Main = mSkills[id];
             env.Data = null;
             GameEnv.Instance.PushEnv(env);
+            //执行该src的onSkill
+            BuffManager.Instance.ExecuteWithEnv(TriggerType.OnSkill, src);
             //执行
             mSkills[id].OnExecute();
             //清除环境
