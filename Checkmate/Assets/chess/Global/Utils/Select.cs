@@ -71,7 +71,7 @@ namespace Checkmate.Game.Utils
 
 
             //获取当前的操作主体
-            ModelController controller = GameEnv.Instance.Current.Obj;
+            ModelController controller = GameEnv.Instance.CurrentExe.Obj;
             //如果为地面，则全触发
             if (controller.Type == (int)ControllerType.Cell)
             {

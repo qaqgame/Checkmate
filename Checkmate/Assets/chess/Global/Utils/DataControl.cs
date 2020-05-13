@@ -96,6 +96,7 @@ namespace Checkmate.Game.Utils
             {
                 mUsedRoles.Add(track.controller);
                 mRoleCount.Add(1);
+                Debuger.Log("{0} attr track added", track.controller.Name);
             }
             else
             {

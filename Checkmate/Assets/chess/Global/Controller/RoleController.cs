@@ -70,6 +70,14 @@ namespace Checkmate.Game.Controller
             private set;
         }
 
+        //普通攻击的效果
+        [GetProperty]
+        public int AttackAction
+        {
+            get;
+            private set;
+        }
+
         //角色id
         [GetProperty]
         public int RoleId
@@ -184,7 +192,7 @@ namespace Checkmate.Game.Controller
         public List<int> Buffs=new List<int>();//所有的buff
 
         //添加buff
-        public void AddBuff(string file)
+        public int AddBuff(string file)
         {
             int bid = BuffManager.Instance.InstanceBuff(file);
             Checkmate.Game.Buff.Buff buff = BuffManager.Instance.GetBuff(bid);
@@ -193,13 +201,8 @@ namespace Checkmate.Game.Controller
             Buffs.Add(bid);
 
             Debuger.Log("buff {0} added to {1}", buff.Name, Name);
-
-            //检测该buff是否还能存在，不能存在直接移除
-            if (buff.ReserveTime == 0 || buff.ReserveTurn == 0)
-            {
-                RemoveBuff(bid);
-            }
-            
+            UpdatePanel();
+            return bid;
         }
 
         //移除buff
@@ -218,14 +221,181 @@ namespace Checkmate.Game.Controller
             GameEnv.Instance.PopEnv();
             Buffs.Remove(id);
 
+            Debuger.Log("remove buff {0} of {1}, with changed roles:{2}", buff.Name, Name,buff.Current.mUsedRoles.Count.ToString());
             //移除buff的所有temp属性加成
             foreach (var role in buff.Current.mUsedRoles)
             {
                 role.CurrentMap.RemoveTrack(buff.Current);
             }
             buff.Current.Clear();
+
+            UpdatePanel();
         }
 
+        public void RemoveBuff(string name)
+        {
+            int i = -1;
+            foreach(var id in Buffs)
+            {
+                Checkmate.Game.Buff.Buff buff = BuffManager.Instance.GetBuff(id);
+                if (buff.Name == name)
+                {
+                    i = id;
+                    break;
+
+                }
+            }
+            if (i != -1)
+            {
+                RemoveBuff(i);
+            }
+        }
+
+        //受到伤害
+        private void OnDamaged(int dmg)
+        {
+            EnvVariable env = new EnvVariable();
+            env.Copy(GameEnv.Instance.CurrentExe);
+            env.Dst = this;
+            GameEnv.Damage = dmg;
+            GameEnv.Instance.PushEnv(env);
+            //执行target的ondamaged
+            BuffManager.Instance.ExecuteWithEnv(TriggerType.OnBeDamaged,this,env.Main);
+            //执行src的ondamage
+            if (env.Src.Type == (int)ControllerType.Role)
+            {
+                RoleController src = env.Src as RoleController;
+                BuffManager.Instance.ExecuteWithEnv(TriggerType.OnDamage, src,env.Main);
+            }
+            //添加伤害函数
+            GameExecuteManager.Instance.Add(_Damage);
+
+            GameEnv.Instance.PopEnv();
+        }
+
+        private void _Damage()
+        {
+            RoleController target = GameEnv.Instance.CurrentExe.Dst as RoleController;
+            if (target != null)
+            {
+                target.Current.Hp -= GameEnv.Damage;
+            }
+        }
+        //判断是否闪避成功
+        private bool CheckMiss()
+        {
+            float miss = Temp.Miss;
+            float temp = UnityEngine.Random.Range(0.0f, 1.0f);
+            if (temp < miss)
+            {
+                EnvVariable env = new EnvVariable();
+                env.Copy(GameEnv.Instance.CurrentExe);
+                env.Dst = this;
+                GameEnv.Instance.PushEnv(env);
+                //如果闪避判定成功
+                BuffManager.Instance.ExecuteWithEnv(TriggerType.OnMiss, this,env.Main);
+                //执行src的onbemissed
+                if (env.Src.Type == (int)ControllerType.Role)
+                {
+                    RoleController src = env.Src as RoleController;
+                    BuffManager.Instance.ExecuteWithEnv(TriggerType.OnBeMissed, src,env.Main);
+                }
+
+                GameEnv.Instance.PopEnv();
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 对该role造成物理伤害
+        /// </summary>
+        /// <param name="dmg">伤害值</param>
+        /// <param name="canMiss">能否闪避</param>
+        public void DamagePhysically(int dmg, bool canMiss)
+        {
+            
+            //判断闪避
+            if (canMiss&&CheckMiss())
+            {
+                return;
+            }
+            //执行伤害
+            OnDamaged(dmg);
+        }
+
+        /// <summary>
+        /// 对该role造成魔法伤害
+        /// </summary>
+        /// <param name="dmg">伤害值</param>
+        /// <param name="canMiss">能否闪避</param>
+        public void DamageMagically(int dmg, bool canMiss)
+        {
+
+            //判断闪避
+            if (canMiss && CheckMiss())
+            {
+                return;
+            }
+            //执行伤害
+            OnDamaged(dmg);
+        }
+
+        /// <summary>
+        /// 被攻击时调用
+        /// </summary>
+        /// <param name="isMagic">攻击类型是否是魔法</param>
+        public void Attacked(bool isMagic,bool canMiss=false)
+        {
+            if (GameEnv.Instance.CurrentExe.Src.Type != (int)ControllerType.Role)
+            {
+                //如果不是角色，直接返回，不允许攻击
+                return;
+            }
+            EnvVariable env = new EnvVariable();
+            env.Copy(GameEnv.Instance.CurrentExe);
+            env.Dst = this;
+            GameEnv.Instance.PushEnv(env);
+            //执行攻击者的onattack
+            RoleController src = env.Src as RoleController;
+            BuffManager.Instance.ExecuteWithEnv(TriggerType.OnAttack,src,env.Main);
+
+            //执行被攻击者的onbeattacked
+            BuffManager.Instance.ExecuteWithEnv(TriggerType.OnBeAttacked, this,env.Main);
+            GameEnv.Instance.PopEnv();
+
+            int damage=src.Temp.Attack;
+
+            if (isMagic)
+            {
+                DamageMagically(damage, canMiss);
+            }
+            else
+            {
+                DamagePhysically(damage, canMiss);
+            }
+        }
+
+        /// <summary>
+        /// 该角色被击杀时调用
+        /// </summary>
+        private void OnKilled()
+        {
+            EnvVariable env = new EnvVariable();
+            env.Copy(GameEnv.Instance.CurrentExe);
+            env.Dst = this;
+            GameEnv.Instance.PushEnv(env);
+            //执行src的onkill
+            if (env.Src.Type == (int)ControllerType.Role)
+            {
+                RoleController src = env.Src as RoleController;
+                BuffManager.Instance.ExecuteWithEnv(TriggerType.OnKill, src, env.Main);
+            }
+            //执行该角色的onbekilled
+            BuffManager.Instance.ExecuteWithEnv(TriggerType.OnBekilled, this, env.Main);
+            GameEnv.Instance.PopEnv();
+
+        }
         //=============================
         //外部接口
         //设置当前属性
@@ -263,6 +433,18 @@ namespace Checkmate.Game.Controller
         public override GameObject GetGameObject()
         {
             return mObj;
+        }
+        //获取模型的对象
+        public GameObject GetModel()
+        {
+            return mObj.transform.Find("Model").GetChild(0).gameObject;
+        }
+
+        public void FaceTo(Vector3 position)
+        {
+            Vector3 target = position;
+            target.y = mObj.transform.position.y;
+            mObj.transform.LookAt(target);
         }
 
         public override Position GetPosition()
@@ -337,6 +519,11 @@ namespace Checkmate.Game.Controller
                 {
                     Current.Hp = (int)value;
                 }
+                //如果当前生命值小于等于0,调用onkill
+                if (Current.Hp <= 0)
+                {
+                    OnKilled();
+                }
                 Debuger.Log("HP changed");
                 //通知生命值改变
                 mPanel.SetHP((int)value);
@@ -358,6 +545,7 @@ namespace Checkmate.Game.Controller
         private void UpdatePanel()
         {
             mPanel.SetHP(Temp.Hp);
+            mPanel.UpdateBuff(Buffs);
         }
         //=====================
 
@@ -367,14 +555,15 @@ namespace Checkmate.Game.Controller
             
             //设置环境变量
             EnvVariable env = new EnvVariable();
-            env.Copy(GameEnv.Instance.Current);
+            env.Copy(GameEnv.Instance.CurrentExe);
+            env.Dst = this;
             env.Data = buff;
             GameEnv.Instance.PushEnv(env);
             //调用源的OnBuff
             //前提是角色（只有角色拥有buff)
-            if (GameEnv.Instance.Current.Src!=null&&GameEnv.Instance.Current.Src.Type == (int)ControllerType.Role)
+            if (GameEnv.Instance.CurrentExe.Src!=null&&GameEnv.Instance.CurrentExe.Src.Type == (int)ControllerType.Role)
             {
-                RoleController src = GameEnv.Instance.Current.Src as RoleController;
+                RoleController src = GameEnv.Instance.CurrentExe.Src as RoleController;
                 BuffManager.Instance.Execute(TriggerType.OnBuff, src);
             }
             //调用现有buff的OnBuffed

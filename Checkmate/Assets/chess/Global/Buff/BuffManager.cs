@@ -1,5 +1,6 @@
 ﻿using Checkmate.Game.Controller;
 using Checkmate.Game.Utils;
+using QGF;
 using QGF.Common;
 using System;
 using System.Collections.Generic;
@@ -16,17 +17,21 @@ namespace Checkmate.Game.Buff
 
 #if UNITY_EDITOR
         private string RootPath=Application.dataPath+"/Test/TestBuff";
+        private string IconRootPath= Application.dataPath + "/Test/Icons";
 #else
         private string RootPath = Application.streamingAssetsPath + "/Buffs";
+        private string IconRootPath= Application.streamingAssetsPath + "/Icons";
 #endif
 
         private Dictionary<string, Buff> mLoadedBuff;//buff的加载缓存
         private Dictionary<int, Buff> mBuffInstances;//buff的实例缓存
-        
+
+        private Dictionary<string, Texture2D> mBuffIconRes;//buff的图标缓存
         public void Init()
         {
             mLoadedBuff = new Dictionary<string, Buff>();
             mBuffInstances = new Dictionary<int, Buff>();
+            mBuffIconRes = new Dictionary<string, Texture2D>();
         }
 
         public Buff GetBuff(int id)
@@ -70,9 +75,7 @@ namespace Checkmate.Game.Buff
             {
                 Buff buff = mBuffInstances[buffId];
                 EnvVariable env = new EnvVariable();
-                env.Src = buff.Src;
-                env.Obj = buff.Obj;
-                env.Dst = null;
+                env.Copy(GameEnv.Instance.Current);
                 env.Center = role.Position;
                 env.Main = buff;
                 env.Data = data;
@@ -103,7 +106,33 @@ namespace Checkmate.Game.Buff
             XmlNode root = document.DocumentElement;
 
             Buff result = BuffParser.ParseBuff(root);
+            //如果存在该buff的icon
+            if (result.Icon != null&&!mBuffIconRes.ContainsKey(result.Icon))
+            {
+                Debuger.Log("loaded buff icon:{0}", result.Icon);
+                Texture2D sprite = AssetUtil.LoadPicture(IconRootPath +"/"+ result.Icon,512);
+                if (sprite == null)
+                {
+                    Debuger.LogError("error load icon:{0}", result.Icon);
+                }
+                mBuffIconRes.Add(result.Icon, sprite);
+            }
             return result;
+        }
+
+        /// <summary>
+        /// 根据buffid获取其图标
+        /// </summary>
+        /// <param name="bid">buff id</param>
+        /// <returns></returns>
+        public Texture2D GetBuffIcon(int bid)
+        {
+            Buff buff = mBuffInstances[bid];
+            if (buff == null || buff.Icon == null)
+            {
+                return null;
+            }
+            return mBuffIconRes[buff.Icon];
         }
     }
 }

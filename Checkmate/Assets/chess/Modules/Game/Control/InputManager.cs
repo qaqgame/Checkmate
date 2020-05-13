@@ -113,7 +113,7 @@ namespace Checkmate.Modules.Game.Control
                         //点击所属角色,且可操作进入operate状态
                         if (target.Type == 2)
                         {
-                            if ((target as RoleController).CanOperate&&(PlayerManager.Instance.PID==(target as RoleController).Team)&&PlayerManager.Instance.Operating)
+                            if ((target as RoleController).CanOperate&&(PlayerManager.Instance.PID==(target as RoleController).Team)&&PlayerManager.Instance.CanOperate)
                             {
                                 mState = InputState.Operate;
                                 (target as RoleController).SetState(RoleState.PreMove);

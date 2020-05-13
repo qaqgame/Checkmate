@@ -153,9 +153,6 @@ namespace Checkmate.Modules.Game
 
             RoleController role = RoleManager.Instance.GetRole(1);
             Debug.Log(role.Name);
-            GameEnv.Instance.PushEnv(null, null, null);
-            role.AddBuff("TestBuff");
-            GameEnv.Instance.PopEnv();
             
             CellController cell = MapManager.Instance.GetCell(role.Position);
             Debug.Log(cell.Terrain);
@@ -220,6 +217,11 @@ namespace Checkmate.Modules.Game
             if (Time.time - last > 3)
             {
                 RoleController role = RoleManager.Instance.GetRole(1);
+                if (role.Buffs.Count > 0)
+                {
+                    Buff buff = BuffManager.Instance.GetBuff(role.Buffs[0]);
+                    Debuger.Log("{0}'s buff {1} has {2} tracks,{3} roles", role.Name, buff.Name, buff.Current.Tracks.Count, buff.Current.mUsedRoles.Count);
+                }
                 Debuger.Log("{0} physicRes:{1},current:{2}", role.Name, role.Temp.GetValue("PhysicalRes"), role.Current.GetValue("PhysicalRes"));
                 Debuger.Log("{0} tempHP:{1},currentHP:{2}", role.Name, role.Temp.Hp, role.Current.Hp);
 
@@ -273,11 +275,13 @@ namespace Checkmate.Modules.Game
             Debug.Log("click pos:" + controller.GetPosition().ToString());
             DrawUtil.ClearAll();
             DrawUtil.DrawSingle(controller.GetPosition(), 1);
+          
         }
 
         private void OnRoleClicked(RoleController role)
         {
             Debug.Log("clicked role:" + role.Name);
+           
         }
 
         private void OnResetState()

@@ -199,7 +199,8 @@ namespace Checkmate.Game.Utils
         Float,
         String,
         ControllerList,
-        Bool
+        Bool,
+        Position
     }
 
 
@@ -234,6 +235,7 @@ namespace Checkmate.Game.Utils
             }
         }
 
+        public Checks Checks=null;//所有的条件操作
 
         public List<TargetTrack> TargetTracks;//执行目标搜索的顺序
         public List<BaseSearch> Searches;//所有搜索操作
@@ -243,7 +245,12 @@ namespace Checkmate.Game.Utils
 
         public SkillAction(XmlNode node)
         {
-
+            //解析条件部分
+            XmlNode check = node.SelectSingleNode("Checks");
+            if (check != null)
+            {
+                Checks = new Checks(check);
+            }
             //解析目标部分
             XmlNode target = node.SelectSingleNode("Targets");
             XmlNodeList tl = target.ChildNodes;
@@ -276,6 +283,17 @@ namespace Checkmate.Game.Utils
                 ExecuteInfo info = ExecuteUtil.ParseExecute(l);
                 Executes.Add(info);
             }
+        }
+        
+        public string GetMethods()
+        {
+            string result = "";
+            foreach(var method in Executes)
+            {
+                result += method.method+",";
+            }
+            result += ";";
+            return result;
         }
     }
 

@@ -1,5 +1,6 @@
 ﻿using Checkmate.Game.Controller;
 using Checkmate.Game.Utils;
+using Checkmate.Global.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace Checkmate.Game.Effect
         public override int Type { get { return (int)ControllerType.Effect; } }
 
 
-        private List<SkillAction> mActions;//所有的活动
+        private Dictionary<EffectTrigger,List<SkillAction>> mActions;//所有的活动
 
 
         [GetProperty]
@@ -33,14 +34,41 @@ namespace Checkmate.Game.Effect
             private set;
         }
 
-
-        public void Execute()
+        //当前冷却回合,>maxTurn则可用
+        [GetProperty]
+        [SetProperty]
+        public int CurTurn
         {
-            if (mActions == null || mActions.Count == 0)
+            get;
+            set;
+        }
+
+        [GetProperty]
+        [SetProperty]
+        public int MaxTurn
+        {
+            get;
+            set;
+        }
+
+        [GetProperty]
+        public bool Available
+        {
+            get
+            {
+                return CurTurn >= MaxTurn;
+            }
+        }
+
+
+
+        public void Execute(EffectTrigger trigger)
+        {
+            if (!mActions.ContainsKey(trigger) || mActions[trigger].Count == 0)
             {
                 return;
             }
-            GameExecuteManager.Instance.Add(mActions);
+            GameExecuteManager.Instance.Add(mActions[trigger]);
             //foreach(var action in mActions)
             //{
             //    GameEnv.Instance.Current.ExecuteAction(action);
@@ -57,6 +85,8 @@ namespace Checkmate.Game.Effect
         {
             Effect temp = new Effect();
             temp.mActions = mActions;
+            temp.CurTurn = this.CurTurn;
+            temp.MaxTurn = this.MaxTurn;
             temp.mExtraData = new Dictionary<string, object>(mExtraData);
             temp.Name = Name;
             temp.Description = Description;
@@ -68,6 +98,7 @@ namespace Checkmate.Game.Effect
         public void Parse(XmlNode node)
         {
             Name = node.Attributes["name"].Value;
+            CurTurn = MaxTurn = int.Parse(node.Attributes["coolturn"].Value);
 
             XmlNode description = node.SelectSingleNode("Description");
             Description = description.InnerText;
@@ -99,13 +130,22 @@ namespace Checkmate.Game.Effect
 
         private void ParseContent(XmlNode node)
         {
-            mActions = new List<SkillAction>();
+            mActions = new Dictionary<EffectTrigger, List<SkillAction>>();
             //解析所有的action
             XmlNodeList cl = node.ChildNodes;
             foreach (XmlNode l in cl)
             {
+                List<EffectTrigger> triggers = ObjectParser.ParseEnums<EffectTrigger>(l.Attributes["trigger"].Value);
                 SkillAction action = new SkillAction(l);
-                mActions.Add(action);
+                foreach(var t in triggers)
+                {
+                    if (!mActions.ContainsKey(t))
+                    {
+                        List<SkillAction> list = new List<SkillAction>();
+                        mActions.Add(t, list);
+                    }
+                    mActions[t].Add(action);
+                }
             }
         }
         #endregion

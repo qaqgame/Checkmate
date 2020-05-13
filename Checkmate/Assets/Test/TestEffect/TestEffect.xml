@@ -1,19 +1,46 @@
-<Effect name="TestEffect"  icon="damage.png">
+<Effect name="TestEffect"  icon="damage.png" coolturn="0">
     <Description>TestEffect</Description>
     <Data>
         <value name="level" type="Int">3</value>
         <value name="Damage" type="Int">10</value>
+        <value name="BuffId" type="Int">-1</value>
     </Data>
 
     <Content>
-        <Action>
+        <Action trigger="Enter">
             <Targets>
             </Targets>
             <Executes>
+                <Execute src="Standard.PlayEffect">
+                    <Params>
+                        <Param type="String" value="Fireball"/>
+                        <Param type="Controller" value="%Dst"/>
+                        <Param type="Float" value="2.0"/>
+                    </Params>
+                </Execute>
+                <Execute src="Standard.AddBuff">
+                    <Params>
+                        <Param type="Controller" value="%Dst"/>
+                        <Param type="String" value="TestBuff"/>
+                    </Params>
+                    <Return value="$BuffId"/>
+                </Execute>
                 <Execute src="Standard.Damage">
                     <Params>
                         <Param type="Controller" value="%Dst"/>
                         <Param type="Int" value="$Damage"/>
+                    </Params>
+                </Execute>
+            </Executes>
+        </Action>
+        <Action trigger="Leave">
+            <Targets>
+            </Targets>
+            <Executes>
+                <Execute src="Standard.RemoveBuff">
+                    <Params>
+                        <Param type="Controller" value="%Dst"/>
+                        <Param type="Int" value="$BuffId"/>
                     </Params>
                 </Execute>
             </Executes>

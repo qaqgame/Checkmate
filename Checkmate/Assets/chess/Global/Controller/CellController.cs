@@ -21,7 +21,7 @@ namespace Checkmate.Game.Controller
         private int mRole=-1;//当前的角色
 
 
-        private List<EffectTrack> effects=null;//该方格存在的效果
+        private List<int> effects=null;//该方格存在的效果
 
         public HexCell Cell
         {
@@ -44,7 +44,7 @@ namespace Checkmate.Game.Controller
                     {
                         foreach(var track in effects)
                         {
-                            Checkmate.Game.Effect.Effect e = EffectManager.Instance.GetEffect(track.Id);
+                            Checkmate.Game.Effect.Effect e = EffectManager.Instance.GetEffect(track);
                             role.CurrentMap.RemoveTrack(e.Current);
                             e.Current.Clear();
                         }
@@ -63,18 +63,14 @@ namespace Checkmate.Game.Controller
 
         private void ExecuteEffect(EffectTrigger trigger,RoleController role)
         {
-            //遍历所有，如果满足触发以及回合冷却则执行
+            //遍历所有，如果满足触发
             if (effects != null && effects.Count > 0)
             {
                 int cnt = 0;
                 foreach (var track in effects)
                 {
-                    if (track.Trigger == trigger && track.Cur >= track.Interval)
-                    {
-                        ++cnt;
-                        EffectManager.Instance.ExecuteEffect(track.Id, this, role);
-                        track.Cur = 0;
-                    }
+                    ++cnt;
+                    EffectManager.Instance.ExecuteEffect(track, this, role,trigger);
                 }
                 Debuger.Log("effect {0} execute {1} when {2}", Position.ToString(), cnt.ToString(),trigger.ToString());
             }
@@ -99,10 +95,10 @@ namespace Checkmate.Game.Controller
                 Debuger.Log("add effect cnt:{0}", fd.effectIdx.Count.ToString());
                 if (fd.effectIdx != null && fd.effectIdx.Count > 0)
                 {
-                    effects = new List<EffectTrack>();
+                    effects = new List<int>();
                     foreach (var idx in fd.effectIdx)
                     {
-                        EffectTrack track = EffectManager.Instance.InstanceEffect(idx);
+                        int track = EffectManager.Instance.InstanceEffect(idx);
                         effects.Add(track);
                     }
                 }

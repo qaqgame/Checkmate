@@ -14,17 +14,17 @@ namespace Checkmate.Game.Buff
     public enum TriggerType
     {
         OnTurn,
-        OnAttack,
-        OnBeAttacked,
+        OnAttack,//
+        OnBeAttacked,//
         OnMove,
-        OnMiss,
-        OnBeMissed,
-        OnSkill,
+        OnMiss,//
+        OnBeMissed,//
+        OnSkill,//
         OnBeSkilled,
-        OnBuff,
-        OnBeBuffed,
-        OnDamage,
-        OnBeDamaged,
+        OnBuff,//
+        OnBeBuffed,//
+        OnDamage,//
+        OnBeDamaged,//
         OnKill,
         OnBekilled,
         OnStatusChanged,
@@ -40,6 +40,13 @@ namespace Checkmate.Game.Buff
     {
 
         public override int Type { get { return -1; } }
+
+        //显示图标
+        public string Icon
+        {
+            get;
+            private set;
+        }
 
         [GetProperty]
         public int BuffId
@@ -63,15 +70,43 @@ namespace Checkmate.Game.Buff
             private set;
         }
 
+        private int _reserveTurn;
+        private int _reserveTime;
         //剩余回合
         [GetProperty]
         [SetProperty]
-        public int ReserveTurn { get; set; }
+        public int ReserveTurn {
+            get
+            {
+                return _reserveTurn;
+            }
+            set
+            {
+                _reserveTurn = value;
+                if (_reserveTurn == 0&&Obj!=null)
+                {
+                    Obj.RemoveBuff(BuffId);
+                }
+            }
+        }
 
         //剩余次数
         [GetProperty]
         [SetProperty]
-        public int ReserveTime { get; set; }
+        public int ReserveTime {
+            get
+            {
+                return _reserveTime;
+            }
+            set
+            {
+                _reserveTime = value;
+                if (_reserveTime == 0 && Obj != null)
+                {
+                    Obj.RemoveBuff(BuffId);
+                }
+            }
+        }
 
         //是否是debuff
         [GetProperty]
@@ -141,8 +176,8 @@ namespace Checkmate.Game.Buff
         public void AttachTo(RoleController dst)
         {
             Obj = dst;
-            Src = GameEnv.Instance.Current.Src;
-            SrcEffect = GameEnv.Instance.Current.Main;
+            Src = GameEnv.Instance.CurrentExe.Src;
+            SrcEffect = GameEnv.Instance.CurrentExe.Main;
         }
 
         //执行
@@ -168,6 +203,18 @@ namespace Checkmate.Game.Buff
         public void Parse(XmlNode node)
         {
             Name = node.Attributes["name"].Value;
+            Icon = node.Attributes["icon"].Value;
+
+            _reserveTurn = _reserveTime = -1;
+            if (node.Attributes["turns"] != null)
+            {
+                _reserveTurn = int.Parse(node.Attributes["turns"].Value);
+            }
+            if (node.Attributes["times"] != null)
+            {
+                _reserveTime = int.Parse(node.Attributes["times"].Value);
+            }
+            
 
             XmlNode description = node.SelectSingleNode("Description");
             Description = description.InnerText;
@@ -231,6 +278,7 @@ namespace Checkmate.Game.Buff
         {
             Buff result = new Buff();
             result.Name = this.Name;
+            result.Icon = this.Icon;
             result.Description = this.Description;
             result.CanRemove = this.CanRemove;
             result.IsDebuff = this.IsDebuff;
