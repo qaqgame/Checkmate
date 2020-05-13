@@ -78,12 +78,16 @@ public class MoveItem : MonoBehaviour
         item.rc.SetState(RoleState.Move);      // 设置状态为移动中
         for (int i = 1; i < item.Path.Count; i++)
         {
+            MapManager.Instance.GetCell(item.rc.Position).SetVisibility(item.rc);
             MapManager.Instance.GetCell(item.rc.Position).Role = -1;
             while(GameExecuteManager.Instance.WaitForExecute)
             {
                 Debug.LogError("Wait for a while1");
                 yield return null;
             }
+
+            
+
 
             // TODO: 移除当前位置的人物信息 : moveutil.RemoveCurRole()
             Vector3 a = MapManager.Instance.GetCellWorldPosition(item.Path[i - 1]);
@@ -93,8 +97,11 @@ public class MoveItem : MonoBehaviour
                 item.rc.GetGameObject().transform.position = Vector3.Lerp(a, b, t);
                 yield return null;
             }
-            
+            MapManager.Instance.GetCell(item.rc.Position).RemoveVisibility(item.rc);
+
             item.rc.Position = item.Path[i];
+            
+            MapManager.Instance.GetCell(item.rc.Position).SetVisibility(item.rc);
             MapManager.Instance.GetCell(item.rc.Position).Role = item.rc.RoleId;
             while (GameExecuteManager.Instance.WaitForExecute)
             {

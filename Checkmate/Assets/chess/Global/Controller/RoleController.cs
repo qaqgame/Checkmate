@@ -279,7 +279,7 @@ namespace Checkmate.Game.Controller
             RoleController target = GameEnv.Instance.CurrentExe.Dst as RoleController;
             if (target != null)
             {
-                target.Current.Hp -= GameEnv.Damage;
+                target.Temp.Hp -= GameEnv.Damage;
             }
         }
         //判断是否闪避成功
@@ -382,6 +382,7 @@ namespace Checkmate.Game.Controller
         /// </summary>
         private void OnKilled()
         {
+            Debug.Log("onKilled invoke");
             EnvVariable env = new EnvVariable();
             env.Copy(GameEnv.Instance.CurrentExe);
             env.Dst = this;
@@ -403,6 +404,7 @@ namespace Checkmate.Game.Controller
         //在击杀相关buff执行结束后
         private void OnKillBuffFinished()
         {
+            Debug.Log("onKillBuffFinished");
             //如果生命值不足，直接销毁
             if (Temp.Hp <= 0)
             {
@@ -533,6 +535,7 @@ namespace Checkmate.Game.Controller
                     Current.Hp = (int)value;
                 }
                 //如果当前生命值小于等于0,调用onkill
+                Debuger.Log("Current HP: {0}", Current.Hp);
                 if (Current.Hp <= 0)
                 {
                     OnKilled();

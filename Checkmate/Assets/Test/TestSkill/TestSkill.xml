@@ -8,7 +8,7 @@
     </EffectRange>
     <Data>
         <value name="level" type="Int">3</value>
-        <value name="Damage" type="Int">10</value>
+        <value name="Damage" type="Int">50</value>
     </Data>
 
     <Content>
@@ -26,7 +26,7 @@
                     <Params>
                         <Param type="Controller" value="%Obj"/>
                         <Param type="Position" value="#2[0].Position"/>
-                        <Param type="Float" value="3"/>
+                        <Param type="Float" value="1"/>
                     </Params>
                 </Execute>
                 <Execute src="Standard.PlayAnim">
@@ -45,7 +45,7 @@
                 <Execute src="Standard.ReturnPos">
                     <Params>
                         <Param type="Controller" value="%Obj"/>
-                        <Param type="Float" value="3"/>
+                        <Param type="Float" value="1"/>
                     </Params>
                 </Execute>
             </Executes>

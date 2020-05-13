@@ -34,6 +34,7 @@ namespace Checkmate.Game.Utils
         public delegate bool WaitAction();
         public void Add(GameEnvTrack track)
         {
+            Debuger.Log("mCurrentRec: {0}, mName: {1}: ", mCurrentRec, track.exe == null ? "myaction" : track.exe.Method.Name);
             //如果当前递归层数大于待执行栈
             if (mCurrentRec+1>=mTracks.Count)
             {
@@ -146,6 +147,7 @@ namespace Checkmate.Game.Utils
         IEnumerator ExecuteTrack(int rec)
         {
             mCurrentRec = rec;
+            Debuger.Log("mmCurrentRec: {0}, count: {1}", mCurrentRec, mTracks.Count > rec ? mTracks[rec].Count.ToString() : "null");
             //如果当前未到最高层且存在
             if (mTracks.Count > rec&&mTracks[rec].Count>0)
             {
@@ -158,7 +160,13 @@ namespace Checkmate.Game.Utils
                     GameEnv.Instance.PushExeEnv(mCurrent.env);
                     if (mCurrent.exe != null)
                     {
+                        Debuger.Log("executed: {0}", mCurrent.exe.Method.Name);
                         mCurrent.exe.Invoke();
+                        //等待子项完成
+                        yield return StartCoroutine(ExecuteTrack(rec + 1));
+                        mCurrentRec = rec;
+                        //无等待项则继续
+                        yield return StartCoroutine(Wait());
                     }
                     else
                     {
@@ -179,7 +187,7 @@ namespace Checkmate.Game.Utils
                                     foreach (var exe in action.Executes)
                                     {
                                         GameEnv.Instance.CurrentExe.ExecuteMain(exe);
-                                        Debuger.Log("execute action:{0}", exe);
+                                        Debuger.Log("execute action:{0}, rec: {1}", exe, rec);
                                         //等待子项完成
                                         yield return StartCoroutine(ExecuteTrack(rec + 1));
                                         mCurrentRec = rec;
@@ -208,6 +216,7 @@ namespace Checkmate.Game.Utils
                 
             }
             mCurrentRec = rec - 1;
+            Debuger.Log("mmrec end: {0}", rec);
         }
 
         //主执行函数，在循环中不断执行当前的项
