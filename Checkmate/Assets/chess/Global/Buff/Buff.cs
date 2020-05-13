@@ -41,6 +41,13 @@ namespace Checkmate.Game.Buff
 
         public override int Type { get { return -1; } }
 
+        //显示图标
+        public string Icon
+        {
+            get;
+            private set;
+        }
+
         [GetProperty]
         public int BuffId
         {
@@ -196,6 +203,8 @@ namespace Checkmate.Game.Buff
         public void Parse(XmlNode node)
         {
             Name = node.Attributes["name"].Value;
+            Icon = node.Attributes["icon"].Value;
+
             _reserveTurn = _reserveTime = -1;
             if (node.Attributes["turns"] != null)
             {
@@ -269,6 +278,7 @@ namespace Checkmate.Game.Buff
         {
             Buff result = new Buff();
             result.Name = this.Name;
+            result.Icon = this.Icon;
             result.Description = this.Description;
             result.CanRemove = this.CanRemove;
             result.IsDebuff = this.IsDebuff;

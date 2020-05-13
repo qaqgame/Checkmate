@@ -1,4 +1,5 @@
-﻿using FairyGUI;
+﻿using Checkmate.Game.UI.Component;
+using FairyGUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace Checkmate.Game.UI
         private GProgressBar mHpBar;//血条槽
         private GImage mDownHPBar;//血条底槽
 
-        private GList mBuffList;//buff栏
+        private BuffList mBuffList;//buff栏
         private GTextField mName;//姓名栏
 
 
@@ -29,7 +30,7 @@ namespace Checkmate.Game.UI
             mHpBar.value = curHP;
             mDownHPBar.scaleX = curHP / (float)maxHP;
 
-            mBuffList = comRoot.GetChild("BuffList").asList;
+            mBuffList = new BuffList(comRoot.GetChild("BuffList").asList);
 
             mName = comRoot.GetChild("Title").asTextField;
             mName.text = name;
@@ -50,6 +51,10 @@ namespace Checkmate.Game.UI
             }
         }
 
-
+        //更新buff
+        public void UpdateBuff(List<int> buffs)
+        {
+            mBuffList.Update(buffs);
+        }
     }
 }

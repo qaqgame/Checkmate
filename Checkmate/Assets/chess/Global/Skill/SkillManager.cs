@@ -65,6 +65,8 @@ namespace Checkmate.Game.Skill
             BuffManager.Instance.ExecuteWithEnv(TriggerType.OnSkill, src);
             //执行
             mSkills[id].OnExecute();
+            //添加结束时操作（重置该角色状态)
+            GameExecuteManager.Instance.Add(() => { src.SetState(RoleState.Idle); });
             //清除环境
             GameEnv.Instance.PopEnv();
         }

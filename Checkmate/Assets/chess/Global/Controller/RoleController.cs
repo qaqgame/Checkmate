@@ -70,6 +70,14 @@ namespace Checkmate.Game.Controller
             private set;
         }
 
+        //普通攻击的效果
+        [GetProperty]
+        public int AttackAction
+        {
+            get;
+            private set;
+        }
+
         //角色id
         [GetProperty]
         public int RoleId
@@ -193,6 +201,7 @@ namespace Checkmate.Game.Controller
             Buffs.Add(bid);
 
             Debuger.Log("buff {0} added to {1}", buff.Name, Name);
+            UpdatePanel();
             return bid;
         }
 
@@ -219,6 +228,8 @@ namespace Checkmate.Game.Controller
                 role.CurrentMap.RemoveTrack(buff.Current);
             }
             buff.Current.Clear();
+
+            UpdatePanel();
         }
 
         public void RemoveBuff(string name)
@@ -534,6 +545,7 @@ namespace Checkmate.Game.Controller
         private void UpdatePanel()
         {
             mPanel.SetHP(Temp.Hp);
+            mPanel.UpdateBuff(Buffs);
         }
         //=====================
 
