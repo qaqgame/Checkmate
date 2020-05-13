@@ -20,7 +20,7 @@ namespace Checkmate.Game.Utils
         {
             get
             {
-                return mTracks != null && mTracks[0].Count > 0;
+                return (mTracks != null && mTracks[0].Count > 0)||wait;
             }
         }
 

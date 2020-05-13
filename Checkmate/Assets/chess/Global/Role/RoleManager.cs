@@ -25,11 +25,14 @@ namespace Checkmate.Game.Role
         private Dictionary<string, GameObject> mModelPrefabs;//模型预制体缓存
 
 
+        private Dictionary<uint, List<int>> mPlayerRoles;//pid（玩家）所拥有的角色(不分是否激活）
+
         public void Init()
         {
             mActiveRoles = new List<int>();
             mRolePool = new Dictionary<int, RoleController>(20);
             mModelPrefabs = new Dictionary<string, GameObject>(10);
+            mPlayerRoles = new Dictionary<uint, List<int>>();
         }
 
         //添加角色
@@ -57,6 +60,14 @@ namespace Checkmate.Game.Role
             mRolePool.Add(id, controller);
             //添加到激活列表
             mActiveRoles.Add(id);
+
+            //添加至玩家序列
+            if (!mPlayerRoles.ContainsKey((uint)controller.Team))
+            {
+                List<int> tempRoles = new List<int>();
+                mPlayerRoles.Add((uint)controller.Team, tempRoles);
+            }
+            mPlayerRoles[(uint)controller.Team].Add(id);
 
             //设置角色的实际位置
             Position pos = new Position(role.position.x, role.position.y, role.position.z);
@@ -110,6 +121,36 @@ namespace Checkmate.Game.Role
         public RoleController GetRole(int id)
         {
             return mRolePool[id];
+        }
+
+
+        //==================
+        //获取所属角色
+        public List<int> GetRolesOfPlayer(uint pid)
+        {
+            if (mPlayerRoles.ContainsKey(pid))
+            {
+                return mPlayerRoles[pid];
+            }
+            return null;
+        }
+
+        //获取所属存活角色
+        public List<int> GetActiveRolesOfPlayer(uint pid)
+        {
+            if (mPlayerRoles.ContainsKey(pid))
+            {
+                List<int> result = new List<int>();
+                foreach(int temp in mPlayerRoles[pid])
+                {
+                    if (mActiveRoles.Contains(temp))
+                    {
+                        result.Add(temp);
+                    }
+                }
+                return result;
+            }
+            return null;
         }
     }
 }
