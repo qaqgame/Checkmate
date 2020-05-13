@@ -36,7 +36,7 @@ namespace Checkmate.Game.Controller
                 if (mRole != -1)
                 {
                     RoleController role = RoleManager.Instance.GetRole(mRole);
-                    MapManager.Instance.DecreaseVisibility(role);
+                    
                     ExecuteEffect(EffectTrigger.Leave, role);
 
                     //移除effect的属性加成
@@ -54,12 +54,23 @@ namespace Checkmate.Game.Controller
                 if (value != -1)
                 {
                     RoleController role = RoleManager.Instance.GetRole(value);
-                    MapManager.Instance.IncreaseVisibility(role);
+                    
                     ExecuteEffect(EffectTrigger.Enter, role);
                 }
                 mRole = value;
             }
         }
+
+        public void RemoveVisibility(RoleController role)
+        {
+            MapManager.Instance.DecreaseVisibility(role);
+        }
+
+        public void SetVisibility(RoleController role)
+        {
+            MapManager.Instance.IncreaseVisibility(role);
+        }
+
 
         private void ExecuteEffect(EffectTrigger trigger,RoleController role)
         {
