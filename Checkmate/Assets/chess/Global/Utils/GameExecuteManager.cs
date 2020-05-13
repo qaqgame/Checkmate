@@ -15,6 +15,15 @@ namespace Checkmate.Game.Utils
     {
         public static GameExecuteManager Instance;
 
+        //有待执行项
+        public bool WaitForExecute
+        {
+            get
+            {
+                return mTracks != null && mTracks[0].Count > 0;
+            }
+        }
+
         private Queue<GameEnvTrack> mExeTracks;//所有要执行的
 
         private GameEnvTrack mCurrent;//当前执行的
