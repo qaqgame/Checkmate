@@ -151,6 +151,7 @@ namespace Checkmate.Game.Map
             List<CellController> cells = GetVisibleCells(role);
             foreach(var cell in cells)
             {
+                cell.SetVisibleRole(role.RoleId);
                 cell.Cell.IncreaseVisibility();
             }
         }
@@ -161,7 +162,11 @@ namespace Checkmate.Game.Map
             List<CellController> cells = GetVisibleCells(role);
             foreach (var cell in cells)
             {
-                cell.Cell.DecreaseVisibility();
+                cell.RemoveVisibleRole(role.RoleId);
+                if (!cell.Visible)
+                {
+                    cell.Cell.DecreaseVisibility();
+                }
             }
         }
     }

@@ -740,6 +740,7 @@ namespace Checkmate.Game
             return currentRole;
         }
 
+
         //提升可见度
         public void IncreaseVisibility()
         {
@@ -753,10 +754,7 @@ namespace Checkmate.Game
         //减少可见度
         public void DecreaseVisibility()
         {
-            if (visibility > 0)
-            {
-                visibility--;
-            }
+            visibility = 0;
             if (visibility == 0)
             {
                 ShaderData.RefreshVisibility(this);
