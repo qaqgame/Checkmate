@@ -164,6 +164,9 @@ namespace Checkmate.Modules.Game
 
             int sid = SkillManager.Instance.GetSkill("TestSkill");
             Debug.Log("load skill suc:" + sid);
+
+            //-------load page
+            GamingPage.LoadPage();
         }
 
 
