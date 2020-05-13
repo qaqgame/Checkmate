@@ -263,6 +263,7 @@ namespace Checkmate.Game.Utils
                 {
                     yield return StartCoroutine(ExecuteTrack(0));
                 }
+                mCurrentRec = -1;
                 PlayerManager.Instance.IsWaiting = false;
                 yield return null;
             }

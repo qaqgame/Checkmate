@@ -1,4 +1,5 @@
 ﻿using Checkmate.Game.Buff;
+using Checkmate.Game.Role;
 using Checkmate.Game.Skill;
 using Checkmate.Game.UI;
 using Checkmate.Game.Utils;
@@ -393,8 +394,20 @@ namespace Checkmate.Game.Controller
             }
             //执行该角色的onbekilled
             BuffManager.Instance.ExecuteWithEnv(TriggerType.OnBekilled, this, env.Main);
+            //添加结束事件
+            GameExecuteManager.Instance.Add(OnKillBuffFinished);
+            
             GameEnv.Instance.PopEnv();
 
+        }
+        //在击杀相关buff执行结束后
+        private void OnKillBuffFinished()
+        {
+            //如果生命值不足，直接销毁
+            if (Temp.Hp <= 0)
+            {
+                RoleManager.Instance.RemoveRole(RoleId);
+            }
         }
         //=============================
         //外部接口
