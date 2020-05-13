@@ -161,9 +161,13 @@ namespace Checkmate.Modules.Game
 
             int sid = SkillManager.Instance.GetSkill("TestSkill");
             Debug.Log("load skill suc:" + sid);
-
+            
             //-------load page
             GamingPage.LoadPage();
+
+
+            IMode mode = ModeParser.ParseMode("KillMode");
+            StartCoroutine(CheckGameCondition(mode));
         }
 
 
@@ -228,6 +232,23 @@ namespace Checkmate.Modules.Game
                 last = Time.time;
             }
         }
+
+
+        IEnumerator CheckGameCondition(IMode mode)
+        {
+            while (true)
+            {
+                yield return new WaitForEndOfFrame();
+                //帧结束时判断是否游戏结束
+                int winner;
+                //如果满足则结束
+                if(mode.CheckEnd(out winner))
+                {
+                    GameNetManager.Instance.EndGame(winner);
+                }
+            }
+        }
+
         //=================================
 
         //消息处理分发函数

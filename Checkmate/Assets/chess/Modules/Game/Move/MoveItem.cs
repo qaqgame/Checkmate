@@ -1,6 +1,7 @@
 ﻿using Checkmate.Game;
 using Checkmate.Game.Controller;
 using Checkmate.Game.Map;
+using Checkmate.Game.Utils;
 using QGF.Common;
 using System.Collections;
 using System.Collections.Generic;
@@ -77,8 +78,14 @@ public class MoveItem : MonoBehaviour
         item.rc.SetState(RoleState.Move);      // 设置状态为移动中
         for (int i = 1; i < item.Path.Count; i++)
         {
+            MapManager.Instance.GetCell(item.rc.Position).Role = -1;
+            while(GameExecuteManager.Instance.WaitForExecute)
+            {
+                Debug.LogError("Wait for a while1");
+                yield return null;
+            }
+
             // TODO: 移除当前位置的人物信息 : moveutil.RemoveCurRole()
-            // MapManager.Instance.GetCell(item.Path[i - 1]).Role = -1;
             Vector3 a = MapManager.Instance.GetCellWorldPosition(item.Path[i - 1]);
             Vector3 b = MapManager.Instance.GetCellWorldPosition(item.Path[i]);
             for (float t = 0f; t < 1f; t += Time.deltaTime * item.travelSpeed)
@@ -86,13 +93,14 @@ public class MoveItem : MonoBehaviour
                 item.rc.GetGameObject().transform.position = Vector3.Lerp(a, b, t);
                 yield return null;
             }
-            // Debug.LogError("i : " + i + "curr position: " + item.rc.Position.ToString() + "count: " + item.Path.Count);
-            // Debug.LogError("count-1: " + item.Path[item.Path.Count - 2].ToString() + "count: " + item.Path[item.Path.Count - 1].ToString());
-            // Debug.LogError("Position now1: " + item.rc.Position.ToString() + " to -1");
-            MapManager.Instance.GetCell(item.rc.Position).Role = -1;
+            
             item.rc.Position = item.Path[i];
-            // Debug.LogError("Position now2: " + item.rc.Position.ToString() + " to id");
             MapManager.Instance.GetCell(item.rc.Position).Role = item.rc.RoleId;
+            while (GameExecuteManager.Instance.WaitForExecute)
+            {
+                Debug.LogError("Wait for a while2");
+                yield return null;
+            }
         }
         // 移动结束
         item.rc.SetState(RoleState.EndMove);

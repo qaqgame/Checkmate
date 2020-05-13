@@ -16,6 +16,8 @@ public class GamingPage : FGUIWindow
     GComponent roleIcon;
     GComponent skillList;
     GComponent propertyList;
+    GList propertyShow;
+    GList propertyHide;
     GComponent buffList;
 
     public static void LoadPage()
@@ -37,6 +39,17 @@ public class GamingPage : FGUIWindow
     {
         base.OnLoad();
         //todo
+        propertyList = mCtrlTarget.GetChildByPath("PropertyList").asCom;
+        propertyShow = propertyList.GetChild("ShowingProperty").asList;
+        propertyHide = propertyList.GetChild("HidenProperty").asList;
+
+        string[] tmp = new string[5]{"HP","MP","Attack","PRejection","MRejection"};
+
+        for (int i = 0; i < 5; i++)
+        {
+            propertyShow.GetChildAt(i).asCom.GetChild("PropertyName").asTextField.text = tmp[i];
+        }
+        
         //---------添加初始技能按钮
         skillList = mCtrlTarget.GetChildByPath("SkillList").asCom;
         GList skills = skillList.GetChild("Skills").asList;
@@ -85,12 +98,13 @@ public class GamingPage : FGUIWindow
         propertyList = mCtrlTarget.GetChildByPath("PropertyList").asCom;
         GList alwaysShowList = propertyList.GetChild("ShowingProperty").asList;
         GList onOverShowList = propertyList.GetChild("HidenProperty").asList;
-        // 遍历属性，创建Property栏目并加入到List中去
+        
+        
     }
 
     // 修改一个具体的属性框中的属性名和属性值
-    private void SetSinglePropertyV(GComponent SingleProperty, string propertyName, string propertyValue)
+    private GComponent AlterSinglePropertyTo(GList target,string propertyName, string propertyValue)
     {
-
+        return null;
     }
 }

@@ -25,6 +25,7 @@ namespace Checkmate.Services.Game
         Action<byte[]> onActionRecv=null;//接收到操作后的处理(发送至外部)
 
         const int ActionCmd = 7;
+        const int EndCmd = 8;//游戏结束的标识
 
         public Action<byte[]> onControlStart=null;//操作开始
 
@@ -55,6 +56,8 @@ namespace Checkmate.Services.Game
             mFSP.onGameBegin += OnGameBegin;
             mFSP.onRoundBegin += OnRoundBegin;
             mFSP.onControlStart += OnControlBegin;
+            mFSP.onRoundEnd += OnRoundEnd;
+            mFSP.onGameEnd += OnGameEnd;
         }
 
         //创建
@@ -93,13 +96,37 @@ namespace Checkmate.Services.Game
             }
         }
 
+        //结束回合
+        public void EndTurn()
+        {
+            mFSP.SendRoundEnd();
+        }
+        //结束时调用
+        private void OnRoundEnd(byte[] content)
+        {
+
+        }
+
+        //结束游戏
+        public void EndGame(int winner)
+        {
+
+            mFSP.SendFSP(EndCmd, winner);
+        }
+
+        //游戏结束时调用
+        private void OnGameEnd(byte[] content)
+        {
+
+        }
+
         //移动
         public void Move(RoleController role,Position target)
         {
             byte[] content = MoveManager.Instance.CreateMoveMsg(role, role.Position, target);
             SendAction(GameAction.Move, content);
         }
-
+        //施放技能
         public void Skill(int skillId,RoleController role,Position center)
         {
             mTempPos.x = center.x;
@@ -142,6 +169,11 @@ namespace Checkmate.Services.Game
                         OnRecvAction(message.content);
                         return;
                     }
+                case EndCmd:
+                    {
+                        OnEndConfirmRecv(message.content);
+                        return;
+                    }
             }
         }
 
@@ -151,6 +183,13 @@ namespace Checkmate.Services.Game
             {
                 onActionRecv.Invoke(content);
             }
+        }
+
+        //接收到确认结束消息
+        private void OnEndConfirmRecv(byte[] content)
+        {
+            //发送结束消息
+            mFSP.SendGameEnd();
         }
     }
 }

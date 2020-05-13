@@ -72,11 +72,21 @@ namespace Checkmate.Game.Player
             uint friend = mFriends[(uint)src];
             return (friend & (1 << dst)) != 0;
         }
+        public bool IsFriend(uint src, uint dst)
+        {
+            uint friend = mFriends[src];
+            return (friend & (1 << ((int)dst))) != 0;
+        }
 
         public bool IsEnemy(int src,int dst)
         {
             uint enemy = mEnemys[(uint)src];
             return (enemy & (1 << dst)) != 0;
+        }
+        public bool IsEnemy(uint src, uint dst)
+        {
+            uint enemy = mEnemys[(uint)src];
+            return (enemy & (1 <<((int)dst))) != 0;
         }
 
         /// <summary>
@@ -88,6 +98,15 @@ namespace Checkmate.Game.Player
         public bool IsNeutual(int src,int dst)
         {
             return (!IsFriend(src, dst)) && (!IsEnemy(src, dst));
+        }
+        public bool IsNeutual(uint src, uint dst)
+        {
+            return (!IsFriend(src, dst)) && (!IsEnemy(src, dst));
+        }
+
+        public List<uint> GetAllPlayers()
+        {
+            return mFriends.Keys.ToList();
         }
     }
 }
