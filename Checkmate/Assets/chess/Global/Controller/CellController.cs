@@ -61,13 +61,34 @@ namespace Checkmate.Game.Controller
             }
         }
 
+
+        private List<int> mVisibleRoles=new List<int>();//可见该方格的角色
+        
+        public void SetVisibleRole(int rid)
+        {
+            if (!mVisibleRoles.Contains(rid))
+            {
+                mVisibleRoles.Add(rid);
+            }
+        }
+        public void RemoveVisibleRole(int rid)
+        {
+            if (mVisibleRoles.Contains(rid))
+            {
+                mVisibleRoles.Remove(rid);
+            }
+        }
+
+
         public void RemoveVisibility(RoleController role)
         {
+            
             MapManager.Instance.DecreaseVisibility(role);
         }
 
         public void SetVisibility(RoleController role)
         {
+            
             MapManager.Instance.IncreaseVisibility(role);
         }
 
@@ -141,7 +162,7 @@ namespace Checkmate.Game.Controller
         {
             get
             {
-                return mCell.IsVisible;
+                return mVisibleRoles.Count > 0;
             }
         }
 
