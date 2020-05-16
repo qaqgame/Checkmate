@@ -173,6 +173,14 @@ namespace Checkmate.Game.Skill
 
         private List<Position> tempResult = new List<Position>();//临时存储结果
 
+
+        //消耗行动点
+        public int Cost
+        {
+            get;
+            private set;
+        }
+
         //获取鼠标范围
         public List<Position> GetMousePositions(Position Start)
         {
@@ -239,6 +247,7 @@ namespace Checkmate.Game.Skill
         {
             Name = node.Attributes["name"].Value;
             CoolTurns = int.Parse(node.Attributes["cd"].Value);
+            Cost = int.Parse(node.Attributes["cost"].Value);
 
             OnParseRoot(node);
 
@@ -337,6 +346,29 @@ namespace Checkmate.Game.Skill
 
         //=======================================
         private Dictionary<ActionTrigger, List<SkillAction>> mActions;//所有的活动
+
+
+        //是否是被动技能
+        public bool IsPassive
+        {
+            get;
+            private set;
+        }
+
+        
+
+        protected override void OnParseRoot(XmlNode node)
+        {
+            base.OnParseRoot(node);
+
+            IsPassive = false;
+            if (node.Attributes["active"] != null)
+            {
+                IsPassive = !(bool.Parse(node.Attributes["active"].Value));
+            }
+
+            
+        }
 
         protected override void OnParseContent(XmlNode node)
         {

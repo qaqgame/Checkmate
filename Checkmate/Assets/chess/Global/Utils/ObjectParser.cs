@@ -1,4 +1,5 @@
 ﻿using Checkmate.Game.Skill;
+using QGF.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,7 +16,7 @@ namespace Checkmate.Game.Utils
         public static string GetExtraDataContent(string name,string path)
         {
             string fullPath = SkillManager.Instance.RootPath + "/" + name + "/" + path;
-            return File.ReadAllText(fullPath);
+            return FileUtils.ReadString(fullPath);
         }
 
         public static object ParseObject(XmlNode node, out string name)

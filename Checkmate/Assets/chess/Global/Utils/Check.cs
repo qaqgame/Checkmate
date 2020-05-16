@@ -49,25 +49,67 @@ namespace Checkmate.Game.Utils
             compare = (CompareType)System.Enum.Parse(typeof(CompareType), node.Attributes["compare"].Value);
         }
 
-        private bool Compare(dynamic a, dynamic b, CompareType type)
+        private bool Compare(object a, object b, CompareType type)
         {
             switch (type)
             {
                 case CompareType.More:
-                    return a > b;
+                    return More(a,b);
                 case CompareType.Less:
-                    return a < b;
+                    return Less(a,b);
                 case CompareType.NotMore:
-                    return a <= b;
+                    return !More(a,b);
                 case CompareType.NotLess:
-                    return a >= b;
+                    return !Less(a,b);
                 case CompareType.Equal:
-                    return a == b;
+                    return Equal(a,b);
                 case CompareType.NotEqual:
-                    return a != b;
+                    return !Equal(a,b);
             }
             return false;
         }
+
+        private bool More(object a,object b)
+        {
+            Type ta = a.GetType();
+            Type tb = b.GetType();
+            if (ta == typeof(string) || tb == typeof(string))
+            {
+                return string.Compare(a.ToString(),b.ToString())==1;
+            }
+            else
+            {
+                return (float)a > (float)b;
+            }
+        }
+
+        private bool Less(object a, object b)
+        {
+            Type ta = a.GetType();
+            Type tb = b.GetType();
+            if (ta == typeof(string) || tb == typeof(string))
+            {
+                return string.Compare(a.ToString(), b.ToString()) == -1;
+            }
+            else
+            {
+                return (float)a < (float)b;
+            }
+        }
+        private bool Equal(object a, object b)
+        {
+            Type ta = a.GetType();
+            Type tb = b.GetType();
+            if (ta == typeof(string) || tb == typeof(string))
+            {
+                return string.Compare(a.ToString(), b.ToString()) == 0;
+            }
+            else
+            {
+                return (float)a == (float)b;
+            }
+        }
+
     }
 
 

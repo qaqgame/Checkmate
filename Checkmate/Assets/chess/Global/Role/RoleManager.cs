@@ -74,6 +74,8 @@ namespace Checkmate.Game.Role
             controller.GetGameObject().transform.position = MapManager.Instance.GetCellWorldPosition(pos);
             CellController cell = MapManager.Instance.GetCell(pos);
             cell.Role = id;
+            //激活视野
+            cell.SetVisibility(controller);
             return controller;
         }
 
@@ -86,6 +88,8 @@ namespace Checkmate.Game.Role
                 //从地图移除
                 CellController cell = MapManager.Instance.GetCell(controller.Position);
                 cell.Role = -1;
+                //移除视野
+                cell.RemoveVisibility(controller);
                 //将其隐藏
                 controller.GetGameObject().SetActive(false);
                 //从激活列表中移除
@@ -113,6 +117,8 @@ namespace Checkmate.Game.Role
                 //加至地图
                 CellController cell = MapManager.Instance.GetCell(position);
                 cell.Role = id;
+                //激活视野
+                cell.SetVisibility(controller);
             }
         }
 

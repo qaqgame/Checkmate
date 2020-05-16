@@ -50,7 +50,7 @@ namespace QGF.Utils
                 }
                 catch (Exception e)
                 {
-                    Debuger.LogError(LOG_TAG, "ReadFile() Path:{0}, Error:{1}", fullpath, e.Message);
+                    Debuger.LogError(LOG_TAG+ "ReadFile() Path:{0}, Error:{1}", fullpath, e.Message);
                 }
                 finally
                 {
@@ -62,7 +62,7 @@ namespace QGF.Utils
             }
             else
             {
-                Debuger.LogError(LOG_TAG, "ReadFile() File is Not Exist: {0}", fullpath);
+                Debuger.LogError(LOG_TAG+"ReadFile() File is Not Exist: {0}", fullpath);
             }
             return buffer;
         }
@@ -84,7 +84,7 @@ namespace QGF.Utils
                 }
                 catch (Exception e)
                 {
-                    Debuger.LogError(LOG_TAG, "ReadFileLines() Path:{0}, Error:{1}", fullpath, e.Message);
+                    Debuger.LogError(LOG_TAG+"ReadFileLines() Path:{0}, Error:{1}", fullpath, e.Message);
                 }
                 finally
                 {
@@ -96,7 +96,7 @@ namespace QGF.Utils
             }
             else
             {
-                Debuger.LogError(LOG_TAG, "ReadFileLines() File is Not Exist: {0}", fullpath);
+                Debuger.LogError(LOG_TAG+ "ReadFileLines() File is Not Exist: {0}", fullpath);
             }
             return listLines.ToArray();
         }
@@ -140,7 +140,7 @@ namespace QGF.Utils
                 }
                 catch (Exception e)
                 {
-                    Debuger.LogError(LOG_TAG, "SaveFile() CreateDirectory Error! Dir:{0}, Error:{1}", dir, e.Message);
+                    Debuger.LogError(LOG_TAG+ "SaveFile() CreateDirectory Error! Dir:{0}, Error:{1}", dir, e.Message);
                     return -1;
                 }
 
@@ -154,7 +154,7 @@ namespace QGF.Utils
             }
             catch (Exception e)
             {
-                Debuger.LogError(LOG_TAG, "SaveFile() Path:{0}, Error:{1}", fullpath, e.Message);
+                Debuger.LogError(LOG_TAG+ "SaveFile() Path:{0}, Error:{1}", fullpath, e.Message);
                 fs.Close();
                 return -1;
             }

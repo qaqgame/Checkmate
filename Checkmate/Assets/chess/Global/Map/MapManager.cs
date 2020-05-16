@@ -7,6 +7,7 @@ using Checkmate.Global.Data;
 using QGF;
 using QGF.Codec;
 using QGF.Common;
+using QGF.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -26,7 +27,7 @@ namespace Checkmate.Game.Map
         public bool Init(HexGrid grid,string mapPath)
         {
             hexGrid = grid;
-            byte[] bytes = File.ReadAllBytes(mapPath);
+            byte[] bytes = FileUtils.ReadFile(mapPath);
             if (bytes.Length <= 0)
             {
                 Debuger.LogError("read map file:{0} error!", "testMap");

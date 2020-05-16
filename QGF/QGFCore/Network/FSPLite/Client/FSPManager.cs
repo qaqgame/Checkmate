@@ -151,6 +151,12 @@ namespace QGF.Network.FSPLite.Client
             SendFSP(FSPCommand.GAME_BEGIN, "begin");
         }
 
+        public void SendGameBegin<T>(T data)
+        {
+            Debuger.Log();
+            SendFSP(FSPCommand.GAME_BEGIN, data);
+        }
+
         private void Handle_GameBegin(byte[] content)
         {
             Debuger.Log(content);
@@ -166,7 +172,11 @@ namespace QGF.Network.FSPLite.Client
             Debuger.Log();
             SendFSP(FSPCommand.ROUND_BEGIN, "");
         }
-
+        public void SendRoundBegin<T>(T data)
+        {
+            Debuger.Log();
+            SendFSP(FSPCommand.ROUND_BEGIN, data);
+        }
         private void Handle_RoundBegin(byte[] content)
         {
             Debuger.Log(content);
@@ -195,6 +205,11 @@ namespace QGF.Network.FSPLite.Client
             Debuger.Log();
             SendFSP(FSPCommand.CONTROL_START, "");
         }
+        public void SendControlStart<T>(T data)
+        {
+            Debuger.Log();
+            SendFSP(FSPCommand.CONTROL_START, data);
+        }
         private void Handle_ControlStart(byte[] content)
         {
             Debuger.Log(content);
@@ -210,6 +225,11 @@ namespace QGF.Network.FSPLite.Client
             Debuger.Log();
             SendFSP(FSPCommand.ROUND_END, "");
         }
+        public void SendRoundEnd<T>(T data)
+        {
+            Debuger.Log();
+            SendFSP(FSPCommand.ROUND_END, data);
+        }
         private void Handle_RoundEnd(byte[] content)
         {
             Debuger.Log(content);
@@ -224,6 +244,11 @@ namespace QGF.Network.FSPLite.Client
         {
             Debuger.Log();
             SendFSP(FSPCommand.GAME_END, "end");
+        }
+        public void SendGameEnd<T>(T data)
+        {
+            Debuger.Log();
+            SendFSP(FSPCommand.GAME_END, data);
         }
         private void Handle_GameEnd(byte[] content)
         {

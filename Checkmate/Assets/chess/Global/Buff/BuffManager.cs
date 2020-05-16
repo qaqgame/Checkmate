@@ -134,5 +134,23 @@ namespace Checkmate.Game.Buff
             }
             return mBuffIconRes[buff.Icon];
         }
+
+        /// <summary>
+        /// 到了新的回合的调用,更新buff回合数，并调用OnUpdate
+        /// </summary>
+        public void NextTurn()
+        {
+            foreach(var buff in mBuffInstances.Values)
+            {
+                if (!buff.IsInfiniteTurn)
+                {
+                    buff.ReserveTurn--;
+                }
+                if (buff.ReserveTurn > 0)
+                {
+                    buff.Execute(TriggerType.OnTurn);
+                }
+            }
+        }
     }
 }

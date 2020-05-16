@@ -91,6 +91,16 @@ namespace Checkmate.Game.Skill
             return mSkills[id].GetMousePositions(start);
         }
 
+        //获取消耗
+        public int GetCost(int id)
+        {
+            if (!mSkills.ContainsKey(id))
+            {
+                return 0;
+            }
+            return mSkills[id].Cost;
+        }
+
 
         //=========================
         [ProtoContract]

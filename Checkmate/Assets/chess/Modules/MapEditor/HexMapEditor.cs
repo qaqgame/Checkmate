@@ -7,6 +7,7 @@ using System.IO;
 using Checkmate.Global.Data;
 using QGF.Codec;
 using QGF;
+using QGF.Utils;
 
 namespace Checkmate.Game
 {
@@ -260,7 +261,7 @@ namespace Checkmate.Game
         public void Load()
         {
             string path = rootPath + "testMap.map";
-            byte[] bytes = File.ReadAllBytes(path);
+            byte[] bytes = FileUtils.ReadFile(path);
             if (bytes.Length <= 0)
             {
                 Debuger.LogError("read map file:{0} error!", "testMap");

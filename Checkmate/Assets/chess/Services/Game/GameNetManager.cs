@@ -1,9 +1,11 @@
 ﻿using Checkmate.Game;
 using Checkmate.Game.Controller;
+using Checkmate.Game.Player;
 using Checkmate.Global.Data;
 using QGF;
 using QGF.Codec;
 using QGF.Common;
+using QGF.Network.Core;
 using QGF.Network.FSPLite;
 using QGF.Network.FSPLite.Client;
 using QGF.Network.General.Client;
@@ -27,11 +29,14 @@ namespace Checkmate.Services.Game
         const int ActionCmd = 7;
         const int EndCmd = 8;//游戏结束的标识
 
-        public Action<byte[]> onControlStart=null;//操作开始
-
+        public Action<bool> onRoundBegin;//回合开始事件
+        public Action<uint> onControlStart=null;//操作开始
+        public Action<byte[]> onRoundEnd = null;//回合结束
 
         GameActionData mTempAction = new GameActionData();
         v3i mTempPos = new v3i();
+
+        private static NetBuffer DefaultReader = new NetBuffer(4096);
         public void SetActionListener(Action<byte[]> actionHandler)
         {
             onActionRecv = actionHandler;
@@ -76,35 +81,68 @@ namespace Checkmate.Services.Game
         //收到gamebegin的处理
         private void OnGameBegin(byte[] content)
         {
+            StartRound();
+        }
+
+
+        public void StartRound()
+        {
             mFSP.SendRoundBegin();
             Debuger.Log("send round begin");
         }
 
         private void OnRoundBegin(byte[] content)
         {
+            if (onRoundBegin != null)
+            {
+                Debuger.Log("recv round begin:{0}", content.Length);
+                Debuger.Log("data:{0}", content.ToString());
+                lock (DefaultReader)
+                {
+                    DefaultReader.Attach(content,content.Length);
+                    uint param = DefaultReader.ReadUInt();
+                    bool condition = param != 0;
+                    onRoundBegin.Invoke(condition);
+                }
+            }
+        }
+
+        //可以开始操作
+        public void StartControl()
+        {
             mFSP.SendControlStart();
             Debuger.Log("send control start");
         }
-
         //接收到可以操作的消息
         private void OnControlBegin(byte[] content)
         {
             Debuger.Log("recv control begin");
             if (onControlStart != null)
             {
-                onControlStart.Invoke(content);
+                lock (DefaultReader)
+                {
+                    DefaultReader.Attach(content, content.Length);
+                    uint id = DefaultReader.ReadUInt();
+                    onControlStart.Invoke(id);
+                }
             }
         }
 
         //结束回合
-        public void EndTurn()
+        public void EndRound()
         {
-            mFSP.SendRoundEnd();
+            int reserve = APManager.Instance.elementAP[(int)PlayerManager.Instance.PID].GetCurrentAP();
+            //发送当前所有用户的剩余行动点
+
+            mFSP.SendRoundEnd(reserve);
         }
         //结束时调用
         private void OnRoundEnd(byte[] content)
         {
-
+            if (onRoundEnd != null)
+            {
+                onRoundEnd.Invoke(content);
+            }
         }
 
         //结束游戏

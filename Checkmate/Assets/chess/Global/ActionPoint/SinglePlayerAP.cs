@@ -13,9 +13,27 @@ public class SinglePlayerAP
         currentAP = current;
     }
 
-    public void changeCurrAP(int num)
+
+    //回复ap
+    public void AddCurAp(int num)
+    {
+        currentAP += num;
+    }
+
+    //消耗AP
+    public void ReduceCurAP(int num)
     {
         currentAP -= num;
-        APManager.onAPChanged.Invoke();
+    }
+
+    public int GetCurrentAP()
+    {
+        return currentAP;
+    }
+
+    public void Reset(int total,int current)
+    {
+        totalAP = total;
+        currentAP = current;
     }
 }

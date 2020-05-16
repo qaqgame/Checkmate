@@ -145,7 +145,10 @@ namespace Checkmate.Standard
         //=========================
         string currentEffectName;//当前name
         RoleController currentRole;//当前角色
-        //控制流
+                                   //控制流
+
+        #region 控制流
+
         public void Wait(float second)
         {
             GameExecuteManager.Instance.Wait(second);
@@ -181,6 +184,27 @@ namespace Checkmate.Standard
             GameObject.Instantiate(effect, role.GetGameObject().transform);
         }
 
+        //跟踪效果
+
+        public void AddTrackEffect(string name,RoleController src,RoleController target,float time)
+        {
+            GameObject effect = Resources.Load("Effects/" + name) as GameObject;
+            GameObject obj=GameObject.Instantiate(effect, src.GetGameObject().transform);
+            startPos = obj.transform.position;
+            currentTime = 0;
+            maxTime = time;
+            targetPos = target.GetModel().transform.position;
+            moveObj = obj;
+            currentEffectName = obj.transform.name;
+            GameExecuteManager.Instance.Wait(time, DestroyCurrent);
+        }
+
+        private bool UpdateEffect()
+        {
+            moveObj.transform.LookAt(targetPos);
+            return Move();
+        }
+
         //播放动画
         public void PlayAnim(string name,RoleController role)
         {
@@ -205,7 +229,7 @@ namespace Checkmate.Standard
             }
             return false;
         }
-
+        #endregion
 
         //移动
         #region 移动
@@ -272,7 +296,7 @@ namespace Checkmate.Standard
         float currentTime = 0;
         float maxTime = 1;
         GameObject moveObj;
-        
+
         private bool Move()
         {
             currentTime += Time.deltaTime;

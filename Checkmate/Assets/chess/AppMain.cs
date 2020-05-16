@@ -150,10 +150,13 @@ namespace Assets.Chess
         private void LoadGameSource()
         {
             AppLoading.Update("加载资源中", 1);
-            GameManager.Instance.Init(() => {
-                AppLoading.Close();
-                Debug.Log("load game finished");
-            });
+            GameManager.Instance.Init(OnGameSceneLoadFinished);
+        }
+
+        private void OnGameSceneLoadFinished()
+        {
+            AppLoading.Close();
+            Debug.Log("load game finished");
         }
 
         private void OnGameSceneLoadStart()

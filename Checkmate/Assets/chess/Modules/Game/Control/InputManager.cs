@@ -5,6 +5,7 @@ using Checkmate.Game.Player;
 using Checkmate.Game.Skill;
 using Checkmate.Modules.Game.Utils;
 using Checkmate.Services.Game;
+using FairyGUI;
 using QGF.Common;
 using System;
 using System.Collections.Generic;
@@ -61,7 +62,8 @@ namespace Checkmate.Modules.Game.Control
         private void HandleMouse()
         {
             //不处理ui遮挡住的鼠标事件
-            if (!EventSystem.current.IsPointerOverGameObject())
+
+            if (!(EventSystem.current.IsPointerOverGameObject()||Stage.isTouchOnUI))
             {
                 //处理移动信息
                 HandleMouseMove(mLastPosition, Input.mousePosition);
@@ -146,8 +148,12 @@ namespace Checkmate.Modules.Game.Control
                                     List<Position> borders = SkillManager.Instance.GetBorderRange(mCurrentSkill, role.Position);
                                     if (borders.Contains(target.GetPosition()))
                                     {
+                                        //消耗行动点
+                                        int cost = SkillManager.Instance.GetCost(mCurrentSkill);
+                                        APManager.Instance.ReduceAp((int)PlayerManager.Instance.PID, cost);
+
                                         //施法
-                                        
+
 
                                         GameNetManager.Instance.Skill(mCurrentSkill, role, target.GetPosition());
 

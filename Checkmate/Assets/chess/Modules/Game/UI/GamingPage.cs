@@ -1,18 +1,20 @@
 ﻿using Checkmate.Game.Controller;
 using FairyGUI;
 using QGF.Unity.FGUI;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GamingPage : FGUIWindow
+public class GamingPage : FGUIPage
 {
     // 主面板
     private GComponent mainPanel = new GComponent();
 
     GComponent map;
-    GComponent apPoints;
     GComponent gameState;
+
+    GComponent mRolePanel;//角色面板根节点
     GComponent roleIcon;
     GComponent skillList;
     GComponent propertyList;
@@ -20,10 +22,11 @@ public class GamingPage : FGUIWindow
     GList propertyHide;
     GComponent buffList;
 
-    public static void LoadPage()
-    {
-        FGUIManager.Instance.Open<GamingPage>("MainPage", "GamingPage",null);
-    }
+    GButton mRoundEndBtn;//回合结束按钮
+    public Action onRoundEnd;//回合结束时调用 
+
+    GComponent mAPRoot;//AP的UI根节点
+    GTextField mCurAP;//当前行动点
 
     private GButton createSkillButton(GList SkillList ,string url = null)
     {   
@@ -39,7 +42,8 @@ public class GamingPage : FGUIWindow
     {
         base.OnLoad();
         //todo
-        propertyList = mCtrlTarget.GetChildByPath("PropertyList").asCom;
+        mRolePanel = mCtrlTarget.GetChild("RolePanel").asCom;
+        propertyList = mRolePanel.GetChildByPath("PropertyList").asCom;
         propertyShow = propertyList.GetChild("ShowingProperty").asList;
         propertyHide = propertyList.GetChild("HidenProperty").asList;
 
@@ -51,14 +55,24 @@ public class GamingPage : FGUIWindow
         }
         
         //---------添加初始技能按钮
-        skillList = mCtrlTarget.GetChildByPath("SkillList").asCom;
+        skillList = mRolePanel.GetChildByPath("SkillList").asCom;
         GList skills = skillList.GetChild("Skills").asList;
         for (int i = 0; i < 3; i++)
         {
             createSkillButton(skills);
         }
-        //------------------------
 
+        mRolePanel.visible = false;
+        //------------------------
+        //获取行动点显示
+        mAPRoot = mCtrlTarget.GetChild("APPoint").asCom;
+        mCurAP = mAPRoot.GetChild("CurrAP").asTextField;
+
+        //==================
+        //获取回合结束按钮
+        mRoundEndBtn = mCtrlTarget.GetChild("RoundEndBtn").asButton;
+        //设置点击事件
+        mRoundEndBtn.onClick.Add(OnRoundEndClicked);
     }
 
     protected override void OnOpen(object arg)
@@ -72,7 +86,44 @@ public class GamingPage : FGUIWindow
         base.OnPanelDestroy();
         //
     }
+    //===============================================
+    //外部接口
+    /// <summary>
+    /// 隐藏所有可隐藏项
+    /// </summary>
+    public void HideAll()
+    {
+        mRoundEndBtn.visible = false;
+        mAPRoot.visible = false;
+    }
+    /// <summary>
+    /// 显示所有可显示项
+    /// </summary>
+    public void ShowAll()
+    {
+        mRoundEndBtn.visible = true;
+        mAPRoot.visible = true;
+    }
 
+    /// <summary>
+    /// 显示角色面板
+    /// </summary>
+    public void ShowRole()
+    {
+        mRolePanel.visible = true;
+    }
+    /// <summary>
+    /// 隐藏角色面板
+    /// </summary>
+    public void HideRole()
+    {
+        mRolePanel.visible = false;
+    }
+
+    public void UpdateAP(int curAP,int maxAP)
+    {
+        mCurAP.text = curAP.ToString();
+    }
     public void UpdateRoleInfo(RoleController rc)
     {
 
@@ -98,13 +149,24 @@ public class GamingPage : FGUIWindow
         propertyList = mCtrlTarget.GetChildByPath("PropertyList").asCom;
         GList alwaysShowList = propertyList.GetChild("ShowingProperty").asList;
         GList onOverShowList = propertyList.GetChild("HidenProperty").asList;
-        
-        
     }
+
+    
 
     // 修改一个具体的属性框中的属性名和属性值
     private GComponent AlterSinglePropertyTo(GList target,string propertyName, string propertyValue)
     {
         return null;
     }
+
+
+    //回合结束事件
+    private void OnRoundEndClicked()
+    {
+        if (onRoundEnd != null)
+        {
+            onRoundEnd.Invoke();
+        }
+    }
+
 }

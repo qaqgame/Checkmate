@@ -25,6 +25,8 @@ using QGF.Codec;
 using QGF.Network.FSPLite;
 using QGF;
 using Checkmate.Game.Buff;
+using Checkmate.Game.Effect;
+using QGF.Utils;
 
 namespace Checkmate.Modules.Game
 {
@@ -34,18 +36,18 @@ namespace Checkmate.Modules.Game
 
         private static Action onInitFinished;
 
-
-//#if UNITY_EDITOR
-        string mTestMapPath;
-        string mSkillPath;
-        string mScriptPath;
-        string mTestRolePath;
-//#else
-//        string mTestMapPath = Application.streamingAssetsPath + "/Test/testMap.map";
-//        string mSkillPath = Application.streamingAssetsPath+ "/Skills";
-//        string mScriptPath = Application.streamingAssetsPath + "/Scripts";
-//        string mTestRolePath = Application.streamingAssetsPath + "/Test/Alice.json";
-//#endif
+        bool wait = true;
+        //#if UNITY_EDITOR
+        static string mTestMapPath ;
+        static string mSkillPath;
+        static string mScriptPath;
+        static string mTestRolePath;
+        //#else
+        //        static string mTestMapPath = Application.streamingAssetsPath + "/Test/testMap.map";
+        //        static string mSkillPath = Application.streamingAssetsPath + "/Skills";
+        //        static string mScriptPath = Application.streamingAssetsPath + "/Scripts";
+        //        static string mTestRolePath = Application.streamingAssetsPath + "/Test/Alice.json";
+        //#endif
         static readonly List<string> types = new List<string>()
         {
             RoleManager.prefabType
@@ -69,17 +71,21 @@ namespace Checkmate.Modules.Game
         //初始化所有的协程
         public IEnumerator InitAll()
         {
+            Debuger.Log("invoke initall");
             ObjectPool.Instance.Init(10, types);
+            Debuger.Log("object pool init");
             HexGrid hexGrid = GameObject.Find("Map").GetComponentInChildren<HexGrid>();
+            Debuger.Log("grid get suc");
             MapManager.Instance.Init(hexGrid, mTestMapPath);
-
+            Debuger.Log("map init");
             SkillManager.Instance.Init(mSkillPath);
+            Debuger.Log("skill init");
             DrawUtil.Init();
-
+            Debuger.Log("draw init");
             RoleManager.Instance.Init();
-
+            Debuger.Log("role init");
             MoveManager.Instance.Init();
-
+            Debuger.Log("move init");
             GameEnv.Instance.Init();//初始化环境
             Debuger.Log("env init");
 
@@ -87,14 +93,21 @@ namespace Checkmate.Modules.Game
             Debuger.Log("execute init");
 
             APManager.Instance.Init();
+            APManager.Instance.AddListener(OnAPUpdate);
             Debuger.Log("ap init");
 
             BuffManager.Instance.Init();
 
             InitEvent();
 
+            while (wait)
+            {
+                Debuger.Log("init waiting");
+                yield return null;
+            }
+
             OnInitFinished();
-            yield return true;
+            GameNetManager.Instance.StartGame();
         }
 
 
@@ -112,18 +125,17 @@ namespace Checkmate.Modules.Game
             mScriptPath = Application.streamingAssetsPath + "/Scripts";
             mTestRolePath = Application.streamingAssetsPath + "/Test/Alice.json";
 #endif
-
         }
 
         private void Start()
         {
-            GameNetManager.Instance.StartGame();
+            
             //=============================
             //测试部分
             //InitTestPlayer();
 
 
-            RoleData alice = JsonConvert.DeserializeObject<RoleData>(File.ReadAllText(mTestRolePath));
+            RoleData alice = JsonConvert.DeserializeObject<RoleData>(FileUtils.ReadString(mTestRolePath));
             AddRole(alice);
             alice.id = 1;
             alice.model = "Bob";
@@ -143,14 +155,6 @@ namespace Checkmate.Modules.Game
             alice.position.z = 3;
             AddRole(alice);
 
-            alice.id = 3;
-            alice.name = "Frank";
-            alice.team = 3;
-            alice.position.x = 4;
-            alice.position.y = -8;
-            alice.position.z = 4;
-            AddRole(alice);
-
             RoleController role = RoleManager.Instance.GetRole(1);
             Debug.Log(role.Name);
             
@@ -161,9 +165,11 @@ namespace Checkmate.Modules.Game
 
             int sid = SkillManager.Instance.GetSkill("TestSkill");
             Debug.Log("load skill suc:" + sid);
-            
+
             //-------load page
-            GamingPage.LoadPage();
+            GamingPageManager.Instance.OpenPage();
+            GamingPageManager.Instance.onRoundEndClicked = OnRoundEndClick;
+
 
 
             IMode mode = ModeParser.ParseMode("KillMode");
@@ -197,13 +203,74 @@ namespace Checkmate.Modules.Game
             GameNetManager.Instance.Start(param);
             GameNetManager.Instance.SetActionListener(HandleAction);
             GameNetManager.Instance.onControlStart = OnControlStart;
+            GameNetManager.Instance.onRoundEnd = OnRoundEnd;
+            GameNetManager.Instance.onRoundBegin = OnRoundBegin;
+            wait = false;
         }
 
-        private void OnControlStart(byte[] content)
+        private void OnControlStart(uint pid)
         {
-            PlayerManager.Instance.Operating = true;
+            Debuger.Log("control start:{0}", pid);
+            if (pid == PlayerManager.Instance.PID)
+            {
+                PlayerManager.Instance.Operating = true;
+                GamingPageManager.Instance.OnNextTurn(true);
+            }
+            else
+            {
+                PlayerManager.Instance.Operating = false;
+                GamingPageManager.Instance.OnNextTurn(false);
+            }
+        }
+        //===========================================
+        //回合结束点击时处理
+        private void OnRoundEndClick()
+        {
+            GameNetManager.Instance.EndRound();
+        }
+        //回合结束处理(此处为更新行动顺序)
+        private void OnRoundEnd(byte[] content)
+        {
+            //更新操作
+
+
+            //操作结束后进入下一回合
+            GameNetManager.Instance.StartRound();
         }
 
+        //============================================
+        //回合开始处理
+        private void OnRoundBegin(bool needTurn)
+        {
+            if (needTurn)
+            {
+                //下一回合
+                //更新行动点
+                APManager.Instance.Reset();
+                //更新buff
+                BuffManager.Instance.NextTurn();
+                //更新地面效果
+                EffectManager.Instance.NextTurn();
+
+            }
+            StartCoroutine(WaitForBeginControl());
+        }
+        IEnumerator WaitForBeginControl()
+        {
+            while (GameExecuteManager.Instance.WaitForExecute)
+            {
+                yield return null;
+            }
+            GameNetManager.Instance.StartControl();
+        }
+
+        //===============================
+        //AP更新事件
+        private void OnAPUpdate()
+        {
+            GamingPageManager.Instance.UpdateAP();
+        }
+        //===========================================
 
         // Update: Update is Called pear frame
         float last=0;
@@ -277,12 +344,8 @@ namespace Checkmate.Modules.Game
             Debug.Log(data.name + ",data:" + controller.GetValue("Id"));
 
         }
-
-        public void RemoveRole(int id)
-        {
-            RoleManager.Instance.RemoveRole(id);
-        }
-
+        //==============================
+        //UI事件部分
         private void InitEvent()
         {
             GameEvent.Init();
@@ -302,12 +365,13 @@ namespace Checkmate.Modules.Game
         private void OnRoleClicked(RoleController role)
         {
             Debug.Log("clicked role:" + role.Name);
-           
+            GamingPageManager.Instance.ShowRolePanel(role);
         }
 
         private void OnResetState()
         {
             DrawUtil.ClearAll();
+            GamingPageManager.Instance.HideRolePanel();
         }
     }
 }

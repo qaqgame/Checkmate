@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Newtonsoft.Json;
 using System.IO;
+using QGF;
+using QGF.Utils;
 
 namespace Checkmate.Game.Utils
 {
@@ -34,9 +36,10 @@ namespace Checkmate.Game.Utils
         /// <param name="types">初始化的对象类别</param>
         public void Init(int size,List<string> types)
         {
+            Debuger.Log("invoke init objectpool");
             //初始化预制体映射
             InitPrefabs(ConfigPath);
-
+            Debuger.Log("init prefab finished");
             //初始化对象池
             mGameObjectPool = new Dictionary<string, List<GameObject>>();
             foreach(var type in types)
@@ -63,6 +66,7 @@ namespace Checkmate.Game.Utils
                 }
                 
             }
+            Debuger.Log("object pool finished");
         }
 
         //获取对象
@@ -125,14 +129,20 @@ namespace Checkmate.Game.Utils
         private void InitPrefabs(string configPath)
         {           
             mPrefabs = new Dictionary<string, GameObject>();
-            string content = File.ReadAllText(configPath);
-            List<PrefabMap> prefabs = JsonConvert.DeserializeObject<List<PrefabMap>>(content);
-            //读取配置文件
-            foreach(var prefab in prefabs)
+            try
             {
-                //生成预制体，添加至映射
-                GameObject prefabObj = Resources.Load<GameObject>(prefab.prefab);
-                mPrefabs.Add(prefab.name, prefabObj);
+                string content = FileUtils.ReadString(configPath);
+                List<PrefabMap> prefabs = JsonConvert.DeserializeObject<List<PrefabMap>>(content);
+                //读取配置文件
+                foreach (var prefab in prefabs)
+                {
+                    //生成预制体，添加至映射
+                    GameObject prefabObj = Resources.Load<GameObject>(prefab.prefab);
+                    mPrefabs.Add(prefab.name, prefabObj);
+                }
+            }catch(Exception e)
+            {
+                Debuger.LogError(e.StackTrace);
             }
         }
 

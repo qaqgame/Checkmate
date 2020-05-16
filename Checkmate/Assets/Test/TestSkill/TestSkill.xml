@@ -1,4 +1,4 @@
-<Skill name="TestSkill" cd="1" type="Active" icon="damage.png">
+<Skill name="TestSkill" cd="1" type="Active" cost="3" icon="damage.png">
     <Description>TestSkill</Description>
     <SkillRange max="3" min="0" type="Cell|Role" team="Self|Friend|Enemy|Neutual">
         <DefaultRange type="Range" limit="3"/>
