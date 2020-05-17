@@ -196,7 +196,7 @@ namespace Checkmate.Standard
             targetPos = target.GetModel().transform.position;
             moveObj = obj;
             currentEffectName = obj.transform.name;
-            GameExecuteManager.Instance.Wait(time, DestroyCurrent);
+            GameExecuteManager.Instance.Wait(UpdateEffect, DestroyCurrent);
         }
 
         private bool UpdateEffect()
@@ -208,10 +208,16 @@ namespace Checkmate.Standard
         //播放动画
         public void PlayAnim(string name,RoleController role)
         {
+            
             //获取实例
             GameObject model = role.GetModel();
             Animator animator = model.GetComponent<Animator>();
-            animator.ResetTrigger("Idle");
+            //如果是移动状态先切到idle
+            if (animator.GetCurrentAnimatorStateInfo(0).IsName("Walk"))
+            {
+                animator.SetTrigger("Idle");
+            }
+            animator.SetBool("FinishAction", false);
             animator.SetTrigger(name);
             
             GameExecuteManager.Instance.Wait(() => { return WaitForAnim(name, animator); });
@@ -220,11 +226,12 @@ namespace Checkmate.Standard
         private bool WaitForAnim(string name,Animator animator)
         {
             AnimatorStateInfo info = animator.GetCurrentAnimatorStateInfo(0);
-            if (info.IsName(name) && info.normalizedTime > 1.0f)
+            
+            if ((info.IsName(name) && info.normalizedTime >= 1.0f))
             {
                 //播放结束，返回true
+                animator.SetBool("FinishAction", true);
                 animator.ResetTrigger(name);
-                animator.SetTrigger("Idle");
                 return true;
             }
             return false;
@@ -250,7 +257,20 @@ namespace Checkmate.Standard
             moveObj = role.GetGameObject();
             targetPos = target;
 
-            GameExecuteManager.Instance.Wait(Move);
+            Animator animator = role.GetModel().GetComponent<Animator>();
+            tempAnim = animator;
+            animator.ResetTrigger("Idle");
+            animator.SetTrigger("Walk");
+            GameExecuteManager.Instance.Wait(Move,OnWalkFinish);
+        }
+        Animator tempAnim=null;
+        private void OnWalkFinish()
+        {
+            if (tempAnim != null)
+            {
+                tempAnim.ResetTrigger("Walk");
+                tempAnim.SetTrigger("Idle");
+            }
         }
 
         /// <summary>

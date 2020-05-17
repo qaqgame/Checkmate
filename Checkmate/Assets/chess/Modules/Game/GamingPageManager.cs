@@ -1,4 +1,5 @@
 ﻿using Checkmate.Game.Controller;
+using Checkmate.Modules.Game.UI;
 using QGF.Common;
 using QGF.Unity.FGUI;
 using System;
@@ -12,11 +13,13 @@ namespace Checkmate.Modules.Game
     public class GamingPageManager:Singleton<GamingPageManager>
     {
         static GamingPage mPage;
+        static RoundPage mRoundPage;//回合切换页
         public Action onRoundEndClicked;//回合结束点击事件
         public void OpenPage()
         {
             mPage= FGUIManager.Instance.Open<GamingPage>("MainPage", "GamingPage", null);
             mPage.onRoundEnd = OnRoundEndClicked;
+            mRoundPage = FGUIManager.Instance.LoadToMemory<RoundPage>("RoundChangePage", "GamingPage");
         }
 
         public void OnRoundEndClicked()
@@ -65,5 +68,44 @@ namespace Checkmate.Modules.Game
                 mPage.ShowAll();
             }
         }
+        #region 回合切换显示
+        //开始回合开始显示
+        public void StartRoundBegin()
+        {
+            if (!mRoundPage.IsOpened)
+            {
+                FGUIManager.Instance.Open<RoundPage>("RoundChangePage", "GamingPage",RoundAnim.Begin);
+            }
+            else
+            {
+                mRoundPage.Show();
+                mRoundPage.PlayBegin();
+            }
+        }
+        //开始回合结束显示
+        public void StartRoundEnd()
+        {
+            if (!mRoundPage.IsOpened)
+            {
+                FGUIManager.Instance.Open<RoundPage>("RoundChangePage", "GamingPage", RoundAnim.End);
+            }
+            else
+            {
+                mRoundPage.Show();
+                mRoundPage.PlayEnd();
+            }
+        }
+
+        public void EndRoundChanging()
+        {
+            mRoundPage.Hide();
+        }
+
+        //是否正在播放回合动效
+        public bool RoundChanging()
+        {
+            return mRoundPage.IsPlaying;
+        }
+        #endregion
     }
 }

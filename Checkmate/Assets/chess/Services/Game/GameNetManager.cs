@@ -135,6 +135,7 @@ namespace Checkmate.Services.Game
             //发送当前所有用户的剩余行动点
 
             mFSP.SendRoundEnd(reserve);
+            Debuger.Log("send round end");
         }
         //结束时调用
         private void OnRoundEnd(byte[] content)
@@ -148,7 +149,7 @@ namespace Checkmate.Services.Game
         //结束游戏
         public void EndGame(int winner)
         {
-
+            Debuger.LogWarning("end game with:{0}", winner);
             mFSP.SendFSP(EndCmd, winner);
         }
 
@@ -162,6 +163,7 @@ namespace Checkmate.Services.Game
         public void Move(RoleController role,Position target)
         {
             byte[] content = MoveManager.Instance.CreateMoveMsg(role, role.Position, target);
+            Debuger.Log("send move msg:{0} move to{1}", role.Name, target.ToString());
             SendAction(GameAction.Move, content);
         }
         //施放技能
@@ -215,13 +217,17 @@ namespace Checkmate.Services.Game
             }
         }
 
+
+        
         private void OnRecvAction(byte[] content)
         {
+            
             if (onActionRecv != null)
             {
                 onActionRecv.Invoke(content);
             }
         }
+
 
         //接收到确认结束消息
         private void OnEndConfirmRecv(byte[] content)

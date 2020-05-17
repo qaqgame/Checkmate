@@ -1,4 +1,5 @@
 ﻿using Checkmate.Game.Buff;
+using Checkmate.Game.Map;
 using Checkmate.Game.Role;
 using Checkmate.Game.Skill;
 using Checkmate.Game.UI;
@@ -116,12 +117,30 @@ namespace Checkmate.Game.Controller
         }
 
         //当前位置
+        private Position _position;
         [GetProperty]
         [SetProperty]
         public Position Position
         {
-            get;
-            set;
+            get { return _position; }
+            set
+            {
+                _position = value;
+                CellController cell = MapManager.Instance.GetCell(value);
+                if (cell != null)
+                {
+                    //可见则设置可见
+                    if (cell.Visible)
+                    {
+
+                        Visible = true;
+                    }
+                    else
+                    {
+                        Visible = false;
+                    }
+                }
+            }
         }
 
         //所属队伍
@@ -149,6 +168,22 @@ namespace Checkmate.Game.Controller
             set;
         }
 
+        private bool _visible;
+        [GetProperty]
+        public bool Visible
+        {
+            get { return _visible; }
+            set
+            {
+                if (value != _visible)
+                {
+                    mObj.SetActive(value);
+                    _visible = value;
+                }
+            }
+        }
+
+
         private Dictionary<int, int> mExtraMove;//不同地形对应的额外行动力
         private List<Int32> mStandMask;//可站立的掩码，1位代表一类地形或特征
 
@@ -160,7 +195,7 @@ namespace Checkmate.Game.Controller
             Origin = new RoleAttributeController(data.props);
             Temp = new RoleAttributeController(data.props);
             Temp.onAttributeChanged = OnTempAttributeChanged;
-            Position = new Position(data.position.x, data.position.y, data.position.z);
+            //Position = new Position(data.position.x, data.position.y, data.position.z);
             Team = data.team;
             Status = data.status;
             mStandMask = data.mask;

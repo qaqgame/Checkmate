@@ -4,6 +4,7 @@ using Checkmate.Game.Role;
 using Checkmate.Game.Utils;
 using Checkmate.Global.Data;
 using ProtoBuf;
+using QGF;
 using QGF.Codec;
 using QGF.Common;
 using System;
@@ -121,7 +122,8 @@ namespace Checkmate.Game.Skill
             SkillMessage message = PBSerializer.NDeserialize<SkillMessage>(msg);
             RoleController role = RoleManager.Instance.GetRole(message.roleId);
             Position center = new Position(message.center.x, message.center.y, message.center.z);
-
+            BaseSkill skill = mSkills[message.skillId];
+            Debuger.Log("{0} execute skill {1} in {2}", role.Name, skill.Name, center.ToString());
             ExecuteSkill(message.skillId, role, center);
         }
 

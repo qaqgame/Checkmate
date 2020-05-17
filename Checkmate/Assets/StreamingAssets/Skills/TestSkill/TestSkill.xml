@@ -18,7 +18,7 @@
                     <DefaultRange type="Range" limit="1"/>
                 </DefaultSearch>
                 <Selects id="2" src="1">
-                    <DefaultTeamSelector team="Enemy|Self"/>
+                    <DefaultTeamSelector team="Enemy|Friend"/>
                 </Selects>
             </Targets>
             <Executes>

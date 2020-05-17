@@ -42,7 +42,7 @@ namespace Checkmate.Modules.Game.Control
             }
 
             //如果存在角色
-            if (cell.HasRole)
+            if (cell.HasRole&&cell.Visible)
             {
                 Debug.Log("should have role");
                 RoleController role = RoleManager.Instance.GetRole(cell.Role);

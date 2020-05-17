@@ -11,6 +11,7 @@ using Checkmate.Game.Role;
 using Checkmate.Game.Map;
 using Checkmate.Game.Effect;
 using QGF;
+using Checkmate.Game.Player;
 
 namespace Checkmate.Game.Controller
 {
@@ -56,6 +57,11 @@ namespace Checkmate.Game.Controller
                     RoleController role = RoleManager.Instance.GetRole(value);
                     
                     ExecuteEffect(EffectTrigger.Enter, role);
+                    //如果方格可见，则设置角色可见
+                    if (Visible)
+                    {
+                        role.Visible = true;
+                    }
                 }
                 mRole = value;
             }
@@ -66,9 +72,20 @@ namespace Checkmate.Game.Controller
         
         public void SetVisibleRole(int rid)
         {
+            
             if (!mVisibleRoles.Contains(rid))
             {
                 mVisibleRoles.Add(rid);
+            }
+            //如果变为可见
+            if (mVisibleRoles.Count ==1)
+            {
+                //如果存在角色,将其显示
+                if (Role != -1)
+                {
+                    RoleController role = RoleManager.Instance.GetRole(Role);
+                    role.Visible = true;
+                }
             }
         }
         public void RemoveVisibleRole(int rid)
@@ -77,19 +94,33 @@ namespace Checkmate.Game.Controller
             {
                 mVisibleRoles.Remove(rid);
             }
+            //如果该方格变为不可见
+            if (mVisibleRoles.Count==0)
+            {
+                //如果存在角色,将其隐藏
+                if (Role != -1)
+                {
+                    RoleController role = RoleManager.Instance.GetRole(Role);
+                    role.Visible = false;
+                }
+            }
         }
 
 
         public void RemoveVisibility(RoleController role)
         {
-            
-            MapManager.Instance.DecreaseVisibility(role);
+            if (PlayerManager.Instance.IsFriend(role.Team))
+            {
+                MapManager.Instance.DecreaseVisibility(role);
+            }
         }
 
         public void SetVisibility(RoleController role)
         {
-            
-            MapManager.Instance.IncreaseVisibility(role);
+            if (PlayerManager.Instance.IsFriend(role.Team))
+            {
+                MapManager.Instance.IncreaseVisibility(role);
+            }
         }
 
 

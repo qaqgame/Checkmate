@@ -78,6 +78,17 @@ namespace Checkmate.Game.Player
             return (friend & (1 << ((int)dst))) != 0;
         }
 
+        public bool IsFriend(int dst)
+        {
+            int src = (int)PID;
+            return IsFriend(src, dst);
+        }
+        public bool IsFriend(uint dst)
+        {
+            uint src = PID;
+            return IsFriend(src, dst);
+        }
+
         public bool IsEnemy(int src,int dst)
         {
             uint enemy = mEnemys[(uint)src];

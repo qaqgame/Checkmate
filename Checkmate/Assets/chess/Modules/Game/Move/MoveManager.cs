@@ -9,6 +9,7 @@ using Checkmate.Game.Role;
 using QGF.Common;
 using ProtoBuf;
 using QGF.Codec;
+using QGF;
 
 // 操作消息中的移动消息
 [ProtoContract]
@@ -35,6 +36,13 @@ public class MoveManager : Singleton<MoveManager>
     private MoveItem moveItem;
     private AstarRoute astarRoute;
 
+    public bool IsMoving
+    {
+        get
+        {
+            return MoveItem.IsMoving;
+        }
+    }
     //寻路器
     public AstarRoute Router
     {
@@ -65,6 +73,9 @@ public class MoveManager : Singleton<MoveManager>
         // Opn.OperationCnt.MoveDirection = null;
         Position start = Position.Parse(Opn.StartPosition);
         Position end = Position.Parse(Opn.EndPosition);
+
+        Debuger.Log("move {0} from {1} to {2}", rc.Name, start.ToString(), end.ToString());
+
         List<Position> path = astarRoute.AstarNavigatorE(rc, start, end);
         if (path == null)
         {

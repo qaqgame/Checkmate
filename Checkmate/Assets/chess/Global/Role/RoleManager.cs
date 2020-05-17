@@ -27,6 +27,9 @@ namespace Checkmate.Game.Role
 
         private Dictionary<uint, List<int>> mPlayerRoles;//pid（玩家）所拥有的角色(不分是否激活）
 
+
+        public List<int> mVisibleRole;//所有可见的role
+        
         public void Init()
         {
             mActiveRoles = new List<int>();
@@ -73,9 +76,13 @@ namespace Checkmate.Game.Role
             Position pos = new Position(role.position.x, role.position.y, role.position.z);
             controller.GetGameObject().transform.position = MapManager.Instance.GetCellWorldPosition(pos);
             CellController cell = MapManager.Instance.GetCell(pos);
+            //设置role的position
+            controller.Position = pos;
             cell.Role = id;
             //激活视野
             cell.SetVisibility(controller);
+
+            
             return controller;
         }
 
@@ -128,8 +135,6 @@ namespace Checkmate.Game.Role
         {
             return mRolePool[id];
         }
-
-
         //==================
         //获取所属角色
         public List<int> GetRolesOfPlayer(uint pid)

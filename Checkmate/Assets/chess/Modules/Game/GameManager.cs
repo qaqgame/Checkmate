@@ -37,6 +37,8 @@ namespace Checkmate.Modules.Game
         private static Action onInitFinished;
 
         bool wait = true;
+        bool initFinished = false;
+
         //#if UNITY_EDITOR
         static string mTestMapPath ;
         static string mSkillPath;
@@ -107,7 +109,11 @@ namespace Checkmate.Modules.Game
             }
 
             OnInitFinished();
+            
+            TestInit();
+            initFinished = true;
             GameNetManager.Instance.StartGame();
+            
         }
 
 
@@ -135,6 +141,12 @@ namespace Checkmate.Modules.Game
             //InitTestPlayer();
 
 
+            
+        }
+
+
+        private void TestInit()
+        {
             RoleData alice = JsonConvert.DeserializeObject<RoleData>(FileUtils.ReadString(mTestRolePath));
             AddRole(alice);
             alice.id = 1;
@@ -148,7 +160,8 @@ namespace Checkmate.Modules.Game
             Debug.Log("extra:" + RoleManager.Instance.GetRole(1).GetValue("Current.test"));
 
             alice.id = 2;
-            alice.name = "Frank";
+            alice.model = "Anna";
+            alice.name = "Anna";
             alice.team = 2;
             alice.position.x = 3;
             alice.position.y = -6;
@@ -157,7 +170,7 @@ namespace Checkmate.Modules.Game
 
             RoleController role = RoleManager.Instance.GetRole(1);
             Debug.Log(role.Name);
-            
+
             CellController cell = MapManager.Instance.GetCell(role.Position);
             Debug.Log(cell.Terrain);
 
@@ -175,7 +188,6 @@ namespace Checkmate.Modules.Game
             IMode mode = ModeParser.ParseMode("KillMode");
             StartCoroutine(CheckGameCondition(mode));
         }
-
 
         //============================
         public void InitTestPlayer()
@@ -201,43 +213,79 @@ namespace Checkmate.Modules.Game
             GameNetManager.Instance.Init(pid);//初始化网络管理器
             Debuger.Log("pid:suib{0},param:{1}", pid, param.ToString());
             GameNetManager.Instance.Start(param);
-            GameNetManager.Instance.SetActionListener(HandleAction);
+            GameNetManager.Instance.SetActionListener(RecvAction);
             GameNetManager.Instance.onControlStart = OnControlStart;
             GameNetManager.Instance.onRoundEnd = OnRoundEnd;
             GameNetManager.Instance.onRoundBegin = OnRoundBegin;
+
+            //开始处理action协程
+            StartCoroutine(HandleActions());
             wait = false;
         }
 
         private void OnControlStart(uint pid)
         {
             Debuger.Log("control start:{0}", pid);
+            StartCoroutine(WaitForSetControl(pid));
+        }
+
+        IEnumerator WaitForSetControl(uint pid)
+        {
+            GamingPageManager.Instance.StartRoundBegin();
+            while (GamingPageManager.Instance.RoundChanging())
+            {
+                yield return null;
+            }
+            GamingPageManager.Instance.EndRoundChanging();
+
             if (pid == PlayerManager.Instance.PID)
             {
                 PlayerManager.Instance.Operating = true;
                 GamingPageManager.Instance.OnNextTurn(true);
-            }
-            else
-            {
-                PlayerManager.Instance.Operating = false;
-                GamingPageManager.Instance.OnNextTurn(false);
             }
         }
         //===========================================
         //回合结束点击时处理
         private void OnRoundEndClick()
         {
-            GameNetManager.Instance.EndRound();
+            if ((!GameExecuteManager.Instance.WaitForExecute))
+            {
+                PlayerManager.Instance.Operating = false;
+                GamingPageManager.Instance.OnNextTurn(false);
+                GameNetManager.Instance.EndRound();
+            }
         }
         //回合结束处理(此处为更新行动顺序)
         private void OnRoundEnd(byte[] content)
         {
+            Debuger.Log("recv round end");
+            StartCoroutine(WaitForRoundEndAnim());
+        }
+        IEnumerator WaitForRoundEndAnim()
+        {
+            yield return StartCoroutine(WaitForRoundEnd());
+
             //更新操作
 
+            //显示回合结束
+            GamingPageManager.Instance.StartRoundEnd();
+            while (GamingPageManager.Instance.RoundChanging())
+            {
+                yield return null;
+            }
+            GamingPageManager.Instance.EndRoundChanging();
 
             //操作结束后进入下一回合
             GameNetManager.Instance.StartRound();
         }
 
+        IEnumerator WaitForRoundEnd()
+        {
+            while (GameExecuteManager.Instance.WaitForExecute || MoveManager.Instance.IsMoving || IsHandlingAction)
+            {
+                yield return null;
+            }
+        }
         //============================================
         //回合开始处理
         private void OnRoundBegin(bool needTurn)
@@ -276,7 +324,10 @@ namespace Checkmate.Modules.Game
         float last=0;
         void Update()
         {
-            
+            if (!initFinished)
+            {
+                return;
+            }
             MoveManager.Instance.Update();
 
             InputManager.Instance.HandleInput();
@@ -311,18 +362,23 @@ namespace Checkmate.Modules.Game
                 //如果满足则结束
                 if(mode.CheckEnd(out winner))
                 {
-                    GameNetManager.Instance.EndGame(winner);
+                    //GameNetManager.Instance.EndGame(winner);
                 }
             }
         }
 
         //=================================
-
+        public static Queue<GameActionData> mRecvActions = new Queue<GameActionData>();
         //消息处理分发函数
-        private void HandleAction(byte[] message)
+        private void RecvAction(byte[] message)
         {
             Debuger.Log("recv action");
             GameActionData action= PBSerializer.NDeserialize<GameActionData>(message);
+            mRecvActions.Enqueue(action);
+        }
+        bool IsHandlingAction = false;
+        private void HandleAction(GameActionData action)
+        {
             switch (action.OperationType)
             {
                 case GameAction.Move:
@@ -337,6 +393,31 @@ namespace Checkmate.Modules.Game
                     }
             }
         }
+
+        IEnumerator HandleActions()
+        {
+            while (true)
+            {
+                while (mRecvActions.Count > 0)
+                {
+                    IsHandlingAction = true;
+                    GameActionData action = mRecvActions.Dequeue();
+                    HandleAction(action);
+                    yield return StartCoroutine(WaitForExe());
+                }
+                IsHandlingAction = false;
+                yield return null;
+            }
+        }
+
+        IEnumerator WaitForExe()
+        {
+            while (GameExecuteManager.Instance.WaitForExecute||MoveManager.Instance.IsMoving)
+            {
+                yield return null;
+            }
+        }
+
 
         public void AddRole(RoleData data)
         {

@@ -32,6 +32,11 @@ namespace Checkmate.Game.Utils
         private List<Queue<GameEnvTrack>> mTracks;//所有待执行
         private int mCurrentRec=-1;//当前递归层数
         public delegate bool WaitAction();
+
+        public void AddToBasic(GameEnvTrack track)
+        {
+            mTracks[0].Enqueue(track);
+        }
         public void Add(GameEnvTrack track)
         {
             Debuger.Log("mCurrentRec: {0}, mName: {1}: ", mCurrentRec, track.exe == null ? "myaction" : track.exe.Method.Name);

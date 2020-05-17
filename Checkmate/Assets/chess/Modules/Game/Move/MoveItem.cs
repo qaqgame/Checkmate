@@ -58,6 +58,7 @@ public class Item
 
 public class MoveItem : MonoBehaviour
 {
+    public static bool IsMoving = false;
     // 移动队列
     public Queue<Item> moveitems = new Queue<Item>();
 
@@ -75,6 +76,7 @@ public class MoveItem : MonoBehaviour
 
     IEnumerator TravelPath(Item item)
     {
+        IsMoving = true;
         item.rc.SetState(RoleState.Move);      // 设置状态为移动中
         for (int i = 1; i < item.Path.Count; i++)
         {
@@ -114,6 +116,7 @@ public class MoveItem : MonoBehaviour
         // this.IsMoving = false;
         // 恢复为Idle状态
         item.rc.SetState(RoleState.Idle);
+        IsMoving = false;
     }
 
     // TODO: 是否还需要进行移动点消耗的计算
