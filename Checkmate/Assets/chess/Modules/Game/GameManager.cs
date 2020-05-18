@@ -182,6 +182,7 @@ namespace Checkmate.Modules.Game
             //-------load page
             GamingPageManager.Instance.OpenPage();
             GamingPageManager.Instance.onRoundEndClicked = OnRoundEndClick;
+            // MiniMap.Instance.Init();
 
 
 

@@ -70,12 +70,15 @@ public class MoveItem : MonoBehaviour
 
     public void Travel(Item item)
     {
-        // this.IsMoving = true;
         StartCoroutine(TravelPath(item));
     }
 
     IEnumerator TravelPath(Item item)
     {
+        if(!item.rc.CanOperate)
+        {
+            yield return null;
+        }
         IsMoving = true;
         item.rc.SetState(RoleState.Move);      // 设置状态为移动中
         for (int i = 1; i < item.Path.Count; i++)
@@ -87,10 +90,6 @@ public class MoveItem : MonoBehaviour
                 Debug.LogError("Wait for a while1");
                 yield return null;
             }
-
-            
-
-
             // TODO: 移除当前位置的人物信息 : moveutil.RemoveCurRole()
             Vector3 a = MapManager.Instance.GetCellWorldPosition(item.Path[i - 1]);
             Vector3 b = MapManager.Instance.GetCellWorldPosition(item.Path[i]);
@@ -113,10 +112,9 @@ public class MoveItem : MonoBehaviour
         }
         // 移动结束
         item.rc.SetState(RoleState.EndMove);
-        // this.IsMoving = false;
         // 恢复为Idle状态
-        item.rc.SetState(RoleState.Idle);
         IsMoving = false;
+        item.rc.SetState(RoleState.Idle);
     }
 
     // TODO: 是否还需要进行移动点消耗的计算
