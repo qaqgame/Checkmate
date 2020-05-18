@@ -235,9 +235,14 @@ namespace Checkmate.Game.Utils
                 //获取变量
                 if (value.Contains('.'))
                 {
-                    string cn = value.Substring(1, value.IndexOf('.'));
+                    value = value.Substring(1);
+                    string cn = value.Substring(0, value.IndexOf('.'));
                     string v = value.Substring(value.IndexOf('.') + 1);
                     BaseController controller = GetController(cn);
+                    if (controller == null)
+                    {
+                        Debuger.LogError("error get controller:{0}, full:{1}", cn, value);
+                    }
                     return controller.GetValue(v);
                 }
                 //否则直接转换

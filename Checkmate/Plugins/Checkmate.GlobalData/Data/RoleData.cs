@@ -42,6 +42,12 @@ namespace Checkmate.Global.Data
         [ProtoMember(12)]
         public int viewHeight;//视高
         [ProtoMember(13)]
+        public int attackRange;//攻击距离
+        [ProtoMember(14)]
+        public bool magicAttack;//是否是魔法攻击
+        [ProtoMember(15)]
+        public bool canMiss;//攻击可否被闪避
+        [ProtoMember(16)]
         public string extraData;//额外数据
     }
 
@@ -69,6 +75,12 @@ namespace Checkmate.Global.Data
         [ProtoMember(10)]
         public List<string> skills;//技能
         [ProtoMember(11)]
+        public string attackSource;//攻击资源
+        [ProtoMember(12)]
+        public string attackEffect;//攻击特效
+        [ProtoMember(13)]
+        public bool nearAttack;//是否是近战
+        [ProtoMember(13)]
         public string extraData;//额外数据
     }
 }

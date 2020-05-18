@@ -25,6 +25,9 @@ namespace Checkmate.Game.Controller
         private float _magicIgn;//法穿
         private int _viewRange;//视距
         private int _viewHeight;//视高
+        private int _atkRange;//攻击距离
+        private bool _magicAtk;//是否是魔法攻击
+        private bool _canMiss;//攻击能否被闪避
 
         public delegate void AttributeListener(string param, ref object value, object origin);
 
@@ -343,6 +346,72 @@ namespace Checkmate.Game.Controller
             }
         }
 
+        [GetProperty]
+        [SetProperty]
+        public int AttackRange
+        {
+            get { return _atkRange; }
+            set
+            {
+                object v = value;
+                if (onAttributeChanging != null)
+                {
+                    onAttributeChanging("AttackRange", ref v, _atkRange);
+                }
+                int temp = _atkRange;
+                _atkRange = (int)v <0 ? 0 : (int)v;
+                v = _atkRange;
+                if (onAttributeChanged != null)
+                {
+                    onAttributeChanged("AttackRange", ref v, temp);
+                }
+            }
+        }
+
+        [GetProperty]
+        [SetProperty]
+        public bool IsMagicAttack
+        {
+            get { return _magicAtk; }
+            set
+            {
+                object v = value;
+                if (onAttributeChanging != null)
+                {
+                    onAttributeChanging("IsMagicAttack", ref v, _magicAtk);
+                }
+                bool temp = _magicAtk;
+                _magicAtk = (bool)v;
+                v = _magicAtk;
+                if (onAttributeChanged != null)
+                {
+                    onAttributeChanged("IsMagicAttack", ref v, temp);
+                }
+            }
+        }
+
+        [GetProperty]
+        [SetProperty]
+        public bool CanMiss
+        {
+            get { return _canMiss; }
+            set
+            {
+                object v = value;
+                if (onAttributeChanging != null)
+                {
+                    onAttributeChanging("CanMiss", ref v, _canMiss);
+                }
+                bool temp = _canMiss;
+                _canMiss = (bool)v;
+                v = _canMiss;
+                if (onAttributeChanged != null)
+                {
+                    onAttributeChanged("CanMiss", ref v, temp);
+                }
+            }
+        }
+
         public RoleAttributeController(RoleProperty data):base(data.extraData)
         {
             _maxHp = data.hp;
@@ -359,6 +428,9 @@ namespace Checkmate.Game.Controller
             _magicIgn = data.magicIgnore;
             _viewRange = data.viewRange;
             _viewHeight = data.viewHeight;
+            _atkRange = data.attackRange;
+            _magicAtk = data.magicAttack;
+            _canMiss = data.canMiss;
         }
 
         public void Set(RoleProperty data)
@@ -375,7 +447,9 @@ namespace Checkmate.Game.Controller
             _magicIgn = data.magicIgnore;
             _viewRange = data.viewRange;
             _viewHeight = data.viewHeight;
-
+            _atkRange = data.attackRange;
+            _magicAtk = data.magicAttack;
+            _canMiss = data.canMiss;
             SetExtra(data.extraData);
         }
 
@@ -395,7 +469,9 @@ namespace Checkmate.Game.Controller
             _magicIgn = data._magicIgn;
             _viewRange = data._viewRange;
             _viewHeight = data._viewHeight;
-
+            _atkRange = data._atkRange;
+            _magicAtk = data._magicAtk;
+            _canMiss = data._canMiss;
             mExtraData = new Dictionary<string, object>(data.mExtraData);
         }
 

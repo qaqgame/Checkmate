@@ -10,7 +10,8 @@ namespace Checkmate.Global.Data
     public enum GameAction
     {
         Move,
-        Skill
+        Skill,
+        Attack
     }
 
     [ProtoContract]

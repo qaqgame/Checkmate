@@ -24,7 +24,9 @@ namespace Checkmate.Game.Controller
         EndMove,//结束移动
         PreSpell,//预施法
         Spell,//施法中
-        EndSpell//结束施法
+        EndSpell,//结束施法
+        PreAttack,//预攻击
+        Attack,
     }
     public class RoleController : ModelController
     {
@@ -57,7 +59,7 @@ namespace Checkmate.Game.Controller
         {
             get
             {
-                return mCurState == RoleState.Idle||mCurState==RoleState.PreMove||mCurState==RoleState.PreSpell;
+                return mCurState == RoleState.Idle||mCurState==RoleState.PreMove||mCurState==RoleState.PreSpell||mCurState==RoleState.PreAttack;
             }
         }
 
@@ -107,6 +109,23 @@ namespace Checkmate.Game.Controller
         {
             get;
         }
+
+        //攻击资源文件
+        [GetProperty]
+        public string AtkSource
+        {
+            get;
+            private set;
+        }
+
+        //攻击特效文件
+        [GetProperty]
+        public string AtkEffect
+        {
+            get;
+            private set;
+        }
+
 
         //显示姓名
         [GetProperty]
@@ -186,7 +205,7 @@ namespace Checkmate.Game.Controller
 
         private Dictionary<int, int> mExtraMove;//不同地形对应的额外行动力
         private List<Int32> mStandMask;//可站立的掩码，1位代表一类地形或特征
-
+        public SkillAction AtkAction;//攻击的具体活动
         public RoleController(RoleData data,GameObject obj):base(data.extraData)
         {
             RoleId = data.id;
@@ -220,6 +239,20 @@ namespace Checkmate.Game.Controller
                 int sid = SkillManager.Instance.GetSkill(skill);
                 Skills.Add(sid);
             }
+
+            AtkSource = data.attackSource;
+            AtkEffect = data.attackEffect;
+
+            string content;
+            if (data.nearAttack)
+            {
+                content = Resources.Load<TextAsset>("Attack_near").text;
+            }
+            else
+            {
+                content = Resources.Load<TextAsset>("Attack_far").text;
+            }
+            AtkAction = new SkillAction(content);
         }
 
 

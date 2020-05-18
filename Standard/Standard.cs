@@ -137,6 +137,10 @@ namespace Checkmate.Standard
             target.DamagePhysically(dmg, miss);
         }
 
+        public void Attack(RoleController target,bool isMagic,bool canMiss)
+        {
+            target.Attacked(isMagic, canMiss);
+        }
 
 
         
@@ -145,6 +149,7 @@ namespace Checkmate.Standard
         //=========================
         string currentEffectName;//当前name
         RoleController currentRole;//当前角色
+        bool parentModel = false;
                                    //控制流
 
         #region 控制流
@@ -161,18 +166,42 @@ namespace Checkmate.Standard
             obj.transform.name = name + "_" + time.ToString();
             currentEffectName = obj.transform.name;
             currentRole = role;
+            parentModel = false;
             GameExecuteManager.Instance.Wait(time, DestroyCurrent);
         }
 
+        public void PlayEffectWithDir(string name,RoleController src,RoleController dst,float time)
+        {
+            GameObject effect = Resources.Load("Effects/" + name) as GameObject;
+            GameObject obj = GameObject.Instantiate(effect, src.GetModel().transform);
+            obj.transform.name = name + "_" + time.ToString();
+            obj.transform.rotation = Quaternion.LookRotation(dst.GetModel().transform.position - src.GetModel().transform.position);
+            currentEffectName = obj.transform.name;
+            currentRole = src;
+            parentModel = true;
+            GameExecuteManager.Instance.Wait(time, DestroyCurrent);
+        }
         private void DestroyCurrent()
         {
-            DestroyEffect(currentEffectName, currentRole);
+            DestroyEffect(currentEffectName, currentRole,parentModel);
         }
 
-        private void DestroyEffect(string realname,RoleController role)
+        private void DestroyEffect(string realname,RoleController role,bool parentModel)
         {
-            GameObject obj = role.GetGameObject().transform.Find(realname).gameObject;
-            GameObject.Destroy(obj);
+
+            Transform obj=null;
+            if (parentModel)
+            {
+                obj= role.GetModel().transform.parent.Find(realname);
+            }
+            else
+            {
+                obj = role.GetGameObject().transform.Find(realname);
+            }
+            if (obj != null)
+            {
+                GameObject.Destroy(obj.gameObject);
+            }
         }
 
 
@@ -221,6 +250,43 @@ namespace Checkmate.Standard
             animator.SetTrigger(name);
             
             GameExecuteManager.Instance.Wait(() => { return WaitForAnim(name, animator); });
+        }
+        /// <summary>
+        /// 播放src的动画，并在dst上附加特效
+        /// </summary>
+        /// <param name="anim">动画名</param>
+        /// <param name="eff">特效名</param>
+        /// <param name="src"></param>
+        /// <param name="dst"></param>
+        /// <param name="time"></param>
+        public void PlayAnimWithEffect(string anim, string eff, RoleController src, bool needDestroy)
+        {
+            GameObject effect = Resources.Load("Effects/" + eff) as GameObject;
+            GameObject obj = GameObject.Instantiate(effect, src.GetModel().transform.parent);
+            obj.transform.name = eff + "_" + Time.time.ToString();
+            currentEffectName = obj.transform.name;
+            currentRole = src;
+            parentModel = true;
+            //动画部分
+            //获取实例
+            GameObject model = src.GetModel();
+            Animator animator = model.GetComponent<Animator>();
+            //如果是移动状态先切到idle
+            if (animator.GetCurrentAnimatorStateInfo(0).IsName("Walk"))
+            {
+                animator.SetTrigger("Idle");
+            }
+            animator.SetBool("FinishAction", false);
+            animator.SetTrigger(anim);
+
+            if (needDestroy)
+            {
+                GameExecuteManager.Instance.Wait(() => { return WaitForAnim(anim, animator); }, DestroyCurrent);
+            }
+            else
+            {
+                GameExecuteManager.Instance.Wait(() => { return WaitForAnim(anim, animator); });
+            }
         }
 
         private bool WaitForAnim(string name,Animator animator)
@@ -330,7 +396,13 @@ namespace Checkmate.Standard
         #endregion
 
 
+        #region 音效
+        public void PlaySound(string name,float delay)
+        {
+            AudioManager.Instance.PlaySound(name,delay);
+        }
 
+        #endregion
 
         //===============================
         private object GetValue(string value,string type)

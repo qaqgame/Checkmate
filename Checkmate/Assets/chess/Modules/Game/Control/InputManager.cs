@@ -2,6 +2,7 @@
 using Checkmate.Game.Controller;
 using Checkmate.Game.Map;
 using Checkmate.Game.Player;
+using Checkmate.Game.Role;
 using Checkmate.Game.Skill;
 using Checkmate.Modules.Game.Utils;
 using Checkmate.Services.Game;
@@ -53,6 +54,14 @@ namespace Checkmate.Modules.Game.Control
                     RoleController role = mObj.CurrentObj as RoleController;
                     role.SetState(RoleState.PreSpell);
                     mCurrentSkill = role.Skills[0];
+                }
+            }
+            if (Input.GetKeyDown(KeyCode.J))
+            {
+                if (mObj.CurrentObj.Type == 2)
+                {
+                    RoleController role = mObj.CurrentObj as RoleController;
+                    role.SetState(RoleState.PreAttack);
                 }
             }
         }
@@ -162,6 +171,36 @@ namespace Checkmate.Modules.Game.Control
                                         GameEvent.onResetAll.Invoke();
                                     }
                                 }
+                                else if (role.CurrentState == RoleState.PreAttack && target != null)
+                                {
+                                    //获取目标距离
+                                    int distance = HexMapUtil.GetDistance(role.Position, target.GetPosition());
+                                    RoleController t = null;
+                                    if (target.Type == (int)ControllerType.Cell)
+                                    {
+                                        CellController cell = (target as CellController);
+                                        t = cell.HasRole ? RoleManager.Instance.GetRole(cell.Role) : null;
+                                    }
+                                    else if(target.Type == (int)ControllerType.Role)
+                                    {
+                                        t = target as RoleController;
+                                    }
+                                    if (t!=null&&distance<=role.Temp.AttackRange)
+                                    {
+                                        //是敌军则进行攻击
+                                        if (PlayerManager.Instance.IsEnemy(t.Team))
+                                        {
+                                            //消耗行动点
+
+                                            //攻击操作
+                                            GameNetManager.Instance.Attack(role, t.Position);
+
+                                            role.SetState(RoleState.Attack);
+                                            mState = InputState.Idle;
+                                            GameEvent.onResetAll.Invoke();
+                                        }
+                                    }
+                                }
                             }
                         }
                         //是地面
@@ -240,6 +279,41 @@ namespace Checkmate.Modules.Game.Control
                                 if (effects != null)
                                 {
                                     DrawUtil.DrawList(effects, 2);
+                                }
+                            }
+                        }
+                        else if (role.CurrentState == RoleState.PreAttack)
+                        {
+                            //预览攻击
+                            List<Position> borders = HexMapUtil.GetRange(role.Position, role.Temp.AttackRange);
+                            DrawUtil.ClearAll();
+
+                            if (borders == null)
+                            {
+                                return;
+                            }
+                            foreach(var pos in borders)
+                            {
+                                CellController cell = MapManager.Instance.GetCell(pos);
+                                if (cell != null)
+                                {
+                                    //如果存在角色
+                                    if (cell.HasRole)
+                                    {
+                                        RoleController targetRole = RoleManager.Instance.GetRole(cell.Role);
+                                        //如果是敌方则可选
+                                        if (PlayerManager.Instance.IsEnemy(targetRole.Team))
+                                        {
+                                            DrawUtil.DrawSingle(pos, 2);
+                                            continue;
+                                        }
+                                    }
+                                    DrawUtil.DrawSingle(pos, 0);
+                                }
+
+                                if (borders.Contains(target))
+                                {
+                                    DrawUtil.DrawSingle(target, 1);
                                 }
                             }
                         }

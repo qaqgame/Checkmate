@@ -183,6 +183,20 @@ namespace Checkmate.Services.Game
 
         }
 
+        public void Attack(RoleController src,Position center)
+        {
+            mTempPos.x = center.x;
+            mTempPos.y = center.y;
+            mTempPos.z = center.z;
+
+            AttackMessage content = new AttackMessage();
+            content.srcId = src.RoleId;
+            content.center = mTempPos;
+
+            byte[] cnt = PBSerializer.NSerialize(content);
+            SendAction(GameAction.Attack, cnt);
+        }
+
         private void SendAction(GameAction actionType,byte[] content)
         {
             mTempAction.OperationType = actionType;

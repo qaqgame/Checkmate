@@ -78,6 +78,21 @@ namespace Checkmate.Game.Utils
             Add(track);
         }
 
+        public void Add(SkillAction action)
+        {
+            GameEnvTrack track = new GameEnvTrack();
+            EnvVariable env = new EnvVariable();
+            env.Copy(GameEnv.Instance.Current);
+            track.env = env;
+            List<List<SkillAction>> temp = new List<List<SkillAction>>();
+            List<SkillAction> actions = new List<SkillAction>();
+            actions.Add(action);
+            temp.Add(actions);
+
+            track.actions = temp;
+            Add(track);
+        }
+
         public void Add(Action action)
         {
             GameEnvTrack track = new GameEnvTrack();

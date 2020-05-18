@@ -146,7 +146,7 @@ namespace Checkmate.Game.Buff
                 {
                     buff.ReserveTurn--;
                 }
-                if (buff.ReserveTurn > 0)
+                if (buff.IsInfiniteTurn||buff.ReserveTurn > 0)
                 {
                     buff.Execute(TriggerType.OnTurn);
                 }

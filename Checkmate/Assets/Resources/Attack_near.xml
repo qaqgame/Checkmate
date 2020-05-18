@@ -1,0 +1,46 @@
+<Action>
+    <Targets>
+        <DefaultSearch id="1" type="Role" limit="1" start="Src" center="Center">
+            <DefaultRange type="Single" limit="1"/>
+        </DefaultSearch>
+        <Selects id="2" src="1">
+            <DefaultTeamSelector team="Enemy|Friend|Neutual"/>
+        </Selects>
+    </Targets>
+    <Executes>
+        <Execute src="Standard.MoveTo">
+            <Params>
+                <Param type="Controller" value="%Obj"/>
+                <Param type="Position" value="#2[0].Position"/>
+                <Param type="Float" value="1"/>
+            </Params>
+        </Execute>
+        <Execute src="Standard.PlaySound">
+            <Params>
+                <Param type="String" value="Metal"/>
+                <Param type="Float" value="0.5"/>
+            </Params>
+        </Execute>
+        <Execute src="Standard.PlayAnimWithEffect">
+            <Params>
+                <Param type="String" value="Attack"/>
+                <Param type="String" value="%Obj.AtkEffect"/>
+                <Param type="Controller" value="%Obj"/>
+                <Param type="Bool" value="true"/>
+            </Params>
+        </Execute>
+        <Execute src="Standard.Attack">
+            <Params>
+                <Param type="Controller" value="#2"/>
+                <Param type="Bool" value="%Src.Temp.IsMagicAttack"/>
+                <Param type="Bool" value="%Src.Temp.CanMiss"/>
+            </Params>
+        </Execute>
+        <Execute src="Standard.ReturnPos">
+            <Params>
+                <Param type="Controller" value="%Obj"/>
+                <Param type="Float" value="1"/>
+            </Params>
+        </Execute>
+    </Executes>
+</Action>

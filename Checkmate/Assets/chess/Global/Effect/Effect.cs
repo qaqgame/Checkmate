@@ -21,6 +21,13 @@ namespace Checkmate.Game.Effect
 
 
         [GetProperty]
+        public bool Timely
+        {
+            get;
+            private set;
+        }
+
+        [GetProperty]
         public string Name
         {
             get;
@@ -90,6 +97,7 @@ namespace Checkmate.Game.Effect
             temp.mExtraData = new Dictionary<string, object>(mExtraData);
             temp.Name = Name;
             temp.Description = Description;
+            temp.Timely = Timely;
 
             return temp;
         }
@@ -99,7 +107,7 @@ namespace Checkmate.Game.Effect
         {
             Name = node.Attributes["name"].Value;
             CurTurn = MaxTurn = int.Parse(node.Attributes["coolturn"].Value);
-
+            Timely = false;
             XmlNode description = node.SelectSingleNode("Description");
             Description = description.InnerText;
 
@@ -136,6 +144,11 @@ namespace Checkmate.Game.Effect
             foreach (XmlNode l in cl)
             {
                 List<EffectTrigger> triggers = ObjectParser.ParseEnums<EffectTrigger>(l.Attributes["trigger"].Value);
+                if (triggers.Contains(EffectTrigger.Timely))
+                {
+                    Timely = true;
+                }
+                
                 SkillAction action = new SkillAction(l);
                 foreach(var t in triggers)
                 {

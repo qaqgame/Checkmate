@@ -183,6 +183,9 @@ namespace Checkmate.Modules.Game
             GamingPageManager.Instance.OpenPage();
             GamingPageManager.Instance.onRoundEndClicked = OnRoundEndClick;
 
+            //播放音乐
+            int rand = UnityEngine.Random.Range(0, 2);
+            AudioManager.Instance.PlayMusic("Battle" + rand.ToString());
 
 
             IMode mode = ModeParser.ParseMode("KillMode");
@@ -389,6 +392,11 @@ namespace Checkmate.Modules.Game
                 case GameAction.Skill:
                     {
                         SkillManager.Instance.Execute(action.OperationCnt);
+                        return;
+                    }
+                case GameAction.Attack:
+                    {
+                        SkillManager.Instance.ExecuteAttack(action.OperationCnt);
                         return;
                     }
             }
