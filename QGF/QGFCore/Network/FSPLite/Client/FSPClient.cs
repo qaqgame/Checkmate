@@ -28,7 +28,7 @@ namespace QGF.Network.FSPLite.Client
         private string mIp;
         private int mPort;
         private Socket mSystemSocket;
-        private Thread mThreadRecv;
+        private Thread mThreadRecv=null;
         private IPEndPoint mRemoteEndPoint;//远端
         private bool mWaitForReconnect = false;//是否在等待重连
         private uint mLastRecvTimestamp = 0;//上次接收数据的时间戳
@@ -138,7 +138,6 @@ namespace QGF.Network.FSPLite.Client
 
 
                 mIsRunning = true;
-
                 mThreadRecv = new Thread(Thread_Recv) { IsBackground = true };
                 mThreadRecv.Start();
 
@@ -218,7 +217,7 @@ namespace QGF.Network.FSPLite.Client
         {
             //将所有数据写入交换链
             EndPoint remotePoint = IPUtils.GetIPEndPointAny(AddressFamily.InterNetwork, 0);
-            int cnt = mSystemSocket.ReceiveFrom(mRecvBufferTemp, mRecvBufferTemp.Length, SocketFlags.None, ref remotePoint);
+            int cnt = mSystemSocket.ReceiveFrom(mRecvBufferTemp,mRecvBufferTemp.Length, SocketFlags.None, ref remotePoint);
 
             if (cnt > 0)
             {
@@ -263,6 +262,7 @@ namespace QGF.Network.FSPLite.Client
                     if (mKcp.Recv(buffer) > 0)
                     {
                         mLastRecvTimestamp = (uint)TimeUtils.GetTotalMillisecondsSince1970();
+                        Debuger.Log("recv fsp data when {0}", mLastRecvTimestamp.ToString());
                         var data = PBSerializer.NDeserialize<FSPDataS2C>(buffer);
                         if (mRecvListener != null)
                         {

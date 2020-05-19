@@ -51,14 +51,14 @@ namespace Checkmate.Services.Online
         {
             float current=QGFTime.GetTimeSinceStartup();
             //相隔5s
-            if (current - mLastHeartBeatTime > 5.0f&&mSendFlag)
+            if (current - mLastHeartBeatTime > 10.0f&&mSendFlag)
             {
                 mLastHeartBeatTime = current;
 
                 HeartBeatReq req = new HeartBeatReq();
                 req.ping = mPing;
                 req.timestamp = (uint)TimeUtils.GetTotalMillisecondsSince1970();
-                mNet.Send<HeartBeatReq, HeartBeatRsp>(ProtoCmd.HeartbeatReq, req, OnHeartBeatRsp, 15, OnHeartBeatError);
+                mNet.Send<HeartBeatReq, HeartBeatRsp>(ProtoCmd.HeartbeatReq, req, OnHeartBeatRsp, 30, OnHeartBeatError);
             }
         }
 

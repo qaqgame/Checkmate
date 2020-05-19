@@ -1,4 +1,5 @@
-﻿using QGF.Common;
+﻿using Assets.chess;
+using QGF.Common;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -42,6 +43,11 @@ namespace Checkmate
                 Debug.LogError("init audio error");
             }
             audios[0].loop = true;
+            audios[0].volume = 0.1f;
+            if (AppConfig.Set != null)
+            {
+                audios[0].volume = AppConfig.Set.BgmVolume;
+            }
             Init(audios[0], audios[1], audios[2]);
 
             mTracks = new List<SoundTrack>();

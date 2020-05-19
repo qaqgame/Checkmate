@@ -34,9 +34,15 @@
         "magicIgnore":0,
         "viewRange":3,
         "vieHeight":0,
+        "attackRange":1,
+        "magicAttack":false,
+        "canMiss":true,
         "extraData":"[{\"name\":\"test\",\"param\":{\"type\":\"Checkmate.Game.Position\",\"value\":\"\",\"param\":[{\"type\":\"int\",\"value\":\"3\",\"param\":[] },{\"type\":\"int\",\"value\":\"2\",\"param\":[] },{\"type\":\"int\",\"value\":\"1\",\"param\":[] }] } }]"
     },
     "skills":["TestSkill"],
+    "attackSource":"arrow",
+    "attackEffect":"SwordWind",
+    "nearAttack":true,
     "extraData":""
 
 }

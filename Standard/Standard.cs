@@ -161,25 +161,31 @@ namespace Checkmate.Standard
 
         public void PlayEffect(string name,RoleController role,float time)
         {
-            GameObject effect = Resources.Load("Effects/" + name) as GameObject;
-            GameObject obj=GameObject.Instantiate(effect, role.GetGameObject().transform);
-            obj.transform.name = name + "_" + time.ToString();
-            currentEffectName = obj.transform.name;
-            currentRole = role;
-            parentModel = false;
-            GameExecuteManager.Instance.Wait(time, DestroyCurrent);
+            if (role.Visible)
+            {
+                GameObject effect = Resources.Load("Effects/" + name) as GameObject;
+                GameObject obj = GameObject.Instantiate(effect, role.GetGameObject().transform);
+                obj.transform.name = name + "_" + time.ToString();
+                currentEffectName = obj.transform.name;
+                currentRole = role;
+                parentModel = false;
+                GameExecuteManager.Instance.Wait(time, DestroyCurrent);
+            }
         }
 
         public void PlayEffectWithDir(string name,RoleController src,RoleController dst,float time)
         {
-            GameObject effect = Resources.Load("Effects/" + name) as GameObject;
-            GameObject obj = GameObject.Instantiate(effect, src.GetModel().transform);
-            obj.transform.name = name + "_" + time.ToString();
-            obj.transform.rotation = Quaternion.LookRotation(dst.GetModel().transform.position - src.GetModel().transform.position);
-            currentEffectName = obj.transform.name;
-            currentRole = src;
-            parentModel = true;
-            GameExecuteManager.Instance.Wait(time, DestroyCurrent);
+            if (src.Visible)
+            {
+                GameObject effect = Resources.Load("Effects/" + name) as GameObject;
+                GameObject obj = GameObject.Instantiate(effect, src.GetModel().transform);
+                obj.transform.name = name + "_" + time.ToString();
+                obj.transform.rotation = Quaternion.LookRotation(dst.GetModel().transform.position - src.GetModel().transform.position);
+                currentEffectName = obj.transform.name;
+                currentRole = src;
+                parentModel = true;
+                GameExecuteManager.Instance.Wait(time, DestroyCurrent);
+            }
         }
         private void DestroyCurrent()
         {
@@ -217,15 +223,19 @@ namespace Checkmate.Standard
 
         public void AddTrackEffect(string name,RoleController src,RoleController target,float time)
         {
-            GameObject effect = Resources.Load("Effects/" + name) as GameObject;
-            GameObject obj=GameObject.Instantiate(effect, src.GetGameObject().transform);
-            startPos = obj.transform.position;
-            currentTime = 0;
-            maxTime = time;
-            targetPos = target.GetModel().transform.position;
-            moveObj = obj;
-            currentEffectName = obj.transform.name;
-            GameExecuteManager.Instance.Wait(UpdateEffect, DestroyCurrent);
+            if (target.Visible)
+            {
+                GameObject effect = Resources.Load("Effects/" + name) as GameObject;
+                GameObject obj = GameObject.Instantiate(effect, target.GetGameObject().transform);
+                obj.transform.position = src.GetGameObject().transform.position;
+                startPos = obj.transform.position;
+                currentTime = 0;
+                maxTime = time;
+                targetPos = target.GetModel().transform.position;
+                moveObj = obj;
+                currentEffectName = obj.transform.name;
+                GameExecuteManager.Instance.Wait(UpdateEffect, DestroyCurrent);
+            }
         }
 
         private bool UpdateEffect()
@@ -235,21 +245,24 @@ namespace Checkmate.Standard
         }
 
         //播放动画
-        public void PlayAnim(string name,RoleController role)
+        public void PlayAnim(string name, RoleController role)
         {
-            
-            //获取实例
-            GameObject model = role.GetModel();
-            Animator animator = model.GetComponent<Animator>();
-            //如果是移动状态先切到idle
-            if (animator.GetCurrentAnimatorStateInfo(0).IsName("Walk"))
+            if (role.Visible)
             {
-                animator.SetTrigger("Idle");
+                //获取实例
+                GameObject model = role.GetModel();
+                Animator animator = model.GetComponent<Animator>();
+                //如果是移动状态先切到idle
+                if (animator.GetCurrentAnimatorStateInfo(0).IsName("Walk"))
+                {
+                    animator.SetTrigger("Idle");
+                }
+                animator.SetBool("FinishAction", false);
+                animator.SetTrigger(name);
+
+                GameExecuteManager.Instance.Wait(() => { return WaitForAnim(name, animator); });
+
             }
-            animator.SetBool("FinishAction", false);
-            animator.SetTrigger(name);
-            
-            GameExecuteManager.Instance.Wait(() => { return WaitForAnim(name, animator); });
         }
         /// <summary>
         /// 播放src的动画，并在dst上附加特效
@@ -261,31 +274,34 @@ namespace Checkmate.Standard
         /// <param name="time"></param>
         public void PlayAnimWithEffect(string anim, string eff, RoleController src, bool needDestroy)
         {
-            GameObject effect = Resources.Load("Effects/" + eff) as GameObject;
-            GameObject obj = GameObject.Instantiate(effect, src.GetModel().transform.parent);
-            obj.transform.name = eff + "_" + Time.time.ToString();
-            currentEffectName = obj.transform.name;
-            currentRole = src;
-            parentModel = true;
-            //动画部分
-            //获取实例
-            GameObject model = src.GetModel();
-            Animator animator = model.GetComponent<Animator>();
-            //如果是移动状态先切到idle
-            if (animator.GetCurrentAnimatorStateInfo(0).IsName("Walk"))
+            if (src.Visible)
             {
-                animator.SetTrigger("Idle");
-            }
-            animator.SetBool("FinishAction", false);
-            animator.SetTrigger(anim);
+                GameObject effect = Resources.Load("Effects/" + eff) as GameObject;
+                GameObject obj = GameObject.Instantiate(effect, src.GetModel().transform.parent);
+                obj.transform.name = eff + "_" + Time.time.ToString();
+                currentEffectName = obj.transform.name;
+                currentRole = src;
+                parentModel = true;
+                //动画部分
+                //获取实例
+                GameObject model = src.GetModel();
+                Animator animator = model.GetComponent<Animator>();
+                //如果是移动状态先切到idle
+                if (animator.GetCurrentAnimatorStateInfo(0).IsName("Walk"))
+                {
+                    animator.SetTrigger("Idle");
+                }
+                animator.SetBool("FinishAction", false);
+                animator.SetTrigger(anim);
 
-            if (needDestroy)
-            {
-                GameExecuteManager.Instance.Wait(() => { return WaitForAnim(anim, animator); }, DestroyCurrent);
-            }
-            else
-            {
-                GameExecuteManager.Instance.Wait(() => { return WaitForAnim(anim, animator); });
+                if (needDestroy)
+                {
+                    GameExecuteManager.Instance.Wait(() => { return WaitForAnim(anim, animator); }, DestroyCurrent);
+                }
+                else
+                {
+                    GameExecuteManager.Instance.Wait(() => { return WaitForAnim(anim, animator); });
+                }
             }
         }
 
@@ -387,6 +403,14 @@ namespace Checkmate.Standard
         {
             currentTime += Time.deltaTime;
             moveObj.transform.position = Vector3.Lerp(startPos, targetPos, currentTime/maxTime);
+            if (MapManager.Instance.IsVisible(moveObj.transform.position))
+            {
+                moveObj.SetActive(true);
+            }
+            else
+            {
+                moveObj.SetActive(false);
+            }
             if (currentTime >= maxTime)
             {
                 return true;

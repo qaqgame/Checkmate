@@ -153,7 +153,8 @@ namespace QGF.Network.General.Client
         private void DoReceiveInThread()
         {
             EndPoint remotePoint = IPUtils.GetIPEndPointAny(AddressFamily.InterNetwork, 0);
-            int cnt=mSysSocket.ReceiveFrom(mReceiveBufferTemp, mReceiveBufferTemp.Length, SocketFlags.None, ref remotePoint);
+            
+            int cnt=mSysSocket.ReceiveFrom(mReceiveBufferTemp,mReceiveBufferTemp.Length, SocketFlags.None, ref remotePoint);
 
             if (cnt > 0)
             {

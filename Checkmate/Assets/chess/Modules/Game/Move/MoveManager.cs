@@ -161,7 +161,7 @@ public class MoveManager : Singleton<MoveManager>
 
     public void Update()
     {
-        while (moveItem.moveitems.Count > 0)
+        if (!MoveItem.IsMoving&&moveItem.moveitems.Count > 0)
         {
             // Debug.LogError("count: " + moveItems.Count);
             Item item = moveItem.moveitems.Dequeue();

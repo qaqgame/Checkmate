@@ -191,7 +191,7 @@ namespace Checkmate.Game.Controller
         [GetProperty]
         public bool Visible
         {
-            get { return _visible; }
+            get { return mObj.activeSelf; }
             set
             {
                 if (value != _visible)

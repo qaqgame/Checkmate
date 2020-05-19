@@ -188,6 +188,8 @@ namespace Checkmate.Modules.Game
             int rand = UnityEngine.Random.Range(0, 2);
             AudioManager.Instance.PlayMusic("Battle" + rand.ToString());
 
+            //开始处理action协程
+            StartCoroutine(HandleActions());
 
             IMode mode = ModeParser.ParseMode("KillMode");
             StartCoroutine(CheckGameCondition(mode));
@@ -222,8 +224,7 @@ namespace Checkmate.Modules.Game
             GameNetManager.Instance.onRoundEnd = OnRoundEnd;
             GameNetManager.Instance.onRoundBegin = OnRoundBegin;
 
-            //开始处理action协程
-            StartCoroutine(HandleActions());
+            
             wait = false;
         }
 
@@ -241,11 +242,19 @@ namespace Checkmate.Modules.Game
                 yield return null;
             }
             GamingPageManager.Instance.EndRoundChanging();
-
+            RoleController alice = RoleManager.Instance.GetRole(0);
+            RoleController bob = RoleManager.Instance.GetRole(1);
+            Debuger.Log("alice state:{0}", alice.CurrentState.ToString());
+            Debuger.Log("bob state:{0}", bob.CurrentState.ToString());
             if (pid == PlayerManager.Instance.PID)
             {
                 PlayerManager.Instance.Operating = true;
+                Debuger.Log("set operating");
                 GamingPageManager.Instance.OnNextTurn(true);
+            }
+            else
+            {
+                Debuger.Log("pid not equal:{0} ,current:{1}", pid, PlayerManager.Instance.PID);
             }
         }
         //===========================================
@@ -376,13 +385,15 @@ namespace Checkmate.Modules.Game
         //消息处理分发函数
         private void RecvAction(byte[] message)
         {
-            Debuger.Log("recv action");
+            
             GameActionData action= PBSerializer.NDeserialize<GameActionData>(message);
+            Debuger.Log("recv action:{0}", action.OperationType.ToString()) ;
             mRecvActions.Enqueue(action);
         }
         bool IsHandlingAction = false;
         private void HandleAction(GameActionData action)
         {
+            Debuger.Log("handle action:{0}", action.OperationCnt);
             switch (action.OperationType)
             {
                 case GameAction.Move:

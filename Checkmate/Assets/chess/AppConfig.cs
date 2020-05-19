@@ -1,4 +1,5 @@
 ﻿using Checkmate.Global.Data;
+using Newtonsoft.Json;
 using ProtoBuf;
 using QGF;
 using QGF.Codec;
@@ -15,6 +16,11 @@ namespace Assets.chess
     [ProtoContract]
     public class AppConfig
     {
+        public class Setting
+        {
+            public float BgmVolume;//bgm音量
+        }
+
         [ProtoMember(1)]
         public UserData mainUserData = new UserData();
         [ProtoMember(2)]
@@ -25,12 +31,14 @@ namespace Assets.chess
         private static AppConfig mValue = new AppConfig();
         public static AppConfig Value { get { return mValue; } }
 
-
+        public static Setting Set { get; set; }
 #if UNITY_EDITOR
         public readonly static string Path = Application.persistentDataPath + "/AppConfig_Editor.data";
 #else
         public readonly static string Path = Application.persistentDataPath + "/AppConfig.data";
 #endif
+        public readonly static string ConfigPath = Application.dataPath + "/Config/Setting.json";
+
         public static void Init()
         {
             //加载配置
@@ -46,6 +54,11 @@ namespace Assets.chess
                     mValue = cfg as AppConfig;
                 }
             }
+
+            //读取设置
+            string setData = FileUtils.ReadString(ConfigPath);
+            Set = JsonConvert.DeserializeObject<Setting>(setData);
+
         }
 
         public static void Save()

@@ -310,11 +310,10 @@ namespace Checkmate.Modules.Game.Control
                                     }
                                     DrawUtil.DrawSingle(pos, 0);
                                 }
-
-                                if (borders.Contains(target))
-                                {
-                                    DrawUtil.DrawSingle(target, 1);
-                                }
+                            }
+                            if (borders.Contains(target))
+                            {
+                                DrawUtil.DrawSingle(target, 1);
                             }
                         }
                     }
