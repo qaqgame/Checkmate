@@ -28,6 +28,7 @@ namespace Checkmate.Services.Game
 
         const int ActionCmd = 7;
         const int EndCmd = 8;//游戏结束的标识
+        const int EmptyCmd = 404;//空包的标识
 
         public Action<bool> onRoundBegin;//回合开始事件
         public Action<uint> onControlStart=null;//操作开始
@@ -70,6 +71,12 @@ namespace Checkmate.Services.Game
         {
             
         }
+
+        private void OnLogicRoundBegin() {
+            mFSP.SendControlStart();
+        }
+
+        
 
         //开始游戏
         public void StartGame()
@@ -181,6 +188,20 @@ namespace Checkmate.Services.Game
             byte[] cnt = PBSerializer.NSerialize(content);
             SendAction(GameAction.Skill, cnt);
 
+        }
+
+        public void Attack(RoleController src,Position center)
+        {
+            mTempPos.x = center.x;
+            mTempPos.y = center.y;
+            mTempPos.z = center.z;
+
+            AttackMessage content = new AttackMessage();
+            content.srcId = src.RoleId;
+            content.center = mTempPos;
+
+            byte[] cnt = PBSerializer.NSerialize(content);
+            SendAction(GameAction.Attack, cnt);
         }
 
         private void SendAction(GameAction actionType,byte[] content)

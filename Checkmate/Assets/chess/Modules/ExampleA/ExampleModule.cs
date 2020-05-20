@@ -29,7 +29,7 @@ namespace Checkmate.Module
             base.Show(arg);
 
             FGUILoginPage login = FGUIManager.Instance.OpenPage<FGUILoginPage>("LoginPanel", "Login","testwindow");
-
+            AudioManager.Instance.PlayMusic("Travel");
             Debuger.Log("page opened");
         
         }

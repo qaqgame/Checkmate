@@ -161,8 +161,17 @@ namespace Checkmate.Game.Controller
                     effects = new List<int>();
                     foreach (var idx in fd.effectIdx)
                     {
-                        int track = EffectManager.Instance.InstanceEffect(idx);
-                        effects.Add(track);
+                        Checkmate.Game.Effect.Effect instance=null;
+                        int track = EffectManager.Instance.InstanceEffect(idx,out instance);
+
+                        if (instance != null)
+                        {
+                            effects.Add(track);
+                            if (instance.Timely)
+                            {
+                                EffectManager.Instance.AddTimelyEffect(track, this);
+                            }
+                        }
                     }
                 }
             }

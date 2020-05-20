@@ -146,6 +146,17 @@ namespace Checkmate.Game.Map
             return result;
         }
 
+        //判断某位置是否可见
+        public bool IsVisible(Vector3 position)
+        {
+            CellController cell = GetCell(position);
+            if (cell != null && cell.Visible)
+            {
+                return true;
+            }
+            return false;
+        }
+
         //提高可见度
         public void IncreaseVisibility(RoleController role)
         {

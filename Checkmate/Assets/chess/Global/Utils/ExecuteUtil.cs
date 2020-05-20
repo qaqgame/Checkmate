@@ -245,6 +245,19 @@ namespace Checkmate.Game.Utils
 
         public SkillAction(XmlNode node)
         {
+            Init(node);
+        }
+
+        public SkillAction(string content)
+        {
+            XmlDocument document = new XmlDocument();
+            document.LoadXml(content);
+            XmlNode root = document.DocumentElement;
+            Init(root);
+        }
+        
+        private void Init(XmlNode node)
+        {
             //解析条件部分
             XmlNode check = node.SelectSingleNode("Checks");
             if (check != null)
@@ -284,7 +297,7 @@ namespace Checkmate.Game.Utils
                 Executes.Add(info);
             }
         }
-        
+
         public string GetMethods()
         {
             string result = "";

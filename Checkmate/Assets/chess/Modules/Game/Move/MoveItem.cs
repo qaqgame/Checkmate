@@ -76,7 +76,6 @@ public class MoveItem : MonoBehaviour
     IEnumerator TravelPath(Item item)
     {
         IsMoving = true;
-        item.rc.SetState(RoleState.Move);      // 设置状态为移动中
         for (int i = 1; i < item.Path.Count; i++)
         {
             MapManager.Instance.GetCell(item.rc.Position).SetVisibility(item.rc);
@@ -107,10 +106,9 @@ public class MoveItem : MonoBehaviour
             }
         }
         // 移动结束
-        item.rc.SetState(RoleState.EndMove);
+        item.rc.SetState(RoleState.Idle);
         // 恢复为Idle状态
         IsMoving = false;
-        item.rc.SetState(RoleState.Idle);
     }
 
     // TODO: 是否还需要进行移动点消耗的计算

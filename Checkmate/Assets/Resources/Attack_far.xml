@@ -1,0 +1,33 @@
+<Action>
+    <Targets>
+        <DefaultSearch id="1" type="Role" limit="1" start="Src" center="Center">
+            <DefaultRange type="Single" limit="1"/>
+        </DefaultSearch>
+        <Selects id="2" src="1">
+            <DefaultTeamSelector team="Enemy|Friend|Neutual"/>
+        </Selects>
+    </Targets>
+    <Executes>
+        <Execute src="Standard.PlayAnim">
+            <Params>
+                <Param type="String" value="Attack"/>
+                <Param type="Controller" value="%Obj"/>
+            </Params>
+        </Execute>
+        <Execute src="Standard.AddTrackEffect">
+            <Params>
+                <Param type="String" value="%Src.AtkSource"/>
+                <Param type="Controller" value="%Src"/>
+                <Param type="Controller" value="#2"/>
+                <Param type="Float" value="1"/>
+            </Params>
+        </Execute>
+        <Execute src="Standard.Attack">
+            <Params>
+                <Param type="Controller" value="#2"/>
+                <Param type="Bool" value="%Src.IsMagic"/>
+                <Param type="Bool" value="%Src.CanMiss"/>
+            </Params>
+        </Execute>
+    </Executes>
+</Action>

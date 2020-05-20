@@ -100,6 +100,16 @@ namespace Checkmate.Game.Player
             return (enemy & (1 <<((int)dst))) != 0;
         }
 
+        public bool IsEnemy(int dst)
+        {
+            int src = (int)PID;
+            return IsEnemy(src, dst);
+        }
+        public bool IsEnemy(uint dst)
+        {
+            uint src = PID;
+            return IsEnemy(src, dst);
+        }
         /// <summary>
         /// dst对于src而言是否是中立
         /// </summary>

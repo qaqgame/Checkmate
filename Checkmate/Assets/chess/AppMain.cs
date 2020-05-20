@@ -10,6 +10,8 @@ using Checkmate.Services.Online;
 using Checkmate.Global.Data;
 using Checkmate.Modules.Game;
 using QGF.Network.FSPLite;
+using Checkmate;
+using System.Collections.Generic;
 
 namespace Assets.Chess
 {
@@ -101,6 +103,8 @@ namespace Assets.Chess
             //初始化模块管理器
             ModuleManager.Instance.Init();
             ModuleManager.Instance.RegistModuleActivator(new NativeModuleActivator(ModuleDef.Namespace, ModuleDef.NativeAssemblyName));
+
+
 
             //初始化UI管理
             FGUISceneManager sceneMng = GetComponent<FGUISceneManager>();

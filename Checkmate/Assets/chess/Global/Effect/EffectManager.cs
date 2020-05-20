@@ -56,7 +56,7 @@ namespace Checkmate.Game.Effect
         }
 
         //获取效果实例
-        public int InstanceEffect(int idx)
+        public int InstanceEffect(int idx,out Effect result)
         {
             Effect origin = mLoadedEffects[idx];
 
@@ -65,6 +65,7 @@ namespace Checkmate.Game.Effect
             Effect target = origin.Clone() as Effect;
             mAllEffects.Add(target);
 
+            result = target;
             return instanceId;
         }
 

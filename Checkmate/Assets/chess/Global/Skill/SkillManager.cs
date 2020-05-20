@@ -1,5 +1,6 @@
 ﻿using Checkmate.Game.Buff;
 using Checkmate.Game.Controller;
+using Checkmate.Game.Map;
 using Checkmate.Game.Role;
 using Checkmate.Game.Utils;
 using Checkmate.Global.Data;
@@ -127,5 +128,40 @@ namespace Checkmate.Game.Skill
             ExecuteSkill(message.skillId, role, center);
         }
 
+        //===============================
+        [ProtoContract]
+        internal class AttackMessage
+        {
+            [ProtoMember(1)]
+            public int srcId;//源id
+            [ProtoMember(2)]
+            public v3i center;//位置
+        }
+
+        public void ExecuteAttack(byte[] msg)
+        {
+            AttackMessage message = PBSerializer.NDeserialize<AttackMessage>(msg);
+            RoleController role = RoleManager.Instance.GetRole(message.srcId);
+            Position center = new Position(message.center.x, message.center.y, message.center.z);
+            int dstId = MapManager.Instance.GetCell(center).Role;
+            if (dstId == -1)
+            {
+                Debuger.LogError("error get attack target role in {0}", center.ToString());
+            }
+            RoleController target = RoleManager.Instance.GetRole(dstId);
+            //设置环境
+            EnvVariable env = new EnvVariable();
+            env.Src = role;
+            env.Obj = role;
+            env.Dst = target;
+            env.Center = center;
+            env.Main = null;
+            env.Data = null;
+            GameEnv.Instance.PushEnv(env);
+            GameExecuteManager.Instance.Add(role.AtkAction);
+            //添加结束时操作（重置该角色状态)
+            GameExecuteManager.Instance.Add(() => { role.SetState(RoleState.Idle); });
+            GameEnv.Instance.PopEnv();
+        }
     }
 }
