@@ -55,6 +55,15 @@ namespace Checkmate.Game.Effect
             return true;
         }
 
+        public void Clear()
+        {
+            mLoadedEffectFile.Clear();
+            mLoadedEffects.Clear();
+            mAllEffects.Clear();
+            mTimelyCell.Clear();
+            mTimelyEffect.Clear();
+        }
+
         //获取效果实例
         public int InstanceEffect(int idx,out Effect result)
         {

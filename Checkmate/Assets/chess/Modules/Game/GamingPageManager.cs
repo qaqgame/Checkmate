@@ -14,12 +14,14 @@ namespace Checkmate.Modules.Game
     {
         static GamingPage mPage;
         static RoundPage mRoundPage;//回合切换页
+        static EndPage mEndPage;//结束页
         public Action onRoundEndClicked;//回合结束点击事件
         public void OpenPage()
         {
             mPage= FGUIManager.Instance.Open<GamingPage>("MainPage", "GamingPage", null);
             mPage.onRoundEnd = OnRoundEndClicked;
             mRoundPage = FGUIManager.Instance.LoadToMemory<RoundPage>("RoundChangePage", "GamingPage");
+            mEndPage= FGUIManager.Instance.LoadToMemory<EndPage>("GameEndPage", "GamingPage");
         }
 
         public void OnRoundEndClicked()
@@ -105,6 +107,16 @@ namespace Checkmate.Modules.Game
         public bool RoundChanging()
         {
             return mRoundPage.IsPlaying;
+        }
+        #endregion
+
+        #region 游戏结束显示
+        public void ShowGameEnd(bool result)
+        {
+            if (!mEndPage.IsOpened)
+            {
+                FGUIManager.Instance.Open<EndPage>("GameEndPage", "GamingPage", result);
+            }
         }
         #endregion
     }

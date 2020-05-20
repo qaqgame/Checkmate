@@ -69,6 +69,16 @@ namespace Checkmate.Game.Utils
             Debuger.Log("object pool finished");
         }
 
+        public void Clear()
+        {
+            foreach(var list in mGameObjectPool.Values)
+            {
+                list.Clear();
+            }
+            mGameObjectPool.Clear();
+            mPrefabs.Clear();
+        }
+
         //获取对象
         public GameObject GetGameObject(string type)
         {

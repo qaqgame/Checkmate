@@ -29,10 +29,6 @@ namespace Checkmate.Game.Player
         }
 
 
-        public void Clear()
-        {
-
-        }
 
         private bool mOperating;
 
@@ -128,6 +124,16 @@ namespace Checkmate.Game.Player
         public List<uint> GetAllPlayers()
         {
             return mFriends.Keys.ToList();
+        }
+
+
+
+        public void Clear()
+        {
+            IsWaiting = true;
+            mOperating = false;
+            mFriends.Clear();
+            mEnemys.Clear();
         }
     }
 }

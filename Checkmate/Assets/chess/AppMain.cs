@@ -125,6 +125,7 @@ namespace Assets.Chess
 
             //初始化游戏开始事件
             GlobalEvent.onGameStart += OnGameStart;
+            GlobalEvent.onGameEnd += OnGameEnd;
 
             //example
             
@@ -173,6 +174,15 @@ namespace Assets.Chess
             AppLoading.Update("地图加载中...", progress);
         }
 
+        private void OnGameEnd()
+        {
+            //加载场景
+            FGUIManager.Instance.LoadSceneWithClearAll("Main", OnGameSceneLoadStart, () =>
+            {
+                ModuleManager.Instance.ShowModule("HomeModule");
+                AppLoading.Close();
+            }, OnGameSceneLoading);
+        }
 
         private void OnLoginSuccess()
         {

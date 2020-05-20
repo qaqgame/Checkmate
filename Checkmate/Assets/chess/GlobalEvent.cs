@@ -19,5 +19,6 @@ namespace Assets.Chess
         public static QGFEvent<int, string> onLoginFailed = new QGFEvent<int, string>();//登录失败
 
         public static QGFEvent<PlayerTeamData, uint,FSPParam> onGameStart = new QGFEvent<PlayerTeamData, uint,FSPParam>();//游戏开始事件
+        public static QGFEvent onGameEnd = new QGFEvent();//游戏结束事件
     }
 }

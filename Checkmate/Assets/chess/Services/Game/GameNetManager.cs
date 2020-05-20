@@ -33,6 +33,7 @@ namespace Checkmate.Services.Game
         public Action<bool> onRoundBegin;//回合开始事件
         public Action<uint> onControlStart=null;//操作开始
         public Action<byte[]> onRoundEnd = null;//回合结束
+        public Action<bool> onGameEnd = null;//游戏结束事件
 
         GameActionData mTempAction = new GameActionData();
         v3i mTempPos = new v3i();
@@ -51,7 +52,14 @@ namespace Checkmate.Services.Game
 
         public void Clear()
         {
-            
+            mFSP.Stop();
+            mFSP.SetFrameListener(null);
+            mFSP.onGameBegin -= OnGameBegin;
+            mFSP.onRoundBegin -= OnRoundBegin;
+            mFSP.onControlStart -= OnControlBegin;
+            mFSP.onRoundEnd -= OnRoundEnd;
+            mFSP.onGameEnd -= OnGameEnd;
+            onActionRecv = null;
         }
 
         public void Start(FSPParam param)
@@ -157,13 +165,17 @@ namespace Checkmate.Services.Game
         public void EndGame(int winner)
         {
             Debuger.LogWarning("end game with:{0}", winner);
-            mFSP.SendFSP(EndCmd, winner);
+            mFSP.SendGameEnd(winner);
         }
 
         //游戏结束时调用
         private void OnGameEnd(byte[] content)
         {
-
+            bool result = PBSerializer.NDeserialize<bool>(content);
+            if (onGameEnd != null)
+            {
+                onGameEnd.Invoke(result);
+            }
         }
 
         //移动
@@ -230,11 +242,6 @@ namespace Checkmate.Services.Game
                         OnRecvAction(message.content);
                         return;
                     }
-                case EndCmd:
-                    {
-                        OnEndConfirmRecv(message.content);
-                        return;
-                    }
             }
         }
 
@@ -249,12 +256,5 @@ namespace Checkmate.Services.Game
             }
         }
 
-
-        //接收到确认结束消息
-        private void OnEndConfirmRecv(byte[] content)
-        {
-            //发送结束消息
-            mFSP.SendGameEnd();
-        }
     }
 }
