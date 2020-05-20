@@ -171,7 +171,8 @@ namespace Checkmate.Services.Game
         //游戏结束时调用
         private void OnGameEnd(byte[] content)
         {
-            bool result = PBSerializer.NDeserialize<bool>(content);
+            List<uint> winners=PBSerializer.NDeserialize<List<uint>>(content);
+            bool result =winners!=null&&winners.Count>0&&winners.Contains(PlayerManager.Instance.PID);
             if (onGameEnd != null)
             {
                 onGameEnd.Invoke(result);
