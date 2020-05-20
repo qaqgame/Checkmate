@@ -20,8 +20,9 @@ namespace Checkmate.Modules.Game.UI
             mSuc = mCtrlTarget.GetChild("SucBg").asImage;
             mFail = mCtrlTarget.GetChild("FailBg").asImage;
 
-            mConfirm = mConfirm.GetChild("ConfirmBtn").asButton;
+            mConfirm = mCtrlTarget.GetChild("ConfirmBtn").asButton;
             mConfirm.onClick.Add(OnButtonClicked);
+           
         }
 
         protected override void OnOpen(object arg)

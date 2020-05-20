@@ -408,6 +408,7 @@ namespace Checkmate.Modules.Game
                 if(mode.CheckEnd(out winner))
                 {
                     GameNetManager.Instance.EndGame(winner);
+                    break;
                 }
             }
         }
