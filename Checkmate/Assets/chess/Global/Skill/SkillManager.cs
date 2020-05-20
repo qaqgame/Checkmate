@@ -28,7 +28,7 @@ namespace Checkmate.Game.Skill
 
         public void Clear()
         {
-
+            mSkills.Clear();
         }
 
         public int GetSkill(string name)

@@ -224,10 +224,16 @@ namespace Checkmate.Modules.Game
             GameNetManager.Instance.onControlStart = OnControlStart;
             GameNetManager.Instance.onRoundEnd = OnRoundEnd;
             GameNetManager.Instance.onRoundBegin = OnRoundBegin;
-
+            GameNetManager.Instance.onGameEnd = OnGameEnd;
             QGFRandom.Default.Seed = param.seed;
             
             wait = false;
+        }
+
+        private void OnGameEnd(bool result)
+        {
+            Debuger.Log("recv game end");
+            GamingPageManager.Instance.ShowGameEnd(result);
         }
 
         private void OnControlStart(uint pid)
@@ -372,6 +378,24 @@ namespace Checkmate.Modules.Game
             }
         }
 
+        private void OnDestroy()
+        {
+            initFinished = false;
+            wait = true;
+            PlayerManager.Instance.Clear();
+            GameNetManager.Instance.Clear();
+            SkillManager.Instance.Clear();
+            RoleManager.Instance.Clear();
+            BuffManager.Instance.Clear();
+            EffectManager.Instance.Clear();
+            DrawUtil.Clear();
+            APManager.Instance.Clear();
+            GameEnv.Instance.Clear();
+            MoveManager.Instance.Clear();
+            ObjectPool.Instance.Clear();
+            ExecuteUtil.Instance.Clear();
+        }
+
 
         IEnumerator CheckGameCondition(IMode mode)
         {
@@ -383,7 +407,7 @@ namespace Checkmate.Modules.Game
                 //如果满足则结束
                 if(mode.CheckEnd(out winner))
                 {
-                    //GameNetManager.Instance.EndGame(winner);
+                    GameNetManager.Instance.EndGame(winner);
                 }
             }
         }

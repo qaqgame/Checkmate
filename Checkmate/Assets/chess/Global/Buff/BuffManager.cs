@@ -34,6 +34,13 @@ namespace Checkmate.Game.Buff
             mBuffIconRes = new Dictionary<string, Texture2D>();
         }
 
+        public void Clear()
+        {
+            mLoadedBuff.Clear();
+            mBuffIconRes.Clear();
+            mBuffInstances.Clear();
+        }
+
         public Buff GetBuff(int id)
         {
             if (!mBuffInstances.ContainsKey(id))

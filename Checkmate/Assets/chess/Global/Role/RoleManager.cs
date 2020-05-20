@@ -38,6 +38,19 @@ namespace Checkmate.Game.Role
             mPlayerRoles = new Dictionary<uint, List<int>>();
         }
 
+        public void Clear()
+        {
+            mActiveRoles.Clear();
+            mRolePool.Clear();
+            mModelPrefabs.Clear();
+            foreach(var list in mPlayerRoles.Values)
+            {
+                list.Clear();
+            }
+            mPlayerRoles.Clear();
+            mVisibleRole.Clear();
+        }
+
         //添加角色
         public RoleController AddRole(RoleData role)
         {

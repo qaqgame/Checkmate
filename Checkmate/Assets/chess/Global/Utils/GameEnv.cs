@@ -396,7 +396,8 @@ namespace Checkmate.Game.Utils
 
         public void Clear()
         {
-
+            mEnvStacks.Clear();
+            mExeEnvStacks.Clear();
         }
 
         public void PushEnv(EnvVariable value)

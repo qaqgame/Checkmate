@@ -27,6 +27,11 @@ namespace Checkmate.Modules.Game.Utils
             mDrawed = new List<Position>();
         }
 
+        public static void Clear()
+        {
+            mDrawed.Clear();
+        }
+
         public static void DrawSingle(Position position, int style)
         {
             CellController cell =MapManager.Instance.GetCell(position);

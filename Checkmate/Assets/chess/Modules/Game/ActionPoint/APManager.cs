@@ -16,6 +16,12 @@ public class APManager : Singleton<APManager>
         onAPChanged = new QGFEvent();
     }
 
+    public void Clear()
+    {
+        elementAP.Clear();
+        onAPChanged.RemoveAllListeners();
+    }
+
     public void Reset()
     {
         foreach(uint pid in PlayerManager.Instance.GetAllPlayers())
