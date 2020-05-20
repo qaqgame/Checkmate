@@ -28,7 +28,6 @@ namespace Checkmate.Game.Role
         private Dictionary<uint, List<int>> mPlayerRoles;//pid（玩家）所拥有的角色(不分是否激活）
 
 
-        public List<int> mVisibleRole;//所有可见的role
         
         public void Init()
         {
@@ -48,7 +47,6 @@ namespace Checkmate.Game.Role
                 list.Clear();
             }
             mPlayerRoles.Clear();
-            mVisibleRole.Clear();
         }
 
         //添加角色

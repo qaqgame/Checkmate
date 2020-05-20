@@ -262,7 +262,7 @@ namespace QGF.Network.FSPLite.Client
                     if (mKcp.Recv(buffer) > 0)
                     {
                         mLastRecvTimestamp = (uint)TimeUtils.GetTotalMillisecondsSince1970();
-                        Debuger.Log("recv fsp data when {0}", mLastRecvTimestamp.ToString());
+                        //Debuger.Log("recv fsp data when {0}", mLastRecvTimestamp.ToString());
                         var data = PBSerializer.NDeserialize<FSPDataS2C>(buffer);
                         if (mRecvListener != null)
                         {
