@@ -75,10 +75,6 @@ public class MoveItem : MonoBehaviour
 
     IEnumerator TravelPath(Item item)
     {
-        if(!item.rc.CanOperate)
-        {
-            yield return null;
-        }
         IsMoving = true;
         item.rc.SetState(RoleState.Move);      // 设置状态为移动中
         for (int i = 1; i < item.Path.Count; i++)
