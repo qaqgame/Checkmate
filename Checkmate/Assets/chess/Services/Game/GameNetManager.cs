@@ -168,11 +168,16 @@ namespace Checkmate.Services.Game
             mFSP.SendGameEnd(winner);
         }
 
+        private class EndMsg
+        {
+            public List<uint> winners;
+        }
         //游戏结束时调用
         private void OnGameEnd(byte[] content)
         {
-            List<uint> winners=PBSerializer.NDeserialize<List<uint>>(content);
-            bool result =winners!=null&&winners.Count>0&&winners.Contains(PlayerManager.Instance.PID);
+            Debuger.Log("recv gameend");
+            EndMsg msg=PBSerializer.NDeserialize<EndMsg>(content);
+            bool result =msg.winners!=null&&msg.winners.Count>0&&msg.winners.Contains(PlayerManager.Instance.PID);
             if (onGameEnd != null)
             {
                 onGameEnd.Invoke(result);
