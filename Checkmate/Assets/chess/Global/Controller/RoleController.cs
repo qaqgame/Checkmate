@@ -1,4 +1,5 @@
 ﻿using Checkmate.Game.Buff;
+using Checkmate.Game.Global.UI;
 using Checkmate.Game.Map;
 using Checkmate.Game.Role;
 using Checkmate.Game.Skill;
@@ -187,7 +188,7 @@ namespace Checkmate.Game.Controller
             set;
         }
 
-        private bool _visible;
+        private bool _visible=true;
         [GetProperty]
         public bool Visible
         {
@@ -253,6 +254,8 @@ namespace Checkmate.Game.Controller
                 content = Resources.Load<TextAsset>("Attack_far").text;
             }
             AtkAction = new SkillAction(content);
+
+            mHud = mObj.GetComponentInChildren<HUDText>();
         }
 
 
@@ -348,6 +351,7 @@ namespace Checkmate.Game.Controller
             if (target != null)
             {
                 target.Temp.Hp -= GameEnv.Damage;
+                ShowText(GameEnv.Damage.ToString());
             }
         }
         //判断是否闪避成功
@@ -371,6 +375,8 @@ namespace Checkmate.Game.Controller
                 }
 
                 GameEnv.Instance.PopEnv();
+                Debuger.Log("{0} missed", Name);
+                ShowText("Miss");
                 return true;
             }
             return false;
@@ -513,6 +519,7 @@ namespace Checkmate.Game.Controller
         //继承的接口
         public override int Type { get { return (int)ControllerType.Role; } }
 
+        private HUDText mHud;
         public override GameObject GetGameObject()
         {
             return mObj;
@@ -528,6 +535,11 @@ namespace Checkmate.Game.Controller
             Vector3 target = position;
             target.y = mObj.transform.position.y;
             mObj.transform.LookAt(target);
+        }
+
+        public void ShowText(string text)
+        {
+            mHud.HUD(text);
         }
 
         public override Position GetPosition()
