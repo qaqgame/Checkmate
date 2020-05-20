@@ -67,10 +67,30 @@ public class MoveItem : MonoBehaviour
         Item item = new Item(_rc, _path, _startpos, _endpos);
         moveitems.Enqueue(item);
     }
+    
 
-    public void Travel(Item item)
+    private void Start()
     {
-        StartCoroutine(TravelPath(item));
+        StartCoroutine(Travel());
+    }
+
+    IEnumerator Travel()
+    {
+        while (true)
+        {
+            if (moveitems.Count > 0)
+            {
+                //取出移动项
+                Item item = moveitems.Dequeue();
+                if (item != null && item.Path != null)
+                {
+                    yield return StartCoroutine(TravelPath(item));
+                }
+            }
+            // 恢复为Idle状态
+            IsMoving = false;
+            yield return null;
+        }
     }
 
     IEnumerator TravelPath(Item item)
@@ -107,8 +127,7 @@ public class MoveItem : MonoBehaviour
         }
         // 移动结束
         item.rc.SetState(RoleState.Idle);
-        // 恢复为Idle状态
-        IsMoving = false;
+        
     }
 
     // TODO: 是否还需要进行移动点消耗的计算
@@ -123,11 +142,7 @@ public class MoveItem : MonoBehaviour
     {
         return;
     }
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+
 
     // Update is called once per frame
     void Update()

@@ -72,7 +72,7 @@ namespace Checkmate.Game
             HexMetrics.noiseSource = noiseSource;
             mFeatureData = new List<FeatureData>();
             mEffectData = new List<EffectData>();
-            mTerrainData = new List<Global.Data.TerrainData>();
+            mTerrainData = new List<Checkmate.Global.Data.TerrainData>();
             HexMetrics.featurePrefabs = new List<Transform>();
             cellShaderData = gameObject.AddComponent<HexCellShaderData>();
             mFeatureMat = Resources.Load<Material>("Map/Basic/Materials/Feature");
@@ -383,7 +383,7 @@ namespace Checkmate.Game
             mTerrainData.Clear(); 
             InitializeTerrains(terrains);
         }
-        private void InitializeTerrains(List<Global.Data.TerrainData> terrains)
+        private void InitializeTerrains(List<Checkmate.Global.Data.TerrainData> terrains)
         {
             mTerrainData = terrains;
             List<Texture2D> textures = new List<Texture2D>();

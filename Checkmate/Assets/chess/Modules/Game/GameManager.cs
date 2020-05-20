@@ -224,6 +224,7 @@ namespace Checkmate.Modules.Game
             GameNetManager.Instance.onRoundEnd = OnRoundEnd;
             GameNetManager.Instance.onRoundBegin = OnRoundBegin;
 
+            UnityEngine.Random.InitState(param.seed);
             
             wait = false;
         }
@@ -250,6 +251,7 @@ namespace Checkmate.Modules.Game
             {
                 PlayerManager.Instance.Operating = true;
                 Debuger.Log("set operating");
+                Debuger.Log("waiting state:{0}", PlayerManager.Instance.IsWaiting.ToString());
                 GamingPageManager.Instance.OnNextTurn(true);
             }
             else
@@ -360,6 +362,11 @@ namespace Checkmate.Modules.Game
                 Debuger.Log("{0} physicRes:{1},current:{2}", role.Name, role.Temp.GetValue("PhysicalRes"), role.Current.GetValue("PhysicalRes"));
                 Debuger.Log("{0} tempHP:{1},currentHP:{2}", role.Name, role.Temp.Hp, role.Current.Hp);
 
+
+                RoleController alice = RoleManager.Instance.GetRole(0);
+                RoleController bob = RoleManager.Instance.GetRole(1);
+                Debuger.Log("alice state:{0}", alice.CurrentState.ToString());
+                Debuger.Log("bob state:{0}", bob.CurrentState.ToString());
                 last = Time.time;
             }
         }

@@ -1,4 +1,4 @@
-<Buff name="TestBuff" turns="1" times="5" icon="test.png">
+<Buff name="TestBuff" turns="-1" times="-1" icon="test.png">
     <Description>TestEffect</Description>
     <Data>
         <value name="level" type="Int">3</value>

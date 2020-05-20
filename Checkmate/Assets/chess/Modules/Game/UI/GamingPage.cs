@@ -75,6 +75,8 @@ namespace Checkmate.Modules.Game.UI
             mRoundEndBtn = mCtrlTarget.GetChild("RoundEndBtn").asButton;
             //设置点击事件
             mRoundEndBtn.onClick.Add(OnRoundEndClicked);
+
+            HideAll();
         }
 
         protected override void OnOpen(object arg)

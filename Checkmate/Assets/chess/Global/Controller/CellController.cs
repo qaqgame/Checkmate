@@ -62,6 +62,10 @@ namespace Checkmate.Game.Controller
                     {
                         role.Visible = true;
                     }
+                    else
+                    {
+                        role.Visible = false;
+                    }
                 }
                 mRole = value;
             }

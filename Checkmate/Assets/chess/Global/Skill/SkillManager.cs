@@ -149,6 +149,7 @@ namespace Checkmate.Game.Skill
                 Debuger.LogError("error get attack target role in {0}", center.ToString());
             }
             RoleController target = RoleManager.Instance.GetRole(dstId);
+            Debuger.Log("execute attack:{0} to {1} ,target position:{2}", role.Name, target.Name, target.Position.ToString());
             //设置环境
             EnvVariable env = new EnvVariable();
             env.Src = role;

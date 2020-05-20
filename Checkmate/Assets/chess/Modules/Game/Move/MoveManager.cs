@@ -147,25 +147,26 @@ public class MoveManager : Singleton<MoveManager>
         return msg;
     }
 
-    private void DoMove(Item item)
-    {
-        if(item != null && item.Path != null)
-        {
-            moveItem.Travel(item);
-        } else
-        {
-            Debug.LogError("not travel");
-        }
-    }
+    //private void DoMove(Item item)
+    //{
+    //    if(item != null && item.Path != null)
+    //    {
+    //        moveItem.Travel(item);
+    //    } else
+    //    {
+    //        Debug.LogError("not travel");
+    //    }
+    //}
 
 
     public void Update()
     {
-        if (!MoveItem.IsMoving&&moveItem.moveitems.Count > 0)
-        {
-            // Debug.LogError("count: " + moveItems.Count);
-            Item item = moveItem.moveitems.Dequeue();
-            DoMove(item);
-        }
+        //if (!MoveItem.IsMoving&&moveItem.moveitems.Count > 0)
+        //{
+        //    Debuger.Log("in move");
+        //    // Debug.LogError("count: " + moveItems.Count);
+        //    Item item = moveItem.moveitems.Dequeue();
+        //    DoMove(item);
+        //}
     }
 }

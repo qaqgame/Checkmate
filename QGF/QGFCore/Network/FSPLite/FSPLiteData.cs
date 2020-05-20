@@ -38,6 +38,8 @@ namespace QGF.Network.FSPLite
         public int jitterBufferSize = 0;//缓冲大小
         [ProtoMember(13)]
         public bool enableAutoBuffer = true;
+        [ProtoMember(14)]
+        public int seed;//随机数种子
 
 
 
@@ -59,7 +61,7 @@ namespace QGF.Network.FSPLite
             sb.AppendFormat("\n{0}clientFrameRateMultiple:{1}", prefix, clientFrameRateMultiple);
             sb.AppendFormat("\n{0}serverTimeout:{1}", prefix, serverTimeout);
             sb.AppendFormat("\n{0}maxFrameId:{1}", prefix, maxFrameId);
-
+            sb.AppendFormat("\n{0}seed:{1}", prefix, seed);
             return sb.ToString();
         }
     }

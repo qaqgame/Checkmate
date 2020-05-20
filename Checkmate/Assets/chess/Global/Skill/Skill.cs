@@ -77,7 +77,7 @@ namespace Checkmate.Game.Skill
         {
             CellController cell = MapManager.Instance.GetCell(pos);
             //该位置不存在或在视野外
-            if (cell == null||!cell.Visible)
+            if (cell == null)
             {
                 return false;
             }
@@ -111,7 +111,11 @@ namespace Checkmate.Game.Skill
         {
             int src = (int)PlayerManager.Instance.PID;
             int dst = role.Team;
-
+            CellController cell = MapManager.Instance.GetCell(role.Position);
+            if (!cell.Visible)
+            {
+                return false;
+            }
             foreach(var team in teams) {
                 if (CheckTeam(src, dst, team))
                 {
