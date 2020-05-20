@@ -39,7 +39,7 @@ namespace Checkmate.Game.Controller
 
         private Action<RoleController> onRoleChanged;//角色属性发生改变的事件
         private Action<RoleController,List<int>> onBuffChanged;//buff栏发生改变的事件
-
+        private Action<List<int>> onSkillChanged;//技能发生更新
         public void SetRoleChangeListener(Action<RoleController> listener)
         {
             onRoleChanged = listener;
@@ -48,11 +48,16 @@ namespace Checkmate.Game.Controller
         {
             onBuffChanged = listener;
         }
+        public void SetSkillChangeListener(Action<List<int>> listener)
+        {
+            onSkillChanged = listener;
+        }
 
         public void ClearAllListener()
         {
             onRoleChanged = null;
             onBuffChanged = null;
+            onSkillChanged = null;
         }
         //当前状态
         public RoleState CurrentState
@@ -541,6 +546,14 @@ namespace Checkmate.Game.Controller
             return mObj.transform.Find("Model").GetChild(0).gameObject;
         }
 
+        public void UpdateSkill()
+        {
+            if (onSkillChanged != null)
+            {
+                onSkillChanged.Invoke(Skills);
+            }
+        }
+
         public void FaceTo(Vector3 position)
         {
             Vector3 target = position;
@@ -694,7 +707,7 @@ namespace Checkmate.Game.Controller
         }
 
         //buff改变时的回调
-        public void OnBuffUpdate()
+        private void OnBuffUpdate()
         {            
             //调用外部传入的事件（用于更新显示部分）
             if (onBuffChanged != null)

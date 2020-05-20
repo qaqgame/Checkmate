@@ -1,4 +1,5 @@
 ﻿using Checkmate.Game.Controller;
+using Checkmate.Game.Global.Utils;
 using Checkmate.Game.Utils;
 using QGF;
 using QGF.Common;
@@ -26,18 +27,15 @@ namespace Checkmate.Game.Buff
         private Dictionary<string, Buff> mLoadedBuff;//buff的加载缓存
         private Dictionary<int, Buff> mBuffInstances;//buff的实例缓存
 
-        private Dictionary<string, Texture2D> mBuffIconRes;//buff的图标缓存
         public void Init()
         {
             mLoadedBuff = new Dictionary<string, Buff>();
             mBuffInstances = new Dictionary<int, Buff>();
-            mBuffIconRes = new Dictionary<string, Texture2D>();
         }
 
         public void Clear()
         {
             mLoadedBuff.Clear();
-            mBuffIconRes.Clear();
             mBuffInstances.Clear();
         }
 
@@ -114,15 +112,9 @@ namespace Checkmate.Game.Buff
 
             Buff result = BuffParser.ParseBuff(root);
             //如果存在该buff的icon
-            if (result.Icon != null&&!mBuffIconRes.ContainsKey(result.Icon))
+            if (result.Icon != null)
             {
-                Debuger.Log("loaded buff icon:{0}", result.Icon);
-                Texture2D sprite = AssetUtil.LoadPicture(IconRootPath +"/"+ result.Icon,512);
-                if (sprite == null)
-                {
-                    Debuger.LogError("error load icon:{0}", result.Icon);
-                }
-                mBuffIconRes.Add(result.Icon, sprite);
+                IconManager.Instance.Load(result.Icon);
             }
             return result;
         }
@@ -139,7 +131,7 @@ namespace Checkmate.Game.Buff
             {
                 return null;
             }
-            return mBuffIconRes[buff.Icon];
+            return IconManager.Instance.GetIcon(buff.Icon);
         }
 
         /// <summary>

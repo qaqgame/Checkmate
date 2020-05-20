@@ -16,6 +16,10 @@ namespace Checkmate.Modules.Game
         static RoundPage mRoundPage;//回合切换页
         static EndPage mEndPage;//结束页
         public Action onRoundEndClicked;//回合结束点击事件
+
+        private RoleController mCurrentRole;//当前显示角色
+
+        private Action<RoleController, int> onSkillClicked;
         public void OpenPage()
         {
             mPage= FGUIManager.Instance.Open<GamingPage>("MainPage", "GamingPage", null);
@@ -41,16 +45,35 @@ namespace Checkmate.Modules.Game
                 mPage.UpdateAP(curAP, maxAP);
             }
         }
+
+
+
         //显示角色面板
         public void ShowRolePanel(RoleController role)
         {
-            mPage.ShowRole();
+            mCurrentRole = role;
+            mPage.ShowRole(role);
+        }
+
+        public void ShowMoreProp()
+        {
+            mPage.ShowMore();
+        }
+
+        public void HideMoreProp()
+        {
+            mPage.HideMore();
         }
 
         //隐藏角色面板
         public void HideRolePanel()
         {
-            mPage.HideRole();
+            if (mCurrentRole != null)
+            {
+                mCurrentRole.ClearAllListener();
+                mPage.HideRole();
+                mCurrentRole = null;
+            }
         }
 
 

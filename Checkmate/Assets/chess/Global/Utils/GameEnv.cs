@@ -384,6 +384,10 @@ namespace Checkmate.Game.Utils
         {
             get
             {
+                if (mExeEnvStacks.Count == 0)
+                {
+                    return null;
+                }
                 return mExeEnvStacks.Peek();
             }
         }

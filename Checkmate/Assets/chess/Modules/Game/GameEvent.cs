@@ -25,6 +25,7 @@ namespace Checkmate.Modules.Game
         //重置事件
         public static QGFEvent onResetAll;
 
+
         public static void Init()
         {
             onControllerClicked = new QGFEvent<ModelController>();

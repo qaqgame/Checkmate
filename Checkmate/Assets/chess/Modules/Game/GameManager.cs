@@ -28,6 +28,7 @@ using Checkmate.Game.Buff;
 using Checkmate.Game.Effect;
 using QGF.Utils;
 using QGF.Math;
+using Checkmate.Game.Global.Utils;
 
 namespace Checkmate.Modules.Game
 {
@@ -77,6 +78,10 @@ namespace Checkmate.Modules.Game
             Debuger.Log("invoke initall");
             ObjectPool.Instance.Init(10, types);
             Debuger.Log("object pool init");
+            IconManager.Instance.Init();
+            Debuger.Log("icon init");
+            GameEnv.Instance.Init();//初始化环境
+            Debuger.Log("env init");
             HexGrid hexGrid = GameObject.Find("Map").GetComponentInChildren<HexGrid>();
             Debuger.Log("grid get suc");
             MapManager.Instance.Init(hexGrid, mTestMapPath);
@@ -89,8 +94,7 @@ namespace Checkmate.Modules.Game
             Debuger.Log("role init");
             MoveManager.Instance.Init();
             Debuger.Log("move init");
-            GameEnv.Instance.Init();//初始化环境
-            Debuger.Log("env init");
+            
 
             ExecuteUtil.Instance.Init(mScriptPath);
             Debuger.Log("execute init");
@@ -196,6 +200,7 @@ namespace Checkmate.Modules.Game
             StartCoroutine(CheckGameCondition(mode));
         }
 
+
         //============================
         public void InitTestPlayer()
         {
@@ -230,6 +235,7 @@ namespace Checkmate.Modules.Game
             wait = false;
         }
 
+        //游戏结束回调
         private void OnGameEnd(bool result)
         {
             Debuger.Log("recv game end");

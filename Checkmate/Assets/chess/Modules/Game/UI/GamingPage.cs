@@ -1,5 +1,6 @@
 ﻿using Checkmate.Game.Controller;
 using Checkmate.Game.UI.Component;
+using Checkmate.Modules.Game.UI.Component;
 using FairyGUI;
 using QGF.Unity.FGUI;
 using System;
@@ -11,21 +12,8 @@ namespace Checkmate.Modules.Game.UI
 {
     public class GamingPage : FGUIPage
     {
-        // 主面板
-        private GComponent mainPanel = new GComponent();
-
-        GComponent map;
-        GComponent gameState;
-
         GComponent mRolePanel;//角色面板根节点
-        BuffList mBuffList;//buff列表的显示
-
-        GComponent roleIcon;
-        GComponent skillList;
-        GComponent propertyList;
-        GList propertyShow;
-        GList propertyHide;
-        GComponent buffList;
+        RoleDataPanel mRolePanelUI;//角色面板
 
         GButton mRoundEndBtn;//回合结束按钮
         public Action onRoundEnd;//回合结束时调用 
@@ -33,44 +21,14 @@ namespace Checkmate.Modules.Game.UI
         GComponent mAPRoot;//AP的UI根节点
         GTextField mCurAP;//当前行动点
 
-        private GButton createSkillButton(GList SkillList, string url = null)
-        {
-            GButton gButton = SkillList.AddItemFromPool("ui://nksqv53jntn1p").asButton;
-            if (url != null)
-            {
-                GLoader loader = gButton.GetChild("SkillIconLoader").asLoader;
-                loader.url = url;
-            }
-            return gButton;
-        }
         protected override void OnLoad()
         {
             base.OnLoad();
             //todo
             mRolePanel = mCtrlTarget.GetChild("RolePanel").asCom;
-            propertyList = mRolePanel.GetChildByPath("PropertyList").asCom;
-            buffList = mRolePanel.GetChild("BuffList").asCom;
-            GList bl = buffList.GetChild("Buffs").asList;
-            mBuffList = new BuffList(bl);
-            propertyShow = propertyList.GetChild("ShowingProperty").asList;
-            propertyHide = propertyList.GetChild("HidenProperty").asList;
+            mRolePanelUI = new RoleDataPanel(mRolePanel);
 
-            string[] tmp = new string[5] { "HP", "MP", "Attack", "PRejection", "MRejection" };
-
-            for (int i = 0; i < 5; i++)
-            {
-                propertyShow.GetChildAt(i).asCom.GetChild("PropertyName").asTextField.text = tmp[i];
-            }
-
-            //---------添加初始技能按钮
-            skillList = mRolePanel.GetChildByPath("SkillList").asCom;
-            GList skills = skillList.GetChild("Skills").asList;
-            for (int i = 0; i < 3; i++)
-            {
-                createSkillButton(skills);
-            }
-
-            mRolePanel.visible = false;
+            mRolePanelUI.Visible = false;
             //------------------------
             //获取行动点显示
             mAPRoot = mCtrlTarget.GetChild("APPoint").asCom;
@@ -118,51 +76,38 @@ namespace Checkmate.Modules.Game.UI
         /// <summary>
         /// 显示角色面板
         /// </summary>
-        public void ShowRole()
+        public void ShowRole(RoleController role)
         {
-            mRolePanel.visible = true;
+            mRolePanelUI.Visible = true;
+            mRolePanelUI.ShowRole(role);
         }
         /// <summary>
         /// 隐藏角色面板
         /// </summary>
         public void HideRole()
         {
-            mRolePanel.visible = false;
+            mRolePanelUI.Visible = false;
+            mRolePanelUI.Clear();
+        }
+
+        public void ShowMore()
+        {
+            if (mRolePanelUI.Visible)
+            {
+                mRolePanelUI.ShowMoreProp();
+            }
+        }
+
+        public void HideMore()
+        {
+            mRolePanelUI.HideMoreProp();
         }
 
         public void UpdateAP(int curAP, int maxAP)
         {
             mCurAP.text = curAP.ToString();
         }
-        public void UpdateRoleInfo(RoleController rc)
-        {
-            //更新buff
-            mBuffList.Update(rc.Buffs);
-            //----------更新技能图标------------
 
-            //----------更新人物属性------------
-            UpdateRoleProperty(rc.Current);
-            //----------更新地图----------------
-
-            //----------更新人物图标Icon--------
-        }
-
-
-        // 修改角色属性部分的信息
-        private void UpdateRoleProperty(RoleAttributeController roleAttributeController)
-        {
-            propertyList = mCtrlTarget.GetChildByPath("PropertyList").asCom;
-            GList alwaysShowList = propertyList.GetChild("ShowingProperty").asList;
-            GList onOverShowList = propertyList.GetChild("HidenProperty").asList;
-        }
-
-
-
-        // 修改一个具体的属性框中的属性名和属性值
-        private GComponent AlterSinglePropertyTo(GList target, string propertyName, string propertyValue)
-        {
-            return null;
-        }
 
 
         //回合结束事件
