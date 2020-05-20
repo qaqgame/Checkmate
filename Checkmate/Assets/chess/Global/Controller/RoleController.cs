@@ -8,6 +8,7 @@ using Checkmate.Game.Utils;
 using Checkmate.Global.Data;
 using FairyGUI;
 using QGF;
+using QGF.Math;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -358,7 +359,7 @@ namespace Checkmate.Game.Controller
         private bool CheckMiss()
         {
             float miss = Temp.Miss;
-            float temp = UnityEngine.Random.Range(0.0f, 1.0f);
+            float temp = QGFRandom.Default.Range(0.0f, 1.0f);
             if (temp < miss)
             {
                 EnvVariable env = new EnvVariable();

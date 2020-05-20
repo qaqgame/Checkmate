@@ -27,6 +27,7 @@ using QGF;
 using Checkmate.Game.Buff;
 using Checkmate.Game.Effect;
 using QGF.Utils;
+using QGF.Math;
 
 namespace Checkmate.Modules.Game
 {
@@ -185,7 +186,7 @@ namespace Checkmate.Modules.Game
             // MiniMap.Instance.Init();
 
             //播放音乐
-            int rand = UnityEngine.Random.Range(0, 2);
+            int rand = (int)UnityEngine.Random.Range(0.0f, 2.0f);
             AudioManager.Instance.PlayMusic("Battle" + rand.ToString());
 
             //开始处理action协程
@@ -224,7 +225,7 @@ namespace Checkmate.Modules.Game
             GameNetManager.Instance.onRoundEnd = OnRoundEnd;
             GameNetManager.Instance.onRoundBegin = OnRoundBegin;
 
-            UnityEngine.Random.InitState(param.seed);
+            QGFRandom.Default.Seed = param.seed;
             
             wait = false;
         }
