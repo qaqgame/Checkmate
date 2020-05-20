@@ -22,6 +22,7 @@ namespace Checkmate.Modules.Game.UI
 
             mConfirm = mCtrlTarget.GetChild("ConfirmBtn").asButton;
             mConfirm.onClick.Add(OnButtonClicked);
+           
         }
 
         protected override void OnOpen(object arg)
