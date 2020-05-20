@@ -496,7 +496,7 @@ namespace Checkmate.Modules.Game
 
         private void OnControllerClick(ModelController controller)
         {
-            Debug.Log("click pos:" + controller.GetPosition().ToString());
+            Debuger.Log("click pos:" + controller.GetPosition().ToString());
             DrawUtil.ClearAll();
             DrawUtil.DrawSingle(controller.GetPosition(), 1);
           
@@ -504,7 +504,7 @@ namespace Checkmate.Modules.Game
 
         private void OnRoleClicked(RoleController role)
         {
-            Debug.Log("clicked role:" + role.Name);
+            Debuger.Log("clicked role:" + role.Name);
             GamingPageManager.Instance.ShowRolePanel(role);
         }
 

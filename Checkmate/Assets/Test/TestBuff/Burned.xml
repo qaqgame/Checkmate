@@ -1,0 +1,39 @@
+<Buff name="Burned" turns="2" times="-1" icon="test.png">
+    <Description>减少20防御，每回合5点真实伤害</Description>
+    <Data>
+        <value name="level" type="Int">3</value>
+        <value name="Damage" type="Int">5</value>
+    </Data>
+
+    <Content>
+        <Action trigger="OnTurn">
+            <Targets>
+            </Targets>
+            <Executes>
+                <Execute src="Standard.Damage">
+                    <Params>
+                        <Param type="Controller" value="%Obj"/>
+                        <Param type="Int" value="$Damage"/>
+                    </Params>
+                </Execute>
+            </Executes>
+        </Action>
+        <Action trigger="OnAttached">
+            <Targets>
+            </Targets>
+            <Executes>
+                <Execute src="Standard.ChangeAttribute">
+                    <Params>
+                        <Param type="Controller" value="%Obj"/>
+                        <Param type="String" value="Sub"/>
+                        <Param type="String" value="PhysicalRes"/>
+                        <Param type="String" value="20"/>
+                        <Param type="String" value="Int"/>
+                        <Param type="Bool" value="false"/>
+                        <Param type="Bool" value="false"/>
+                    </Params>
+                </Execute>
+            </Executes>
+        </Action>
+    </Content>
+</Buff>

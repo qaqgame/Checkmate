@@ -31,7 +31,8 @@ namespace Checkmate.Global.Data
         [ProtoMember(1)] public int id;//特征id
         [ProtoMember(2)] public string name;//特征名
         [ProtoMember(3)] public string file;//文件名
-        [ProtoMember(4)] public List<int> effectIdx;//效果（idx）
+        [ProtoMember(4)] public bool single;//单一特征
+        [ProtoMember(5)] public List<int> effectIdx;//效果（idx）
     }
 
     //terrain数据

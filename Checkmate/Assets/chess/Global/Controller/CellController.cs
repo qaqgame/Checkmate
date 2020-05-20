@@ -143,6 +143,7 @@ namespace Checkmate.Game.Controller
             }
         }
 
+        [GetProperty]
         public bool HasRole
         {
             get { return mRole > -1; }

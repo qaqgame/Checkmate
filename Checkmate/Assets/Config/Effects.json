@@ -1,5 +1,8 @@
 [
     {
         "effect":"TestEffect"
+    },
+    {
+        "effect":"Burn"
     }
 ]

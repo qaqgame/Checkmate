@@ -3,12 +3,28 @@
         "id":1025,
         "name":"tree",
         "file":"Tree",
+        "single":false,
         "effectIdx":[0]
     },
     {
         "id":1026,
         "name":"grass",
         "file":"Grass",
+        "single":false,
         "effectIdx":[]
+    },
+    {
+        "id":1027,
+        "name":"tower_moon",
+        "file":"TowerMoon",
+        "single":true,
+        "effectIdx":[]
+    },
+    {
+        "id":1028,
+        "name":"burn",
+        "file":"Burning",
+        "single":true,
+        "effectIdx":[1]
     }
 ]

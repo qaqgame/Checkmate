@@ -106,7 +106,7 @@ namespace Checkmate.Game.Utils
             }
             else
             {
-                return (float)a == (float)b;
+                return a.Equals(b);
             }
         }
 

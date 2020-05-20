@@ -589,6 +589,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hex Map Editor
       objectReference: {fileID: 0}
+    - target: {fileID: 3830137220106560335, guid: 4910066fa7e00fe4e83483df21fc8009,
+        type: 3}
+      propertyPath: m_Name
+      value: FeaturesUI
+      objectReference: {fileID: 0}
     - target: {fileID: 3830137220137826618, guid: 4910066fa7e00fe4e83483df21fc8009,
         type: 3}
       propertyPath: m_AnchorMax.y
