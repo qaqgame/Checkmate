@@ -44,6 +44,16 @@ namespace Checkmate.Game.Controller
         {
             onRoleChanged = listener;
         }
+        public void SetBuffChangeListener(Action<RoleController,List<int>> listener)
+        {
+            onBuffChanged = listener;
+        }
+
+        public void ClearAllListener()
+        {
+            onRoleChanged = null;
+            onBuffChanged = null;
+        }
         //当前状态
         public RoleState CurrentState
         {
@@ -643,6 +653,7 @@ namespace Checkmate.Game.Controller
         {
             mPanel.SetHP(Temp.Hp);
             mPanel.UpdateBuff(Buffs);
+            OnBuffUpdate();
         }
         //=====================
 
