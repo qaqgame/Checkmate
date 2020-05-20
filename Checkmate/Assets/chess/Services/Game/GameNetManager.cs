@@ -2,6 +2,7 @@
 using Checkmate.Game.Controller;
 using Checkmate.Game.Player;
 using Checkmate.Global.Data;
+using ProtoBuf;
 using QGF;
 using QGF.Codec;
 using QGF.Common;
@@ -168,8 +169,10 @@ namespace Checkmate.Services.Game
             mFSP.SendGameEnd(winner);
         }
 
+        [ProtoContract]
         private class EndMsg
         {
+            [ProtoMember(1)]
             public List<uint> winners;
         }
         //游戏结束时调用
