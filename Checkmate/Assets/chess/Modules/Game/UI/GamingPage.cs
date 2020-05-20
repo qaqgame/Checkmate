@@ -1,4 +1,5 @@
 ﻿using Checkmate.Game.Controller;
+using Checkmate.Game.UI.Component;
 using FairyGUI;
 using QGF.Unity.FGUI;
 using System;
@@ -17,6 +18,8 @@ namespace Checkmate.Modules.Game.UI
         GComponent gameState;
 
         GComponent mRolePanel;//角色面板根节点
+        BuffList mBuffList;//buff列表的显示
+
         GComponent roleIcon;
         GComponent skillList;
         GComponent propertyList;
@@ -46,6 +49,9 @@ namespace Checkmate.Modules.Game.UI
             //todo
             mRolePanel = mCtrlTarget.GetChild("RolePanel").asCom;
             propertyList = mRolePanel.GetChildByPath("PropertyList").asCom;
+            buffList = mRolePanel.GetChild("BuffList").asCom;
+            GList bl = buffList.GetChild("Buffs").asList;
+            mBuffList = new BuffList(bl);
             propertyShow = propertyList.GetChild("ShowingProperty").asList;
             propertyHide = propertyList.GetChild("HidenProperty").asList;
 
@@ -130,7 +136,8 @@ namespace Checkmate.Modules.Game.UI
         }
         public void UpdateRoleInfo(RoleController rc)
         {
-
+            //更新buff
+            mBuffList.Update(rc.Buffs);
             //----------更新技能图标------------
 
             //----------更新人物属性------------
@@ -140,12 +147,6 @@ namespace Checkmate.Modules.Game.UI
             //----------更新人物图标Icon--------
         }
 
-        public void UpdateGameInfo(APManager aPManager)
-        {
-            //----------更新行动力--------------
-
-            //----------更新游戏当前信息--------
-        }
 
         // 修改角色属性部分的信息
         private void UpdateRoleProperty(RoleAttributeController roleAttributeController)
