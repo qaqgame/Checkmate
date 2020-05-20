@@ -1,5 +1,6 @@
 ﻿using Checkmate.Game.Buff;
 using Checkmate.Game.Controller;
+using Checkmate.Game.Global.Utils;
 using Checkmate.Game.Map;
 using Checkmate.Game.Role;
 using Checkmate.Game.Utils;
@@ -14,12 +15,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using UnityEngine;
+
 namespace Checkmate.Game.Skill
 {
     public class SkillManager:Singleton<SkillManager>
     {
         private Dictionary<int, BaseSkill> mSkills;//所有技能
         public string RootPath;//根路径
+
+
         public void Init(string path)
         {
             mSkills = new Dictionary<int, BaseSkill>();
@@ -41,11 +46,33 @@ namespace Checkmate.Game.Skill
             XmlNode node = document.DocumentElement;
 
             BaseSkill skill = SkillParser.ParseSkill(node);
+            if (skill.Icon != null)
+            {
+                IconManager.Instance.Load(skill.Icon);
+            }
             int id = mSkills.Count;
             mSkills.Add(id, skill);
             return id;
         }
 
+        public BaseSkill GetInstance(int id)
+        {
+            if (!mSkills.ContainsKey(id))
+            {
+                return null;
+            }
+            return mSkills[id];
+        }
+
+        public Texture2D GetIcon(int id)
+        {
+            BaseSkill skill = mSkills[id];
+            if (skill == null || skill.Icon == null)
+            {
+                return null;
+            }
+            return IconManager.Instance.GetIcon(skill.Icon);
+        }
         
 
         public void ExecuteSkill(int id,RoleController src,Position center)

@@ -64,8 +64,25 @@ namespace Checkmate.Modules.Game.Control
                     role.SetState(RoleState.PreAttack);
                 }
             }
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                GamingPageManager.Instance.ShowMoreProp();
+            }
+            if (Input.GetKeyUp(KeyCode.C))
+            {
+                GamingPageManager.Instance.HideMoreProp();
+            }
         }
 
+
+        public void PreSkill(RoleController role,int skillId)
+        {
+            if (mObj.CurrentObj == role)
+            {
+                role.SetState(RoleState.PreSpell);
+                mCurrentSkill = skillId;
+            }
+        }
 
         //处理鼠标事件
         private void HandleMouse()

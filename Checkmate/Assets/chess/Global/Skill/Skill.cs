@@ -231,7 +231,20 @@ namespace Checkmate.Game.Skill
                 {
                     _coolTurn = value;
                 }
+                //事件回调
+                EnvVariable v = GameEnv.Instance.CurrentExe;
+                if (v != null && v.Obj != null && v.Obj.Type == (int)ControllerType.Role)
+                {
+                    (v.Obj as RoleController).UpdateSkill();
+                }
             }
+        }
+
+        //冷却
+        public int MaxCool
+        {
+            get;
+            private set;
         }
 
         public string Name
@@ -247,11 +260,20 @@ namespace Checkmate.Game.Skill
             private set;
         }
         
+        //图标
+        public string Icon
+        {
+            get;
+            private set;
+        }
+
         public void Parse(XmlNode node)
         {
             Name = node.Attributes["name"].Value;
-            CoolTurns = int.Parse(node.Attributes["cd"].Value);
+            CoolTurns =MaxCool= int.Parse(node.Attributes["cd"].Value);
             Cost = int.Parse(node.Attributes["cost"].Value);
+            Icon = node.Attributes["icon"].Value;
+
 
             OnParseRoot(node);
 
@@ -422,6 +444,7 @@ namespace Checkmate.Game.Skill
             {
                 return;
             }
+            CoolTurns = 0;
             GameExecuteManager.Instance.Add(mActions[ActionTrigger.Execute]);
             //foreach (var action in mActions[ActionTrigger.Execute])
             //{
