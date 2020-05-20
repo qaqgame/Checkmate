@@ -224,6 +224,7 @@ namespace Checkmate.Services.Game
 
         private void SendAction(GameAction actionType,byte[] content)
         {
+            Debuger.Log("send action:{0}", actionType.ToString());
             mTempAction.OperationType = actionType;
             mTempAction.OperationCnt = content;
             mFSP.SendFSP(ActionCmd, mTempAction);
