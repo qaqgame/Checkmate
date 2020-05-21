@@ -165,8 +165,9 @@ namespace Checkmate.Services.Game
         //结束游戏
         public void EndGame(int winner)
         {
-            Debuger.LogWarning("end game with:{0}", winner);
+     
             mFSP.SendGameEnd(winner);
+            Debuger.LogWarning("end game with:{0}", winner);
         }
 
         [ProtoContract]

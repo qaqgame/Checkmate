@@ -297,7 +297,7 @@ namespace Checkmate.Game.Controller
         public void RemoveBuff(int id)
         {
             //移除前执行buff的OnRemove
-            Checkmate.Game.Buff.Buff buff = BuffManager.Instance.GetBuff(id);
+            Checkmate.Game.Buff.Buff buff = BuffManager.Instance.RemoveBuff(id);
             EnvVariable env = new EnvVariable();
             env.Src = buff.Src;
             env.Obj = buff.Obj;

@@ -84,13 +84,16 @@ namespace Checkmate.Game
                     Debug.Log("prefab is null");
                     return;
                 }
+                Transform instance = Instantiate(prefab);
+                instance.localPosition = HexMetrics.Perturb(position);
                 if (cell.firstAddFeature)
                 {
                     cell.firstAddFeature = false;
                 }
-                Transform instance = Instantiate(prefab);
-                instance.localPosition = HexMetrics.Perturb(position);
-                instance.localRotation = Quaternion.Euler(0f, 360f * hash.c, 0f);
+                else
+                {
+                    instance.localRotation = Quaternion.Euler(0f, 360f * hash.c, 0f);
+                }
                 instance.SetParent(container, false);
             }
         }

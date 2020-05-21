@@ -27,6 +27,7 @@ namespace Checkmate.Game.Buff
         private Dictionary<string, Buff> mLoadedBuff;//buff的加载缓存
         private Dictionary<int, Buff> mBuffInstances;//buff的实例缓存
 
+        static int cnt = 0;
         public void Init()
         {
             mLoadedBuff = new Dictionary<string, Buff>();
@@ -64,10 +65,21 @@ namespace Checkmate.Game.Buff
 
             }
             result = mLoadedBuff[file].Clone() as Buff;
-            int id = mBuffInstances.Count;
+            int id = cnt++;
             result.BuffId = id;
             mBuffInstances.Add(id, result);
             return id;
+        }
+
+        public Buff RemoveBuff(int id)
+        {
+            if (!mBuffInstances.ContainsKey(id))
+            {
+                return null;
+            }
+            Buff buff = mBuffInstances[id];
+            mBuffInstances.Remove(id);
+            return buff;
         }
         /// <summary>
         /// 执行buff，并自动设置环境
@@ -141,13 +153,21 @@ namespace Checkmate.Game.Buff
         {
             foreach(var buff in mBuffInstances.Values)
             {
+                if (buff.IsInfiniteTurn || buff.ReserveTurn > 0)
+                {
+                    EnvVariable env = new EnvVariable();
+                    env.Center = buff.Obj.Position;
+                    env.Main = buff;
+                    env.Src = buff.Src;
+                    env.Obj = buff.Obj;
+                    env.Dst = null;
+
+                    GameEnv.Instance.PushEnv(env);
+                    buff.Execute(TriggerType.OnTurn);
+                }
                 if (!buff.IsInfiniteTurn)
                 {
                     buff.ReserveTurn--;
-                }
-                if (buff.IsInfiniteTurn||buff.ReserveTurn > 0)
-                {
-                    buff.Execute(TriggerType.OnTurn);
                 }
             }
         }

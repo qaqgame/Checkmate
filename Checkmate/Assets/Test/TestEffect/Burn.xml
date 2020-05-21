@@ -1,0 +1,38 @@
+<Effect name="Burn"  icon="damage.png" coolturn="0">
+    <Description>每回合造成10点魔法伤害</Description>
+    <Data>
+        <value name="level" type="Int">3</value>
+        <value name="Damage" type="Int">10</value>
+        <value name="BuffId" type="Int">-1</value>
+    </Data>
+
+    <Content>
+        <Action trigger="Enter">
+            <Targets>
+            </Targets>
+            <Executes>
+                <Execute src="Standard.AddBuff">
+                    <Params>
+                        <Param type="Controller" value="%Dst"/>
+                        <Param type="String" value="Burned"/>
+                    </Params>
+                </Execute>
+            </Executes>
+        </Action>
+        <Action trigger="Timely">
+            <Checks>
+                <DefaultCheck src="%Src.HasRole" srcType="Bool" target="true" targetType="Bool" compare="Equal"/>
+            </Checks>
+            <Targets>
+            </Targets>
+            <Executes>
+                <Execute src="Standard.Damage">
+                    <Params>
+                        <Param type="Controller" value="%Dst"/>
+                        <Param type="Int" value="$Damage"/>
+                    </Params>
+                </Execute>
+            </Executes>
+        </Action>
+    </Content>
+</Effect>

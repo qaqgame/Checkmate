@@ -336,14 +336,20 @@ namespace Checkmate.Game
                     Debug.LogError("ERROR Mat:" + render.material.name);
                 }
                 var currentRender = render;
+                if (currentRender.material.shader.name == "Standard")
+                {
+                    var newMat = new Material(mFeatureMat);
 
-                var newMat = new Material(mFeatureMat);
 
-
-                newMat.mainTexture = originalMaterial.mainTexture;
-                newMat.SetFloat("_Glossiness", originalMaterial.GetFloat("_Glossiness"));
-                newMat.SetFloat("_Metallic", originalMaterial.GetFloat("_Metallic"));
-                currentRender.material = newMat;
+                    newMat.mainTexture = originalMaterial.mainTexture;
+                    newMat.SetFloat("_Glossiness", originalMaterial.GetFloat("_Glossiness"));
+                    newMat.SetFloat("_Metallic", originalMaterial.GetFloat("_Metallic"));
+                    currentRender.material = newMat;
+                }
+                else
+                {
+                    Debuger.Log("current shader:{0}", currentRender.material.shader.name);
+                }
 
             }
         }

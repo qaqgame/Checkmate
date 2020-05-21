@@ -166,7 +166,7 @@ namespace Checkmate.Game
         {
             get
             {
-                return false;
+                return HasFeatures&&FeatureManager.Instance.GetFeatureData(Feature).single;
             }
         }
 
