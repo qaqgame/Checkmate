@@ -98,6 +98,12 @@ public class MoveItem : MonoBehaviour
         IsMoving = true;
         for (int i = 1; i < item.Path.Count; i++)
         {
+            if(MapManager.Instance.GetCell(item.Path[i]).Role != -1)
+            {
+                // 移动结束
+                item.rc.SetState(RoleState.Idle);
+                yield break;
+            }
             MapManager.Instance.GetCell(item.rc.Position).SetVisibility(item.rc);
             MapManager.Instance.GetCell(item.rc.Position).Role = -1;
             while(GameExecuteManager.Instance.WaitForExecute)
