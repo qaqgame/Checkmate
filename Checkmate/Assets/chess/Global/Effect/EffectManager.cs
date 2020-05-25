@@ -73,6 +73,7 @@ namespace Checkmate.Game.Effect
             Effect target = origin.Clone() as Effect;
             if (target != null) 
             {
+                target.EffectId = instanceId;
                 mAllEffects.Add(instanceId, target);
                 target.Position = pos;
                 if (target.Timely)
@@ -194,14 +195,14 @@ namespace Checkmate.Game.Effect
             }
 
             //遍历所有effect，减少其life，如果为0，则移除
-            foreach(var pair in mAllEffects)
+            foreach(var e in mAllEffects.Values)
             {
-                if (pair.Value.Life != -1)
+                if (e.Life != -1)
                 {
-                    pair.Value.Life--;
-                    if (pair.Value.Life == 0)
+                    e.Life--;
+                    if (e.Life == 0)
                     {
-                        RemoveEffect(pair.Key);
+                        RemoveEffect(e.EffectId);
                     }
                 }
             }

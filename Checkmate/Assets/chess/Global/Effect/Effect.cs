@@ -19,6 +19,11 @@ namespace Checkmate.Game.Effect
 
         private Dictionary<EffectTrigger,List<SkillAction>> mActions;//所有的活动
 
+        public int EffectId
+        {
+            get;
+            set;
+        }
 
         [GetProperty]
         public int Life
