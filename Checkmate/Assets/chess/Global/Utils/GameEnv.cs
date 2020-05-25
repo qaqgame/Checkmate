@@ -203,7 +203,10 @@ namespace Checkmate.Game.Utils
                         {
                             pos = c.GetPosition();
                         }
-                        pos = null;
+                        else
+                        {
+                            pos = null;
+                        }
                         return true;
                     }
                 case "Center":

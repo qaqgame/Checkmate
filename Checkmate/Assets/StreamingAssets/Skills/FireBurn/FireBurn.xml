@@ -1,0 +1,35 @@
+<Skill name="FireBurn" cd="4" type="Active" cost="3" icon="fireburn.png">
+    <Description>FireBurn: Shoot a Fire Ray to a direction up to three cells</Description>
+    <SkillRange max="2" min="0" type="Cell|Role" team="Self|Friend|Enemy|Neutual">
+        <DefaultRange type="Range" limit="2"/>
+    </SkillRange>
+    <EffectRange>
+        <DefaultRange type="Line" limit="2"/>
+    </EffectRange>
+    <Data>
+        <value name="level" type="Int">1</value>
+        <value name="Damage" type="Int">30</value>
+    </Data>
+
+    <Content>
+        <Action trigger="Execute">
+            <Targets>
+                <DefaultSearch id="1" type="Role" limit="99" start="Src" center="Center">
+                    <DefaultRange type="Line" limit="2"/>
+                </DefaultSearch>
+                <Selects id="2" src="1">
+                    <DefaultTeamSelector team="Enemy"/>
+                </Selects>
+            </Targets>
+            <Executes>
+                <Execute src="Standard.DamagePhysically">
+                    <Params>
+                        <Param type="Controller" value="#2"/>
+                        <Param type="Int" value="$Damage"/>
+                        <Param type="Bool" value="false"/>
+                    </Params>
+                </Execute>
+            </Executes>
+        </Action>
+    </Content>
+</Skill>

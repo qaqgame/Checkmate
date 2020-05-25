@@ -21,6 +21,13 @@ namespace Checkmate.Game.Effect
 
 
         [GetProperty]
+        public int Life
+        {
+            get;
+            set;
+        }
+
+        [GetProperty]
         public bool Timely
         {
             get;
@@ -67,7 +74,12 @@ namespace Checkmate.Game.Effect
             }
         }
 
-
+        [GetProperty]
+        public Position Position
+        {
+            get;
+            set;
+        }
 
         public void Execute(EffectTrigger trigger)
         {
@@ -98,7 +110,7 @@ namespace Checkmate.Game.Effect
             temp.Name = Name;
             temp.Description = Description;
             temp.Timely = Timely;
-
+            temp.Life = Life;
             return temp;
         }
 
@@ -108,9 +120,18 @@ namespace Checkmate.Game.Effect
             Name = node.Attributes["name"].Value;
             CurTurn = MaxTurn = int.Parse(node.Attributes["coolturn"].Value);
             Timely = false;
+
+            Life = -1;
+            if (node.Attributes["life"] != null)
+            {
+                Life = int.Parse(node.Attributes["life"].Value);
+            }
+
             XmlNode description = node.SelectSingleNode("Description");
             Description = description.InnerText;
 
+           
+            
             //解析特殊字典
             XmlNode specialData = node.SelectSingleNode("SpecialData");
             if (specialData != null)

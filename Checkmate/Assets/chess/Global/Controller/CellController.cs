@@ -22,7 +22,8 @@ namespace Checkmate.Game.Controller
         private int mRole=-1;//当前的角色
 
 
-        private List<int> effects=null;//该方格存在的效果
+        public List<int> effects=null;//该方格存在的效果
+
 
         public HexCell Cell
         {
@@ -137,7 +138,7 @@ namespace Checkmate.Game.Controller
                 foreach (var track in effects)
                 {
                     ++cnt;
-                    EffectManager.Instance.ExecuteEffect(track, this, role,trigger);
+                    EffectManager.Instance.ExecuteEffect(track,trigger);
                 }
                 Debuger.Log("effect {0} execute {1} when {2}", Position.ToString(), cnt.ToString(),trigger.ToString());
             }
@@ -172,15 +173,11 @@ namespace Checkmate.Game.Controller
                     foreach (var idx in fd.effectIdx)
                     {
                         Checkmate.Game.Effect.Effect instance=null;
-                        int track = EffectManager.Instance.InstanceEffect(idx,out instance);
+                        int track = EffectManager.Instance.InstanceEffect(idx,out instance,this.Position);
 
                         if (instance != null)
                         {
                             effects.Add(track);
-                            if (instance.Timely)
-                            {
-                                EffectManager.Instance.AddTimelyEffect(track, this);
-                            }
                         }
                     }
                 }

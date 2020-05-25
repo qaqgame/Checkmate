@@ -1,6 +1,7 @@
 ﻿using Checkmate.Game;
 using Checkmate.Game.Buff;
 using Checkmate.Game.Controller;
+using Checkmate.Game.Effect;
 using Checkmate.Game.Map;
 using Checkmate.Game.Role;
 using Checkmate.Game.Utils;
@@ -99,6 +100,20 @@ namespace Checkmate.Standard
             if (id != -1&&role!=null)
             {
                 role.RemoveBuff(id);
+            }
+        }
+
+        public int AddCellEffect(Position pos,string effect)
+        {
+            int id = EffectManager.Instance.AddEffect(pos, effect);
+            return id;
+        }
+
+        public void RemoveCellEffect(int id)
+        {
+            if (id != -1)
+            {
+                EffectManager.Instance.RemoveEffect(id);
             }
         }
 
@@ -292,6 +307,42 @@ namespace Checkmate.Standard
         }
         #endregion
 
+        //长久特效
+        static Dictionary<string, GameObject> EffectInstances;//所有的特效实例
+
+        /// <summary>
+        /// 在目标位置放置effect的特效
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="effect"></param>
+        /// <returns></returns>
+        public string PlaceEffect(Position pos,string effect)
+        {
+            CellController cell = MapManager.Instance.GetCell(pos);
+            if (effect.Length > 0&&cell!=null)
+            {
+                GameObject instance = Resources.Load("Effects/" + effect) as GameObject;
+                GameObject obj = GameObject.Instantiate(instance, cell.GetGameObject().transform);
+                obj.transform.position = MapManager.Instance.GetCellWorldPosition(pos);
+                obj.transform.name = effect + "_" + Time.time.ToString();
+
+                EffectInstances.Add(obj.transform.name, obj);
+                return obj.transform.name;
+            }
+            return "";
+        }
+
+
+        public void RemovePlacedEffect(string name)
+        {
+            if (name.Length > 0&&EffectInstances.ContainsKey(name))
+            {
+                GameObject target = EffectInstances[name];
+                GameObject.Destroy(target);
+            }
+        }
+        
+        
         //移动
         #region 移动
 

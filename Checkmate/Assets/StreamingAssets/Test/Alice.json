@@ -39,7 +39,7 @@
         "canMiss":true,
         "extraData":"[{\"name\":\"test\",\"param\":{\"type\":\"Checkmate.Game.Position\",\"value\":\"\",\"param\":[{\"type\":\"int\",\"value\":\"3\",\"param\":[] },{\"type\":\"int\",\"value\":\"2\",\"param\":[] },{\"type\":\"int\",\"value\":\"1\",\"param\":[] }] } }]"
     },
-    "skills":["TestSkill"],
+    "skills":["TestSkill","Gogogo","FireBurn"],
     "attackSource":"arrow",
     "attackEffect":"SwordWind",
     "nearAttack":true,
