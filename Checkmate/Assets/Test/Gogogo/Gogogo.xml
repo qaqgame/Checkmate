@@ -1,0 +1,37 @@
+<Skill name="Gogogo" cd="1" type="Active" cost="3" icon="damage.png">
+    <Description>wu</Description>
+    <SkillRange max="2" min="0" type="Role" team="Self|Friend|Neutual">
+        <DefaultRange type="Range" limit="2"/>
+    </SkillRange>
+    <EffectRange>
+        <DefaultRange type="Single" limit="1"/>
+    </EffectRange>
+    <Data>
+        <value name="level" type="Int">3</value>
+        <value name="Value" type="Int">20</value>
+    </Data>
+
+    <Content>
+        <Action trigger="Execute">
+            <Targets>
+                <DefaultSearch id="target" type="Role" limit="1" start="Src" center="Center">
+                    <DefaultRange type="Single" limit="1"/>
+                </DefaultSearch>
+                <Selects id="realTarget" src="target">
+                    <DefaultTeamSelector team="Self|Friend"/>
+                </Selects>
+            </Targets>
+            <Executes>
+                <Execute src="Standard.Add">
+                    <Params>
+                        <Param type="Controller" value="#realTarget"/>
+                        <Param type="String" value="Attack"/>
+                        <Param type="Int" value="$Value"/>
+                        <Param type="Bool" value="false"/>
+                        <Param type="Bool" value="true"/>
+                    </Params>
+                </Execute>
+            </Executes>
+        </Action>
+    </Content>
+</Skill>

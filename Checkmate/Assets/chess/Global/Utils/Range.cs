@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QGF;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -44,32 +45,39 @@ namespace Checkmate.Game.Utils
 
         public void Parse(XmlNode root)
         {
-            //解析范围类型
-            type = (RangeType)System.Enum.Parse(typeof(RangeType), root.Attributes["type"].Value);
-            if (type != RangeType.Single)
+            try
             {
-                string l = root.Attributes["limit"].Value;
-                //解析选取的范围
-                l = root.Attributes["limit"].Value;
-                //解析range
-                if (type == RangeType.Range)
+                //解析范围类型
+                type = (RangeType)System.Enum.Parse(typeof(RangeType), root.Attributes["type"].Value);
+                if (type != RangeType.Single)
                 {
-                    limit = int.Parse(l);
-                }
-                //解析line
-                else if (type == RangeType.Line)
-                {
-                    //以center为结束点
-                    if (l == "Center")
-                    {
-                        limit = -1;
-                    }
-                    //限制最长长度
-                    else
+                    string l = root.Attributes["limit"].Value;
+                    //解析选取的范围
+                    l = root.Attributes["limit"].Value;
+                    //解析range
+                    if (type == RangeType.Range)
                     {
                         limit = int.Parse(l);
                     }
+                    //解析line
+                    else if (type == RangeType.Line)
+                    {
+                        //以center为结束点
+                        if (l == "Center")
+                        {
+                            limit = -1;
+                        }
+                        //限制最长长度
+                        else
+                        {
+                            limit = int.Parse(l);
+                        }
+                    }
                 }
+            }
+            catch(Exception e)
+            {
+                Debuger.LogError(e.StackTrace);
             }
         }
 

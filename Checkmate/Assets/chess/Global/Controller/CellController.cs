@@ -160,9 +160,14 @@ namespace Checkmate.Game.Controller
             {
                
                 FeatureData fd = FeatureManager.Instance.GetFeatureData(mCell.Feature);
-                Debuger.Log("add effect cnt:{0}", fd.effectIdx.Count.ToString());
+                if (fd == null)
+                {
+                    Debuger.LogError("error get featuredata:{0}, current Features Count:{1}", mCell.Feature,FeatureManager.Instance.Count);
+                }
+                
                 if (fd.effectIdx != null && fd.effectIdx.Count > 0)
                 {
+                    Debuger.Log("add effect cnt:{0}", fd.effectIdx.Count.ToString());
                     effects = new List<int>();
                     foreach (var idx in fd.effectIdx)
                     {

@@ -22,57 +22,29 @@ namespace Checkmate.Standard
         }
 
         //add
-        public void Add(RoleController role,string src,int value, bool temp = true, bool persistent = false)
+        public void Add(RoleController role,string src,string value,string type, bool temp = true, bool persistent = false)
         {
-            ChangeAttribute(role, "Add", src, value.ToString(), "Int",temp, persistent);
-        }
-        public void Add(RoleController role, string src, float value, bool temp = true, bool persistent = false)
-        {
-            ChangeAttribute(role, "Add", src, value.ToString(), "Float", temp, persistent);
+            ChangeAttribute(role, "Add", src, value, type,temp, persistent);
         }
         //sub
-        public void Sub(RoleController role, string src, float value, bool temp = true, bool persistent = false)
+        public void Sub(RoleController role, string src, string value,string type, bool temp = true, bool persistent = false)
         {
-            ChangeAttribute(role, "Sub", src, value.ToString(), "Float", temp, persistent);
-        }
-        public void Sub(RoleController role, string src, int value, bool temp = true, bool persistent = false)
-        {
-            ChangeAttribute(role, "Sub", src, value.ToString(), "Int", temp, persistent);
+            ChangeAttribute(role, "Sub", src, value, type, temp, persistent);
         }
         //mul
-        public void Mul (RoleController role, string src, float value, bool temp = true, bool persistent = false)
+        public void Mul (RoleController role, string src, string value,string type, bool temp = true, bool persistent = false)
         {
-            ChangeAttribute(role, "Mul", src, value.ToString(), "Float", temp, persistent);
-        }
-        public void Mul(RoleController role, string src, int value, bool temp = true, bool persistent = false)
-        {
-            ChangeAttribute(role, "Mul", src, value.ToString(), "Int", temp, persistent);
+            ChangeAttribute(role, "Mul", src, value, type, temp, persistent);
         }
         //div
-        public void Div(RoleController role, string src, int value, bool temp = true, bool persistent = false)
+        public void Div(RoleController role, string src, string value,string type, bool temp = true, bool persistent = false)
         {
-            ChangeAttribute(role, "Div", src, value.ToString(), "Int", temp, persistent);
-        }
-        public void Div(RoleController role, string src, float value, bool temp = true, bool persistent = false)
-        {
-            ChangeAttribute(role, "Div", src, value.ToString(), "Float", temp, persistent);
+            ChangeAttribute(role, "Div", src, value, type, temp, persistent);
         }
         //set
-        public void Set(RoleController role, string src, float value, bool temp = true, bool persistent = false)
+        public void Set(RoleController role, string src, string value,string type, bool temp = true, bool persistent = false)
         {
-            ChangeAttribute(role, "Set", src, value.ToString(), "Float", temp, persistent);
-        }
-        public void Set(RoleController role, string src, int value, bool temp = true, bool persistent = false)
-        {
-            ChangeAttribute(role, "Set", src, value.ToString(), "Int", temp, persistent);
-        }
-        public void Set(RoleController role, string src, bool value, bool temp = true, bool persistent = false)
-        {
-            ChangeAttribute(role, "Set", src, value.ToString(), "Bool", temp, persistent);
-        }
-        public void Set(RoleController role, string src, string value, bool temp = true, bool persistent = false)
-        {
-            ChangeAttribute(role, "Set", src, value.ToString(), "String", temp, persistent);
+            ChangeAttribute(role, "Set", src, value, type, temp, persistent);
         }
 
 

@@ -95,7 +95,7 @@ namespace Checkmate.Game.Skill
             //执行
             mSkills[id].OnExecute();
             //添加结束时操作（重置该角色状态)
-            GameExecuteManager.Instance.Add(() => { src.SetState(RoleState.Idle); });
+            GameExecuteManager.Instance.Add(() => { src.SetState(RoleState.Idle);mSkills[id].Current.Clear(); });
             //清除环境
             GameEnv.Instance.PopEnv();
         }

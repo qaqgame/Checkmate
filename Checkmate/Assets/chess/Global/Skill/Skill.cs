@@ -3,6 +3,7 @@ using Checkmate.Game.Map;
 using Checkmate.Game.Player;
 using Checkmate.Game.Role;
 using Checkmate.Game.Utils;
+using QGF;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -269,56 +270,62 @@ namespace Checkmate.Game.Skill
 
         public void Parse(XmlNode node)
         {
-            Name = node.Attributes["name"].Value;
-            CoolTurns =MaxCool= int.Parse(node.Attributes["cd"].Value);
-            Cost = int.Parse(node.Attributes["cost"].Value);
-            Icon = node.Attributes["icon"].Value;
-
-
-            OnParseRoot(node);
-
-            XmlNode description = node.SelectSingleNode("Description");
-            Description = description.InnerText;
-
-            //解析鼠标范围
-            XmlNode skillRange = node.SelectSingleNode("SkillRange");
-            mMouseRange = new SkillRange(skillRange);
-
-            //解析影响范围
-            XmlNode effectRange = node.SelectSingleNode("EffectRange");
-            mEffectRanges = new List<IRange>();
-            XmlNodeList list = effectRange.ChildNodes;
-            foreach(XmlNode l in list)
+            try
             {
-                IRange range = RangeParser.ParseRange(l);
-                mEffectRanges.Add(range);
-            }
+                Name = node.Attributes["name"].Value;
+                CoolTurns = MaxCool = int.Parse(node.Attributes["cd"].Value);
+                Cost = int.Parse(node.Attributes["cost"].Value);
+                Icon = node.Attributes["icon"].Value;
 
-            //解析特殊字典
-            XmlNode specialData = node.SelectSingleNode("SpecialData");
-            if (specialData != null)
-            {
-                SetExtra(ObjectParser.GetExtraDataContent(Name,specialData.Attributes["file"].Value));
-            }
 
-            //解析字典
-            XmlNode dataNode = node.SelectSingleNode("Data");
-            if (dataNode.HasChildNodes)
-            {
-                list = dataNode.ChildNodes;
-                string tempKey;
+                OnParseRoot(node);
+
+                XmlNode description = node.SelectSingleNode("Description");
+                Description = description.InnerText;
+
+                //解析鼠标范围
+                XmlNode skillRange = node.SelectSingleNode("SkillRange");
+                mMouseRange = new SkillRange(skillRange);
+
+                //解析影响范围
+                XmlNode effectRange = node.SelectSingleNode("EffectRange");
+                mEffectRanges = new List<IRange>();
+                XmlNodeList list = effectRange.ChildNodes;
                 foreach (XmlNode l in list)
                 {
-                    object value = ObjectParser.ParseObject(l, out tempKey);
-                    mExtraData.Add(tempKey, value);
+                    IRange range = RangeParser.ParseRange(l);
+                    mEffectRanges.Add(range);
                 }
+
+                //解析特殊字典
+                XmlNode specialData = node.SelectSingleNode("SpecialData");
+                if (specialData != null)
+                {
+                    SetExtra(ObjectParser.GetExtraDataContent(Name, specialData.Attributes["file"].Value));
+                }
+
+                //解析字典
+                XmlNode dataNode = node.SelectSingleNode("Data");
+                if (dataNode.HasChildNodes)
+                {
+                    list = dataNode.ChildNodes;
+                    string tempKey;
+                    foreach (XmlNode l in list)
+                    {
+                        object value = ObjectParser.ParseObject(l, out tempKey);
+                        mExtraData.Add(tempKey, value);
+                    }
+                }
+
+
+                //解析内容
+                XmlNode content = node.SelectSingleNode("Content");
+                OnParseContent(content);
             }
-
-
-            //解析内容
-            XmlNode content = node.SelectSingleNode("Content");
-            OnParseContent(content);
-
+            catch(Exception e)
+            {
+                Debuger.LogError(e.StackTrace);
+            }
         }
         protected virtual void OnParseRoot(XmlNode node) { }
         //解析函数
@@ -468,14 +475,22 @@ namespace Checkmate.Game.Skill
             System.Type tp = System.Type.GetType(RangeNameSpace + root.Name);
             if (tp == null)
             {
-                Debug.LogError("error get class:" + RangeNameSpace + root.Name);
+                Debuger.LogError("error get class:" + RangeNameSpace + root.Name);
             }
-            ConstructorInfo constructor = tp.GetConstructor(System.Type.EmptyTypes);
+            try
+            {
+                ConstructorInfo constructor = tp.GetConstructor(System.Type.EmptyTypes);
 
-            BaseSkill skill = (BaseSkill)constructor.Invoke(null);
-            skill.Parse(root);
-
-            return skill;
+                BaseSkill skill = (BaseSkill)constructor.Invoke(null);
+                skill.Parse(root);
+                return skill;
+            }
+            catch(Exception e)
+            {
+                Debuger.LogError(e.StackTrace);
+                return null;
+            }
+            
         }
     }
 }

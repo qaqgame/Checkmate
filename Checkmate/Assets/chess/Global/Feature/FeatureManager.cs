@@ -25,6 +25,11 @@ namespace Checkmate.Game.Feature
             return true;
         }
 
+        public int Count
+        {
+            get { return mUsedFeatures.Count; }
+        }
+
         /// <summary>
         /// 获取feature的数据
         /// </summary>

@@ -667,6 +667,10 @@ namespace Checkmate.Game.Controller
             mPanel.SetHP(Temp.Hp);
             mPanel.UpdateBuff(Buffs);
             OnBuffUpdate();
+            if (onRoleChanged != null)
+            {
+                onRoleChanged.Invoke(this);
+            }
         }
         //=====================
 
