@@ -22,6 +22,8 @@ namespace Checkmate.Global.Data
         Leave,//离开触发
         Timely,//可用则触发
         Active,//主动触发
+        OnAttached,
+        OnRemoved
     }
 
     //feature数据

@@ -102,6 +102,7 @@ namespace Checkmate.Game.Effect
                 if (result != null)
                 {
                     cell.effects.Add(id);
+                    ExecuteEffect(id, EffectTrigger.OnAttached);
                     return id;
                 }
             }
@@ -114,6 +115,7 @@ namespace Checkmate.Game.Effect
             {
                 return;
             }
+            ExecuteEffect(id, EffectTrigger.OnRemoved);
             Effect temp = mAllEffects[id];
             if (temp.Timely)
             {
@@ -125,6 +127,7 @@ namespace Checkmate.Game.Effect
                 cell.effects.Remove(id);
             }
             mAllEffects.Remove(id);
+            
         }
 
 
@@ -140,7 +143,7 @@ namespace Checkmate.Game.Effect
             mTimelyEffect.Remove(id);
         }
 
-        public void ExecuteEffect(int id,EffectTrigger trigger=EffectTrigger.Enter)
+        public void ExecuteEffect(int id,EffectTrigger trigger=EffectTrigger.Enter,RoleController role=null)
         {
             Effect target = mAllEffects[id];
             //可用则执行
@@ -151,8 +154,15 @@ namespace Checkmate.Game.Effect
                 env.Src = env.Obj = cell;
                 env.Center = target.Position;
 
-                RoleController role = cell != null && cell.HasRole ? RoleManager.Instance.GetRole(cell.Role) : null;
-                env.Dst = role;
+                if (role == null)
+                {
+                    RoleController temp = cell != null && cell.HasRole ? RoleManager.Instance.GetRole(cell.Role) : null;
+                    env.Dst = temp;
+                }
+                else
+                {
+                    env.Dst = role;
+                }
 
                 env.Main = target;
                 GameEnv.Instance.PushEnv(env);
@@ -187,7 +197,7 @@ namespace Checkmate.Game.Effect
                     pair.Value.Life--;
                     if (pair.Value.Life == 0)
                     {
-                        mAllEffects.Remove(pair.Key);
+                        RemoveEffect(pair.Key);
                     }
                 }
             }

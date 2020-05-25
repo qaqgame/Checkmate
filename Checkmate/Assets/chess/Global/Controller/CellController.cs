@@ -39,7 +39,7 @@ namespace Checkmate.Game.Controller
                 {
                     RoleController role = RoleManager.Instance.GetRole(mRole);
                     
-                    ExecuteEffect(EffectTrigger.Leave, role);
+                    ExecuteEffect(EffectTrigger.Leave);
 
                     //移除effect的属性加成
                     if (effects != null && effects.Count > 0)
@@ -57,7 +57,7 @@ namespace Checkmate.Game.Controller
                 {
                     RoleController role = RoleManager.Instance.GetRole(value);
                     
-                    ExecuteEffect(EffectTrigger.Enter, role);
+                    ExecuteEffect(EffectTrigger.Enter,role);
                     //如果方格可见，则设置角色可见
                     if (Visible)
                     {
@@ -129,7 +129,7 @@ namespace Checkmate.Game.Controller
         }
 
 
-        private void ExecuteEffect(EffectTrigger trigger,RoleController role)
+        private void ExecuteEffect(EffectTrigger trigger,RoleController role=null)
         {
             //遍历所有，如果满足触发
             if (effects != null && effects.Count > 0)
@@ -138,7 +138,7 @@ namespace Checkmate.Game.Controller
                 foreach (var track in effects)
                 {
                     ++cnt;
-                    EffectManager.Instance.ExecuteEffect(track,trigger);
+                    EffectManager.Instance.ExecuteEffect(track,trigger,role);
                 }
                 Debuger.Log("effect {0} execute {1} when {2}", Position.ToString(), cnt.ToString(),trigger.ToString());
             }
@@ -178,6 +178,7 @@ namespace Checkmate.Game.Controller
                         if (instance != null)
                         {
                             effects.Add(track);
+                            
                         }
                     }
                 }

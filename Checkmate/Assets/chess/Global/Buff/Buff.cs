@@ -13,7 +13,7 @@ namespace Checkmate.Game.Buff
 {
     public enum TriggerType
     {
-        OnTurn,
+        OnTurn,//
         OnAttack,//
         OnBeAttacked,//
         OnMove,
@@ -25,8 +25,8 @@ namespace Checkmate.Game.Buff
         OnBeBuffed,//
         OnDamage,//
         OnBeDamaged,//
-        OnKill,
-        OnBekilled,
+        OnKill,//
+        OnBekilled,//
         OnStatusChanged,
         
 
