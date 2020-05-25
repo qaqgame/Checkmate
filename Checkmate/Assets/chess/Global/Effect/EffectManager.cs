@@ -101,6 +101,10 @@ namespace Checkmate.Game.Effect
                 int id = InstanceEffect(idx, out result,pos);
                 if (result != null)
                 {
+                    if (cell.effects == null)
+                    {
+                        cell.effects = new List<int>();
+                    }
                     cell.effects.Add(id);
                     ExecuteEffect(id, EffectTrigger.OnAttached);
                     return id;
