@@ -109,6 +109,11 @@ namespace Checkmate.Standard
             return id;
         }
 
+        public void AddCellEffects(CellController cell,string effect)
+        {
+            EffectManager.Instance.AddEffect(cell.Position, effect);
+        }
+
         public void RemoveCellEffect(int id)
         {
             if (id != -1)
