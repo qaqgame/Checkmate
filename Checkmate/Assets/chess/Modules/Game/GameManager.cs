@@ -327,7 +327,8 @@ namespace Checkmate.Modules.Game
                 BuffManager.Instance.NextTurn();
                 //更新地面效果
                 EffectManager.Instance.NextTurn();
-
+                //更新技能
+                SkillManager.Instance.NextTurn();
             }
             StartCoroutine(WaitForBeginControl());
         }

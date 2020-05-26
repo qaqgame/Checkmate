@@ -36,6 +36,17 @@ namespace Checkmate.Game.Skill
             mSkills.Clear();
         }
 
+        public void NextTurn()
+        {
+            foreach (var s in mSkills.Values)
+            {
+                if (s.CoolTurns != -1 && s.CoolTurns < s.MaxCool)
+                {
+                    s.CoolTurns++;
+                }
+            }
+        }
+
         public int GetSkill(string name)
         {
             XmlDocument document = new XmlDocument();

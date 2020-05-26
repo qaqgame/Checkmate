@@ -79,5 +79,13 @@ PrefabInstance:
       propertyPath: maxVelocityMagnitude
       value: 15
       objectReference: {fileID: 0}
+    - target: {fileID: 19872856, guid: d8a1b0eece7e69b4da49b0e02e53cad5, type: 3}
+      propertyPath: InitialModule.startSizeY.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 19872856, guid: d8a1b0eece7e69b4da49b0e02e53cad5, type: 3}
+      propertyPath: InitialModule.startSizeZ.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d8a1b0eece7e69b4da49b0e02e53cad5, type: 3}
