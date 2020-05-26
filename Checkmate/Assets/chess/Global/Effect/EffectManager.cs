@@ -102,11 +102,11 @@ namespace Checkmate.Game.Effect
                 int id = InstanceEffect(idx, out result,pos);
                 if (result != null)
                 {
-                    if (cell.effects == null)
+                    if (cell.mExtraEffects == null)
                     {
-                        cell.effects = new List<int>();
+                        cell.mExtraEffects = new List<int>();
                     }
-                    cell.effects.Add(id);
+                    cell.mExtraEffects.Add(id);
                     ExecuteEffect(id, EffectTrigger.OnAttached);
                     return id;
                 }
@@ -129,10 +129,29 @@ namespace Checkmate.Game.Effect
             CellController cell = MapManager.Instance.GetCell(temp.Position);
             if (cell != null)
             {
-                cell.effects.Remove(id);
+                if (cell.effects!=null&&cell.effects.Contains(id))
+                {
+                    cell.effects.Remove(id);
+                }
+                else if (cell.mExtraEffects!=null&&cell.mExtraEffects.Contains(id))
+                {
+                    cell.mExtraEffects.Remove(id);
+                }
             }
             mAllEffects.Remove(id);
-            
+        }
+
+        public void RemoveAllEffects(Position pos)
+        {
+            CellController cell = MapManager.Instance.GetCell(pos);
+            if (cell.mExtraEffects != null && cell.mExtraEffects.Count > 0)
+            {
+                for(int i = cell.mExtraEffects.Count - 1; i >= 0; --i)
+                {
+                    int id = cell.mExtraEffects[i];
+                    RemoveEffect(id);
+                }
+            }
         }
 
 

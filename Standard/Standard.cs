@@ -122,6 +122,10 @@ namespace Checkmate.Standard
             }
         }
 
+        public void RemoveCellEffects(CellController cell)
+        {
+            EffectManager.Instance.RemoveAllEffects(cell.Position);
+        }
 
 
         public void DamagePhysically(RoleController target,int dmg,bool miss)
@@ -313,7 +317,7 @@ namespace Checkmate.Standard
         #endregion
 
         //长久特效
-        static Dictionary<string, GameObject> EffectInstances;//所有的特效实例
+        static Dictionary<string, GameObject> EffectInstances=new Dictionary<string, GameObject>();//所有的特效实例
 
         /// <summary>
         /// 在目标位置放置effect的特效

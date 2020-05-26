@@ -14,7 +14,7 @@ namespace Checkmate.Game
     public class HexMapEditor : MonoBehaviour
     {
         public HexGrid hexGrid;
-        public Dropdown features, terrains;
+        public Dropdown features, terrains,roles;
         private int activeTerrain;//当前颜色
         private int activeElevation, activeWaterLevel, activeFeatureLevel;//当前高度,水平面高度
         private int brushSize = 0;
@@ -22,12 +22,26 @@ namespace Checkmate.Game
 
         bool applyTerrain, applyElevation = false, applyWaterLevel = false, applyFeature = false;//是否使用颜色,高度，水面
 
+
+        private List<string> mAllRoles = new List<string>();
+        private string mActiveRole;//当前选择角色
+        private int mActiveTeam;//当前选择队伍
+
+        class RoleTrack
+        {
+            public string name;
+            public int team;
+            public Position position;
+        }
+
+        private List<RoleTrack> mSelRoles = new List<RoleTrack>();
+
         enum OptionalToggle
         {
             Ignore, Yes, No
         }
 
-        OptionalToggle riverMode, roadMode;//河流编辑模式
+        OptionalToggle riverMode, roadMode,roleMode;//河流编辑模式
 
         bool isDrag;//当前是否在拖动
         HexDirection dragDirection;//拖动方向
@@ -36,9 +50,19 @@ namespace Checkmate.Game
         private string rootPath;//
         private void Awake()
         {
+            string rolePath;
 #if UNITY_EDITOR
             rootPath = Application.dataPath + "/Test/";
+            rolePath=Application.dataPath+"/Test/Roles";
 #endif
+            rolePath = Application.persistentDataPath + "/Roles";
+            DirectoryInfo folder = new DirectoryInfo(rolePath);
+
+            foreach(var fileInfo in folder.GetFiles())
+            {
+                string roleName = fileInfo.Name;
+                mAllRoles.Add(roleName);
+            }
         }
 
         // Start is called before the first frame update
@@ -92,6 +116,17 @@ namespace Checkmate.Game
         {
             activeTerrain = hexGrid.GetTerrainId(terrains.options[idx].text);
         }
+
+        public void SelectRole(int idx)
+        {
+            mActiveRole = mAllRoles[idx];
+        }
+
+        public void SelectTeam(int team)
+        {
+            mActiveTeam = team;
+        }
+
         public void SetBrushSize(float size)
         {
             brushSize = (int)size;
@@ -219,6 +254,11 @@ namespace Checkmate.Game
             roadMode = (OptionalToggle)mode;
         }
 
+        public void SetRoleMode(int mode)
+        {
+            roleMode = (OptionalToggle)mode;
+        }
+
         public void ShowUI(bool v)
         {
             hexGrid.ShowUI(v);
@@ -231,6 +271,9 @@ namespace Checkmate.Game
 
             terrains.AddOptions(hexGrid.GetTerrainNames());
             terrains.value = 0;
+
+            roles.AddOptions(mAllRoles);
+            roles.value = 0;
         }
 
         private void OnFeatureChanged(int item)
@@ -238,6 +281,8 @@ namespace Checkmate.Game
             Debug.Log("selected item:" + features.options[item].text);
             activeFeature = hexGrid.GetFeatureId(features.options[item].text);
         }
+
+        
 
         //保存文件
         public void Save()

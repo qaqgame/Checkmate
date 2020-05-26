@@ -24,7 +24,7 @@ namespace Checkmate.Game.Controller
 
         public List<int> effects=null;//该方格存在的效果
 
-
+        public List<int> mExtraEffects = null;//额外效果
         public HexCell Cell
         {
             get { return mCell; }
