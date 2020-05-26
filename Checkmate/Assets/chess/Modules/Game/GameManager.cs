@@ -160,6 +160,7 @@ namespace Checkmate.Modules.Game
                     AddRole(r);
                 }
             }
+            mInitRoles = null;
             //RoleData alice = JsonConvert.DeserializeObject<RoleData>(FileUtils.ReadString(mTestRolePath));
             //AddRole(alice);
             //alice.id = 1;
@@ -397,8 +398,10 @@ namespace Checkmate.Modules.Game
 
         private void OnDestroy()
         {
+            Debuger.LogWarning("destroy game called");
             initFinished = false;
             wait = true;
+            GamingPageManager.Instance.Clear();
             PlayerManager.Instance.Clear();
             GameNetManager.Instance.Clear();
             SkillManager.Instance.Clear();

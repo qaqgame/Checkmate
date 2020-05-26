@@ -1,11 +1,16 @@
 {
     "Rule":"KillMode",
-    "MaxTeam":4,
+    "MaxTeam":2,
     "Roles":[
         {
             "name":"Alice",
             "team":0,
             "position":"(2,-4,2)"
+        },
+        {
+            "name":"Alice",
+            "team":1,
+            "position":"(3,-6,3)"
         }
     ]
 }

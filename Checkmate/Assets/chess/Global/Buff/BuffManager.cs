@@ -36,6 +36,7 @@ namespace Checkmate.Game.Buff
 
         public void Clear()
         {
+            cnt = 0;
             mLoadedBuff.Clear();
             mBuffInstances.Clear();
         }

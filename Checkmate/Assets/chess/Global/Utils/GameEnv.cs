@@ -403,6 +403,7 @@ namespace Checkmate.Game.Utils
 
         public void Clear()
         {
+            Damage = 0;
             mEnvStacks.Clear();
             mExeEnvStacks.Clear();
         }

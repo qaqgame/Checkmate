@@ -24,7 +24,7 @@ namespace Checkmate.Game.Skill
         private Dictionary<int, BaseSkill> mSkills;//所有技能
         public string RootPath;//根路径
 
-
+        static int cnt = 0;
         public void Init(string path)
         {
             mSkills = new Dictionary<int, BaseSkill>();
@@ -33,6 +33,7 @@ namespace Checkmate.Game.Skill
 
         public void Clear()
         {
+            cnt = 0;
             mSkills.Clear();
         }
 
@@ -61,7 +62,7 @@ namespace Checkmate.Game.Skill
             {
                 IconManager.Instance.Load(skill.Icon);
             }
-            int id = mSkills.Count;
+            int id =cnt++;
             mSkills.Add(id, skill);
             return id;
         }

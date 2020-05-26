@@ -130,6 +130,7 @@ namespace Checkmate.Game.Player
 
         public void Clear()
         {
+            PID = 0;
             IsWaiting = true;
             mOperating = false;
             mFriends.Clear();

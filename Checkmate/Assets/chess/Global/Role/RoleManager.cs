@@ -27,8 +27,6 @@ namespace Checkmate.Game.Role
 
         private Dictionary<uint, List<int>> mPlayerRoles;//pid（玩家）所拥有的角色(不分是否激活）
 
-
-        
         public void Init()
         {
             mActiveRoles = new List<int>();

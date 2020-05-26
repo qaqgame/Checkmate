@@ -140,6 +140,7 @@ namespace Checkmate.Module
         {
             string content = File.ReadAllText(mapPath + map + "_config.json");
             MapConfig config = JsonConvert.DeserializeObject<MapConfig>(content);
+            Debuger.Log("get roles:{0}", config.Roles.Count);
             OnlineManager.Net.Invoke("*ZoneServer.ZoneServer.CreateRoom", name, map,config);
         }
 

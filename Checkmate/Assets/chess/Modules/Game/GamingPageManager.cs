@@ -28,6 +28,18 @@ namespace Checkmate.Modules.Game
             mEndPage= FGUIManager.Instance.LoadToMemory<EndPage>("GameEndPage", "GamingPage");
         }
 
+        public void Clear()
+        {
+            HideRolePanel();
+            OnNextTurn(false);
+            onRoundEndClicked = null;
+            if (mPage.IsOpened)
+            {
+                mPage.Close();
+            }
+            mPage.onRoundEnd = null;
+        }
+
         public void OnRoundEndClicked()
         {
             if (onRoundEndClicked != null)
