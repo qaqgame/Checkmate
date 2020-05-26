@@ -181,6 +181,9 @@ namespace Checkmate.Game.Controller
                             
                         }
                     }
+                } else
+                {
+                    Debuger.LogError("Not Found Effect: {0}, {1}", fd.name, mCell.Feature);
                 }
             }
         }

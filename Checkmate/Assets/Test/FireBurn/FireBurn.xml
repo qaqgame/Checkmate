@@ -9,12 +9,16 @@
     <Data>
         <value name="level" type="Int">1</value>
         <value name="Damage" type="Int">30</value>
+        <value name="EffectFilePath" type="String">FireBurnEffect</value>
     </Data>
 
     <Content>
         <Action trigger="Execute">
             <Targets>
                 <DefaultSearch id="1" type="Role" limit="99" start="Src" center="Center">
+                    <DefaultRange type="Line" limit="2"/>
+                </DefaultSearch>
+                <DefaultSearch id="cellList" type="Cell" limit="4" start="Src" center="Center">
                     <DefaultRange type="Line" limit="2"/>
                 </DefaultSearch>
                 <Selects id="2" src="1">
@@ -27,6 +31,12 @@
                         <Param type="Controller" value="#2"/>
                         <Param type="Int" value="$Damage"/>
                         <Param type="Bool" value="false"/>
+                    </Params>
+                </Execute>
+                <Execute src="Standard.AddCellEffects">
+                    <Params>
+                        <Param type="ControllerList" value="#cellList"/>
+                        <Param type="String" value="$EffectFilePath"/>
                     </Params>
                 </Execute>
             </Executes>

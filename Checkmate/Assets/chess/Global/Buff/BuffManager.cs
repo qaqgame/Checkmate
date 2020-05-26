@@ -151,8 +151,9 @@ namespace Checkmate.Game.Buff
         /// </summary>
         public void NextTurn()
         {
-            foreach(var buff in mBuffInstances.Values)
+            for(int i = mBuffInstances.Values.Count-1; i>=0; i--)
             {
+                Buff buff = mBuffInstances.Values.ElementAt(i);
                 if (buff.IsInfiniteTurn || buff.ReserveTurn > 0)
                 {
                     EnvVariable env = new EnvVariable();

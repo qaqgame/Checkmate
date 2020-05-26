@@ -214,8 +214,9 @@ namespace Checkmate.Game.Effect
             }
 
             //遍历所有effect，减少其life，如果为0，则移除
-            foreach(var e in mAllEffects.Values)
+            for(int i = mAllEffects.Values.Count-1; i >=0 ;i--)
             {
+                Effect e = mAllEffects.Values.ElementAt(i);
                 if (e.Life != -1)
                 {
                     e.Life--;

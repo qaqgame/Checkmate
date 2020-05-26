@@ -217,15 +217,15 @@ namespace Checkmate.Game.Skill
             }
             set
             {
-                if (_coolTurn == 0 && value > 0)
+                if (_coolTurn < MaxCool && value == MaxCool)
                 {
                     _coolTurn = value;
-                    OnCoolBegin(value);
+                    OnCoolOver();
                 }
-                if (_coolTurn > 0 && value <= 0)
+                if (_coolTurn == MaxCool && value == 0)
                 {
                     _coolTurn = 0;
-                    OnCoolOver();
+                    OnCoolBegin(MaxCool);
 
                 }
                 else
