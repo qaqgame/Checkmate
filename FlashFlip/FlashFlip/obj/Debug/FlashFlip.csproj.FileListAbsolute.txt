@@ -1,0 +1,2 @@
+D:\UnityProject\Checkmate\FlashFlip\FlashFlip\obj\Debug\FlashFlip.csprojAssemblyReference.cache
+D:\UnityProject\Checkmate\FlashFlip\FlashFlip\obj\Debug\FlashFlip.csproj.CoreCompileInputs.cache

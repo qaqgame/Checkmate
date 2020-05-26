@@ -1,0 +1,30 @@
+<Skill name="SafePlace" cd="4" type="Active" cost="2" icon="safeplace.png">
+    <Description>清除一个Cell上的地面效果</Description>
+    <SkillRange max="2" min="0" type="Cell|Role" team="Self|Friend|Enemy|Neutual">
+        <DefaultRange type="Range" limit="2"/>
+    </SkillRange>
+    <EffectRange>
+        <DefaultRange type="Single" limit="2"/>
+    </EffectRange>
+    <Data>
+        <value name="level" type="Int">1</value>
+    </Data>
+
+    <Content>
+        <Action trigger="Execute">
+            <Targets>
+                <DefaultSearch id="SingleCell" type="Cell" limit="1" start="Center" center="Center">
+                    <DefaultRange type="Single" limit="2"/>
+                </DefaultSearch>
+            </Targets>
+
+            <Executes>
+                <Execute src="Standard.RemoveCellEffects">
+                    <Params>
+                        <Param type="Controller" value="#SingleCell"/>
+                    </Params>
+                </Execute>
+            </Executes>
+        </Action>
+    </Content>
+</Skill>

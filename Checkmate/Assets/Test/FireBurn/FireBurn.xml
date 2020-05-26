@@ -1,5 +1,5 @@
-<Skill name="FireBurn" cd="4" type="Active" cost="3" icon="fireburn.png">
-    <Description>FireBurn: Shoot a Fire Ray to a direction up to three cells</Description>
+<Skill name="FireBurn" cd="6" type="Active" cost="3" icon="fireburn.png">
+    <Description>选择范围为2的Cell内的一条路径，对路径上的敌人造成伤害，并留下持续3回合的地面灼烧效果。</Description>
     <SkillRange max="2" min="0" type="Cell|Role" team="Self|Friend|Enemy|Neutual">
         <DefaultRange type="Range" limit="2"/>
     </SkillRange>
