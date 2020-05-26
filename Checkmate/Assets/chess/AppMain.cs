@@ -135,15 +135,15 @@ namespace Assets.Chess
 
         //==========================================
         //事件处理函数
-        private void OnGameStart(PlayerTeamData team,uint pid, FSPParam param)
+        private void OnGameStart(GameParam gp, FSPParam param)
         {
             Debug.Log("start load game");
 
             //加载场景
             FGUIManager.Instance.LoadSceneWithClearAll("Game", OnGameSceneLoadStart, () =>
             {
-                LoadGameSource();
-                GameManager.Instance.InitPlayer(team, pid, param);
+                LoadGameSource(gp.map);
+                GameManager.Instance.InitPlayer(gp.teams, gp.pid,gp.roles,param);
             }, OnGameSceneLoading);
             ////加载场景
             //FGUIManager.Instance.LoadScene<DefaultLoading>("Game", () =>
@@ -152,10 +152,15 @@ namespace Assets.Chess
             //}, "Login", "AppLoadingPanel");
         }
 
-        private void LoadGameSource()
+        private void LoadGameSource(string map)
         {
             AppLoading.Update("加载资源中", 1);
-            GameManager.Instance.Init(OnGameSceneLoadFinished);
+#if UNITY_EDITOR
+            string mapPath = Application.dataPath + "/Test/" + map + ".map";
+#else
+            string mapPath = Application.streamingAssetsPath + "/Maps/" + map + ".map";
+#endif
+            GameManager.Instance.Init(OnGameSceneLoadFinished,mapPath);
         }
 
         private void OnGameSceneLoadFinished()

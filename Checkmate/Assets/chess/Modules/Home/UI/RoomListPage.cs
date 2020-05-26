@@ -36,6 +36,8 @@ namespace Checkmate.Module.UI
             mManager.onJoin.AddListener(OnJoinRoom);
             mManager.onExit.AddListener(OnExitRoom);
             mManager.UpdateRoomList();
+
+            mManager.CreateRoom("testRoom", "testMap");
         }
 
         protected override void OnPanelDestroy()

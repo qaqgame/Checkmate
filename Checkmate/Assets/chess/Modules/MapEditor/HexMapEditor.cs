@@ -8,17 +8,21 @@ using Checkmate.Global.Data;
 using QGF.Codec;
 using QGF;
 using QGF.Utils;
+using Newtonsoft.Json;
 
 namespace Checkmate.Game
 {
     public class HexMapEditor : MonoBehaviour
     {
         public HexGrid hexGrid;
-        public Dropdown features, terrains,roles;
+        public Dropdown features, terrains,roles,teams,rules;
         private int activeTerrain;//当前颜色
         private int activeElevation, activeWaterLevel, activeFeatureLevel;//当前高度,水平面高度
         private int brushSize = 0;
         private int activeFeature = -1;
+        private int maxTeam=1;//最大队伍数
+        private string mActiveRule;//当前规则
+        private string mActiveName;//当前地图名
 
         bool applyTerrain, applyElevation = false, applyWaterLevel = false, applyFeature = false;//是否使用颜色,高度，水面
 
@@ -27,12 +31,8 @@ namespace Checkmate.Game
         private string mActiveRole;//当前选择角色
         private int mActiveTeam;//当前选择队伍
 
-        class RoleTrack
-        {
-            public string name;
-            public int team;
-            public Position position;
-        }
+        private List<string> mAllRules = new List<string> { "KillMode" };//所有规则
+
 
         private List<RoleTrack> mSelRoles = new List<RoleTrack>();
 
@@ -54,14 +54,20 @@ namespace Checkmate.Game
 #if UNITY_EDITOR
             rootPath = Application.dataPath + "/Test/";
             rolePath=Application.dataPath+"/Test/Roles";
+#else
+            rootPath = Application.streamingAssetsPath + "/Maps/";
+            rolePath = Application.streamingAssetsPath + "/Roles";
 #endif
-            rolePath = Application.persistentDataPath + "/Roles";
             DirectoryInfo folder = new DirectoryInfo(rolePath);
 
             foreach(var fileInfo in folder.GetFiles())
             {
-                string roleName = fileInfo.Name;
-                mAllRoles.Add(roleName);
+                Debug.Log("extension:" + fileInfo.Extension);
+                if (fileInfo.Extension == ".json")
+                {
+                    string roleName = fileInfo.Name.Remove(fileInfo.Name.LastIndexOf('.'));
+                    mAllRoles.Add(roleName);
+                }
             }
         }
 
@@ -120,6 +126,7 @@ namespace Checkmate.Game
         public void SelectRole(int idx)
         {
             mActiveRole = mAllRoles[idx];
+            Debug.Log("select role:" + mActiveRole);
         }
 
         public void SelectTeam(int team)
@@ -134,6 +141,25 @@ namespace Checkmate.Game
         public void SetElevation(float e)
         {
             activeElevation = (int)e;
+        }
+
+        public void SelectRule(int idx)
+        {
+            mActiveRule = mAllRules[idx];
+        }
+
+        public void OnMaxTeamChanged(string max)
+        {
+            Debug.Log("team changed:" + max);
+            int m = int.Parse(max);
+            maxTeam = m;
+            UpdateTeams();
+        }
+
+        public void SetMapName(string name)
+        {
+            mActiveName = name;
+            Debug.Log("set map name:" + name);
         }
 
         private void EditCell(HexCell cell)
@@ -165,6 +191,14 @@ namespace Checkmate.Game
                 if (roadMode == OptionalToggle.No)
                 {
                     cell.RemoveRoads();
+                }
+                if (roleMode == OptionalToggle.Yes)
+                {
+                    SetRole(cell);
+                }
+                else if (roleMode == OptionalToggle.No)
+                {
+                    RemoveRole(cell);
                 }
                 if (isDrag)
                 {
@@ -216,6 +250,42 @@ namespace Checkmate.Game
                 }
             }
             isDrag = false;
+        }
+        //添加角色
+        private void SetRole(HexCell cell)
+        {
+            Position pos = cell.coordinates.ToPosition();
+            int idx = mSelRoles.FindIndex(temp => temp.position.Equals(pos.ToString()));
+            //如果此处已有角色
+            if (idx != -1)
+            {
+                //移除
+                mSelRoles.RemoveAt(idx);
+            }
+
+            RoleTrack track = new RoleTrack();
+            track.name = mActiveRole;
+            track.team = mActiveTeam;
+            track.position = pos.ToString();
+            mSelRoles.Add(track);
+
+            cell.EnableLable(track.team + ":" + track.name);
+            Debug.Log("add role:" + track.name + " at " + track.position);
+        }
+        //移除角色
+        private void RemoveRole(HexCell cell)
+        {
+            Position pos = cell.coordinates.ToPosition();
+            int idx = mSelRoles.FindIndex(track => track.position.Equals(pos.ToString()));
+            //如果此处已有角色
+            if (idx != -1)
+            {
+                //移除
+                mSelRoles.RemoveAt(idx);
+                cell.EnableLable(pos.ToSeparateString());
+                cell.DisableLabel();
+                Debug.Log("remomve role at" + pos.ToString());
+            }
         }
 
         public void SetApplyElevation(bool s)
@@ -274,7 +344,26 @@ namespace Checkmate.Game
 
             roles.AddOptions(mAllRoles);
             roles.value = 0;
+            mActiveRole = mAllRoles[0];
+
+            UpdateTeams();
+
+            rules.AddOptions(mAllRules);
+            rules.value =0;
+            mActiveRule = mAllRules[0];
         }
+
+        //更新队伍选择
+        private void UpdateTeams()
+        {
+            teams.ClearOptions();
+            for (int i = 0; i < maxTeam; ++i)
+            {
+                teams.options.Add(new Dropdown.OptionData(i.ToString()));
+            }
+        }
+
+
 
         private void OnFeatureChanged(int item)
         {
@@ -287,10 +376,12 @@ namespace Checkmate.Game
         //保存文件
         public void Save()
         {
-            string path = rootPath + "testMap.map";
+            string path = rootPath + mActiveName+".map";
+            string configPath = rootPath + mActiveName + "_config.json";
             MapData data = hexGrid.Save("test", "1.0");
             data.mode = "testmode";
             byte[] bytes = PBSerializer.NSerialize(data);
+            
             if (bytes.Length <= 0)
             {
                 Debuger.LogError("error generate byte:{0}", data.title);
@@ -299,6 +390,20 @@ namespace Checkmate.Game
             {
                 writer.Write(bytes);
             }
+
+            //生成配置信息
+            MapConfig config = new MapConfig();
+            config.Rule = mActiveRule;
+            config.MaxTeam = maxTeam;
+            config.Roles = mSelRoles;
+
+            string content = JsonConvert.SerializeObject(config);
+            using (StreamWriter writer= new StreamWriter(File.Open(configPath, FileMode.Create),System.Text.Encoding.UTF8))
+            {
+                writer.Write(content);
+            }
+
+
             Debug.Log("save finished");
         }
 

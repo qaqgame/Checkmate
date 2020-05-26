@@ -411,8 +411,12 @@ namespace Checkmate.Game.Controller
             {
                 return;
             }
+
+            int phy = Temp.PhysicalRes;
+            float res = 100 / (Mathf.Log(5, phy + 1) + 1);
+            int realDmg =(int)( res * dmg);
             //执行伤害
-            OnDamaged(dmg);
+            OnDamaged(realDmg);
         }
 
         /// <summary>
@@ -428,6 +432,13 @@ namespace Checkmate.Game.Controller
             {
                 return;
             }
+
+            int phy = Temp.MagicRes;
+            float res = 100 / (Mathf.Log(5, phy + 1) + 1);
+            int realDmg = (int)(res * dmg);
+            //执行伤害
+            OnDamaged(realDmg);
+
             //执行伤害
             OnDamaged(dmg);
         }
@@ -512,7 +523,7 @@ namespace Checkmate.Game.Controller
         //获取额外的移动力
         public int GetExtraMove(int terrain)
         {
-            if (mExtraMove.ContainsKey(terrain))
+            if (mExtraMove!=null&&mExtraMove.ContainsKey(terrain))
             {
                 return mExtraMove[terrain];
             }

@@ -80,7 +80,7 @@ namespace Checkmate.Global.Data
         public string attackEffect;//攻击特效
         [ProtoMember(13)]
         public bool nearAttack;//是否是近战
-        [ProtoMember(13)]
+        [ProtoMember(14)]
         public string extraData;//额外数据
     }
 }

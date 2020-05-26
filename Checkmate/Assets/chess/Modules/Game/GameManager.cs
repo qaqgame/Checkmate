@@ -42,7 +42,7 @@ namespace Checkmate.Modules.Game
         bool initFinished = false;
 
         //#if UNITY_EDITOR
-        static string mTestMapPath ;
+        static string mMapPath ;
         static string mSkillPath;
         static string mScriptPath;
         static string mTestRolePath;
@@ -60,10 +60,10 @@ namespace Checkmate.Modules.Game
 
 
         //初始化函数
-        public void Init(Action onInitComplete)
+        public void Init(Action onInitComplete,string mapPath)
         {
             onInitFinished = onInitComplete;
-            StartCoroutine(InitAll());
+            StartCoroutine(InitAll(mapPath));
         }
         private void OnInitFinished()
         {
@@ -73,7 +73,7 @@ namespace Checkmate.Modules.Game
             }
         }
         //初始化所有的协程
-        public IEnumerator InitAll()
+        public IEnumerator InitAll(string mapPath)
         {
             Debuger.Log("invoke initall");
             ObjectPool.Instance.Init(10, types);
@@ -84,7 +84,7 @@ namespace Checkmate.Modules.Game
             Debuger.Log("env init");
             HexGrid hexGrid = GameObject.Find("Map").GetComponentInChildren<HexGrid>();
             Debuger.Log("grid get suc");
-            MapManager.Instance.Init(hexGrid, mTestMapPath);
+            MapManager.Instance.Init(hexGrid, mapPath);
             Debuger.Log("map init");
             SkillManager.Instance.Init(mSkillPath);
             Debuger.Log("skill init");
@@ -126,12 +126,12 @@ namespace Checkmate.Modules.Game
         {
             Instance = this;
 #if UNITY_EDITOR
-            mTestMapPath=Application.dataPath + "/Test/testMap.map";
+            mMapPath=Application.dataPath + "/Test/";
             mSkillPath=Application.dataPath + "/Test";
             mScriptPath=Application.dataPath + "/Test";
             mTestRolePath= Application.dataPath + "/Test/Alice.json";
 #else
-            mTestMapPath = Application.streamingAssetsPath + "/Test/testMap.map";
+            mMapPath = Application.streamingAssetsPath + "/Test/";
             mSkillPath = Application.streamingAssetsPath + "/Skills";
             mScriptPath = Application.streamingAssetsPath + "/Scripts";
             mTestRolePath = Application.streamingAssetsPath + "/Test/Alice.json";
@@ -149,40 +149,48 @@ namespace Checkmate.Modules.Game
             
         }
 
-
+        private List<RoleData> mInitRoles = null;
         private void TestInit()
         {
-            RoleData alice = JsonConvert.DeserializeObject<RoleData>(FileUtils.ReadString(mTestRolePath));
-            AddRole(alice);
-            alice.id = 1;
-            alice.model = "Bob";
-            alice.name = "Bob";
-            alice.team = 0;
-            alice.position.x = 2;
-            alice.position.y = -4;
-            alice.position.z = 2;
-            AddRole(alice);
-            Debug.Log("extra:" + RoleManager.Instance.GetRole(1).GetValue("Current.test"));
+            if (mInitRoles != null)
+            {
+                foreach(var r in mInitRoles)
+                {
+                    Debuger.Log("add role:{0}", r.name);
+                    AddRole(r);
+                }
+            }
+            //RoleData alice = JsonConvert.DeserializeObject<RoleData>(FileUtils.ReadString(mTestRolePath));
+            //AddRole(alice);
+            //alice.id = 1;
+            //alice.model = "Bob";
+            //alice.name = "Bob";
+            //alice.team = 0;
+            //alice.position.x = 2;
+            //alice.position.y = -4;
+            //alice.position.z = 2;
+            //AddRole(alice);
+            //Debug.Log("extra:" + RoleManager.Instance.GetRole(1).GetValue("Current.test"));
 
-            alice.id = 2;
-            alice.model = "Anna";
-            alice.name = "Anna";
-            alice.team = 2;
-            alice.position.x = 3;
-            alice.position.y = -6;
-            alice.position.z = 3;
-            AddRole(alice);
+            //alice.id = 2;
+            //alice.model = "Anna";
+            //alice.name = "Anna";
+            //alice.team = 2;
+            //alice.position.x = 3;
+            //alice.position.y = -6;
+            //alice.position.z = 3;
+            //AddRole(alice);
 
-            RoleController role = RoleManager.Instance.GetRole(1);
-            Debug.Log(role.Name);
+            //RoleController role = RoleManager.Instance.GetRole(1);
+            //Debug.Log(role.Name);
 
-            CellController cell = MapManager.Instance.GetCell(role.Position);
-            Debug.Log(cell.Terrain);
+            //CellController cell = MapManager.Instance.GetCell(role.Position);
+            //Debug.Log(cell.Terrain);
 
-            Debug.Log(role.CanStand(cell.Terrain));
+            //Debug.Log(role.CanStand(cell.Terrain));
 
-            int sid = SkillManager.Instance.GetSkill("TestSkill");
-            Debug.Log("load skill suc:" + sid);
+            //int sid = SkillManager.Instance.GetSkill("TestSkill");
+            //Debug.Log("load skill suc:" + sid);
 
             //-------load page
             GamingPageManager.Instance.OpenPage();
@@ -217,7 +225,7 @@ namespace Checkmate.Modules.Game
         }
 
         //初始化player数据
-        public void InitPlayer(PlayerTeamData data,uint pid,FSPParam param)
+        public void InitPlayer(PlayerTeamData data,uint pid,List<RoleData> roles,FSPParam param)
         {
             PlayerManager.Instance.Init(data);
             PlayerManager.Instance.PID = pid;
@@ -231,7 +239,9 @@ namespace Checkmate.Modules.Game
             GameNetManager.Instance.onRoundBegin = OnRoundBegin;
             GameNetManager.Instance.onGameEnd = OnGameEnd;
             QGFRandom.Default.Seed = param.seed;
-            
+
+            mInitRoles = roles;
+            Debuger.Log("roles:{0}", roles.Count.ToString());
             wait = false;
         }
 
@@ -256,10 +266,10 @@ namespace Checkmate.Modules.Game
                 yield return null;
             }
             GamingPageManager.Instance.EndRoundChanging();
-            RoleController alice = RoleManager.Instance.GetRole(0);
-            RoleController bob = RoleManager.Instance.GetRole(1);
-            Debuger.Log("alice state:{0}", alice.CurrentState.ToString());
-            Debuger.Log("bob state:{0}", bob.CurrentState.ToString());
+            //RoleController alice = RoleManager.Instance.GetRole(0);
+            //RoleController bob = RoleManager.Instance.GetRole(1);
+            //Debuger.Log("alice state:{0}", alice.CurrentState.ToString());
+            //Debuger.Log("bob state:{0}", bob.CurrentState.ToString());
             if (pid == PlayerManager.Instance.PID)
             {
                 PlayerManager.Instance.Operating = true;
@@ -367,21 +377,21 @@ namespace Checkmate.Modules.Game
             //测试部分
             if (Time.time - last > 3)
             {
-                RoleController role = RoleManager.Instance.GetRole(1);
-                if (role.Buffs.Count > 0)
-                {
-                    Buff buff = BuffManager.Instance.GetBuff(role.Buffs[0]);
-                    Debuger.Log("{0}'s buff {1} has {2} tracks,{3} roles", role.Name, buff.Name, buff.Current.Tracks.Count, buff.Current.mUsedRoles.Count);
-                }
-                Debuger.Log("{0} physicRes:{1},current:{2}", role.Name, role.Temp.GetValue("PhysicalRes"), role.Current.GetValue("PhysicalRes"));
-                Debuger.Log("{0} tempHP:{1},currentHP:{2}", role.Name, role.Temp.Hp, role.Current.Hp);
+                //RoleController role = RoleManager.Instance.GetRole(1);
+                //if (role.Buffs.Count > 0)
+                //{
+                //    Buff buff = BuffManager.Instance.GetBuff(role.Buffs[0]);
+                //    Debuger.Log("{0}'s buff {1} has {2} tracks,{3} roles", role.Name, buff.Name, buff.Current.Tracks.Count, buff.Current.mUsedRoles.Count);
+                //}
+                //Debuger.Log("{0} physicRes:{1},current:{2}", role.Name, role.Temp.GetValue("PhysicalRes"), role.Current.GetValue("PhysicalRes"));
+                //Debuger.Log("{0} tempHP:{1},currentHP:{2}", role.Name, role.Temp.Hp, role.Current.Hp);
 
 
-                RoleController alice = RoleManager.Instance.GetRole(0);
-                RoleController bob = RoleManager.Instance.GetRole(1);
-                Debuger.Log("alice state:{0}", alice.CurrentState.ToString());
-                Debuger.Log("bob state:{0}", bob.CurrentState.ToString());
-                last = Time.time;
+                //RoleController alice = RoleManager.Instance.GetRole(0);
+                //RoleController bob = RoleManager.Instance.GetRole(1);
+                //Debuger.Log("alice state:{0}", alice.CurrentState.ToString());
+                //Debuger.Log("bob state:{0}", bob.CurrentState.ToString());
+                //last = Time.time;
             }
         }
 

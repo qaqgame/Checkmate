@@ -7,6 +7,27 @@ using System.Threading.Tasks;
 
 namespace Checkmate.Global.Data
 {
+    [ProtoContract]
+    public class RoleTrack
+    {
+        [ProtoMember(1)]
+        public string name;
+        [ProtoMember(2)]
+        public int team;
+        [ProtoMember(3)]
+        public string position;
+    }
+
+    [ProtoContract]
+    public class MapConfig
+    {
+        [ProtoMember(1)]
+        public string Rule;
+        [ProtoMember(2)]
+        public int MaxTeam;
+        [ProtoMember(3)]
+        public List<RoleTrack> Roles;
+    }
 
     //effect数据
     [ProtoContract]

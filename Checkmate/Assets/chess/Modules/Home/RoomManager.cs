@@ -1,15 +1,18 @@
 ﻿using Assets.Chess;
 using Checkmate.Global.Data;
 using Checkmate.Services.Online;
+using Newtonsoft.Json;
 using QGF;
 using QGF.Event;
 using QGF.Network.Core.RPCLite;
 using QGF.Network.FSPLite;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Checkmate.Module
 {
@@ -32,6 +35,14 @@ namespace Checkmate.Module
         public bool IsReady { get { return mIsReady; } }
         public bool IsInRoom { get { return mIsInRoom; } }
         public bool IsAllReady { get { return mIsAllReady; } }
+
+
+        public List<string> mAllMaps=null;//所有的地图
+#if UNITY_EDITOR
+        string mapPath=Application.dataPath + "/Test/";
+#else
+        string mapPath = Application.streamingAssetsPath + "/Maps/";
+#endif
 
         public uint TeamId
         {
@@ -58,12 +69,23 @@ namespace Checkmate.Module
         public void Init()
         {
             OnlineManager.Net.RegistRPCListener(this);
+            mAllMaps = new List<string>();
 
+            DirectoryInfo folder = new DirectoryInfo(mapPath);
+            foreach(var file in folder.GetFiles())
+            {
+                if (file.Extension == ".map")
+                {
+                    mAllMaps.Add(file.Name.Remove(file.Name.LastIndexOf('.')));
+                }
+            }
         }
 
         public void Clear()
         {
             OnlineManager.Net.UnRegistRPCListener(this);
+            mAllMaps.Clear();
+            mAllMaps = null;
         }
 
         public void Reset()
@@ -114,9 +136,11 @@ namespace Checkmate.Module
         /// <param name="mode">房间模式</param>
         /// <param name="teamLimits">队伍限制数</param>
         [RPCRequest]
-        public void CreateRoom(string name, string map,string mode, List<int> teamLimits)
+        public void CreateRoom(string name, string map)
         {
-            OnlineManager.Net.Invoke("*ZoneServer.ZoneServer.CreateRoom", name, map,mode, teamLimits);
+            string content = File.ReadAllText(mapPath + map + "_config.json");
+            MapConfig config = JsonConvert.DeserializeObject<MapConfig>(content);
+            OnlineManager.Net.Invoke("*ZoneServer.ZoneServer.CreateRoom", name, map,config);
         }
 
         [RPCResponse]
@@ -251,10 +275,10 @@ namespace Checkmate.Module
 
 
         [RPCNotify]
-        private void NotifyGameStart(PlayerTeamData team,uint pid,FSPParam param)
+        private void NotifyGameStart(GameParam gp,FSPParam param)
         {
-            Debuger.LogWarning("start game:{0}",pid);
-            GlobalEvent.onGameStart.Invoke(team, pid,param);
+            Debuger.LogWarning("start game:{0}",gp.pid);
+            GlobalEvent.onGameStart.Invoke(gp,param);
             
 
             //for (int i = 0; i < param.players.Count; i++)

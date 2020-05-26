@@ -78,4 +78,18 @@ namespace Checkmate.Global.Data
         [ProtoMember(1)]
         public List<MaskData> masks;//标识数据
     }
+
+
+    [ProtoContract]
+    public class GameParam
+    {
+        [ProtoMember(1)]
+        public PlayerTeamData teams;//分队数据
+        [ProtoMember(2)]
+        public uint pid;//pid
+        [ProtoMember(3)]
+        public List<RoleData> roles;//所有角色
+        [ProtoMember(4)]
+        public string map;//地图名
+    }
 }

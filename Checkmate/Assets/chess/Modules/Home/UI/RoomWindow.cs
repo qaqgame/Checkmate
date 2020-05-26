@@ -64,8 +64,11 @@ namespace Checkmate.Module.UI
             Debuger.Log("room info update called");
             mRoomTitle.text = data.name;
             mMapTitle.SetVar("map", data.map);
+            Debuger.Log("recv map:{0}", data.map);
             mModeInfo.SetVar("mode", data.mode);
-            
+            Debuger.Log("recv mode:{0}", data.mode);
+            mModeInfo.FlushVars();
+            mMapTitle.FlushVars();
 
             //更新playerlist
             mPlayerList.Update(data);

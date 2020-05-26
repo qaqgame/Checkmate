@@ -21,20 +21,6 @@ namespace Checkmate.Global.Data
         public List<RoleData> roles = new List<RoleData>();//所有的角色
     }
 
-    //游戏启动的参数
-    [ProtoContract]
-    public class GameParam
-    {
-        [ProtoMember(1)]
-        public uint id = 0;//该局游戏的id
-
-        //[ProtoMember(2)]
-        //public MapData mapData = new MapData();//地图数据
-
-        [ProtoMember(2)]
-        public int randomSeed = 0;//随机数种子
-    }
-
 
 
 
