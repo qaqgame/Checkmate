@@ -20,7 +20,7 @@ namespace Checkmate.Game.Player
         {
             mFriends = new Dictionary<uint, uint>();
             mEnemys = new Dictionary<uint, uint>();
-
+            mNames = new Dictionary<uint, string>();
             foreach (var team in data.masks)
             {
                 mFriends.Add(team.pid, team.friendMask);
