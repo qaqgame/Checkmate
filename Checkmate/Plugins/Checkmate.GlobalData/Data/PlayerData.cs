@@ -69,6 +69,9 @@ namespace Checkmate.Global.Data
 
         [ProtoMember(3)]
         public uint enemyMask;//敌军标识
+
+        [ProtoMember(4)]
+        public string name;//昵称
     }
 
     //游戏开始时下行的队伍数据
@@ -91,5 +94,15 @@ namespace Checkmate.Global.Data
         public List<RoleData> roles;//所有角色
         [ProtoMember(4)]
         public string map;//地图名
+    }
+
+    [ProtoContract]
+    public class PlayerAP
+    {
+        [ProtoMember(1)]
+        public uint curPlayer;//当前玩家
+
+        [ProtoMember(2)]
+        public Dictionary<uint, int> allAp;//所有的ap
     }
 }

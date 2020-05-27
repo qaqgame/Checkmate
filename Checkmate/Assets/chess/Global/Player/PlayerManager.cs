@@ -15,6 +15,7 @@ namespace Checkmate.Game.Player
 
         private Dictionary<uint, uint> mFriends;//友军标识
         private Dictionary<uint, uint> mEnemys;//敌军标识
+        private Dictionary<uint, string> mNames;//对应昵称
         public void Init(PlayerTeamData data)
         {
             mFriends = new Dictionary<uint, uint>();
@@ -24,6 +25,7 @@ namespace Checkmate.Game.Player
             {
                 mFriends.Add(team.pid, team.friendMask);
                 mEnemys.Add(team.pid, team.enemyMask);
+                mNames.Add(team.pid, team.name);
             }
             IsWaiting = false;
         }
@@ -126,7 +128,11 @@ namespace Checkmate.Game.Player
             return mFriends.Keys.ToList();
         }
 
-
+        public string GetName(int pid)
+        {
+            uint id = (uint)pid;
+            return mNames[id];
+        }
 
         public void Clear()
         {

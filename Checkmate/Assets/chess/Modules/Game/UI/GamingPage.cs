@@ -1,4 +1,5 @@
 ﻿using Checkmate.Game.Controller;
+using Checkmate.Game.Player;
 using Checkmate.Game.UI.Component;
 using Checkmate.Modules.Game.UI.Component;
 using FairyGUI;
@@ -24,6 +25,8 @@ namespace Checkmate.Modules.Game.UI
         GComponent mTipsPanel;//提示ui
         TipsPanel mTips;//提示ui类
 
+        PlayerList mCurPlayers, mNextPlayers;
+
         Transition mTipsIn, mTipsOut;//提示界面进出动画
         protected override void OnLoad()
         {
@@ -46,6 +49,14 @@ namespace Checkmate.Modules.Game.UI
             //获取行动点显示
             mAPRoot = mCtrlTarget.GetChild("APPoint").asCom;
             mCurAP = mAPRoot.GetChild("CurrAP").asTextField;
+
+            //---------------------
+            //获取玩家显示
+            GList temp = mCtrlTarget.GetChildByPath("CurrentQueue.List").asList;
+            mCurPlayers = new PlayerList(temp,true);
+
+            temp = mCtrlTarget.GetChildByPath("NextQueue.List").asList;
+            mNextPlayers = new PlayerList(temp,false);
 
             //==================
             //获取回合结束按钮
@@ -121,7 +132,23 @@ namespace Checkmate.Modules.Game.UI
             mCurAP.text = curAP.ToString();
         }
 
+        //更新玩家列表
+        public void UpdatePlayers(uint player)
+        {
+            mCurPlayers.Remove((int)player);
+            mNextPlayers.Add((int)player);
+        }
 
+        public void ResetPlayers()
+        {
+            mCurPlayers.RemoveAll();
+            foreach(var pid in PlayerManager.Instance.GetAllPlayers())
+            {
+                int id = (int)pid;
+                mCurPlayers.Add(id);
+            }
+            mNextPlayers.RemoveAll();
+        }
 
         //说明界面的api
         public void ShowTips(string icon,string text)

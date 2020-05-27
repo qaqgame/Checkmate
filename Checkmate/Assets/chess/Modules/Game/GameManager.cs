@@ -99,9 +99,7 @@ namespace Checkmate.Modules.Game
             ExecuteUtil.Instance.Init(mScriptPath);
             Debuger.Log("execute init");
 
-            APManager.Instance.Init();
-            APManager.Instance.AddListener(OnAPUpdate);
-            Debuger.Log("ap init");
+            
 
             BuffManager.Instance.Init();
 
@@ -114,7 +112,9 @@ namespace Checkmate.Modules.Game
             }
 
             OnInitFinished();
-            
+            APManager.Instance.Init();
+            APManager.Instance.AddListener(OnAPUpdate);
+            Debuger.Log("ap init");
             TestInit();
             initFinished = true;
             GameNetManager.Instance.StartGame();
@@ -298,14 +298,24 @@ namespace Checkmate.Modules.Game
         //回合结束处理(此处为更新行动顺序)
         private void OnRoundEnd(byte[] content)
         {
+            PlayerAP param = PBSerializer.NDeserialize<PlayerAP>(content);
+            //设置ap
+            Dictionary<uint, int> aps = param.allAp;
+            foreach(var id in aps.Keys)
+            {
+                APManager.Instance.SetAP((int)id, aps[id]);
+            }
+            uint target = param.curPlayer;
             Debuger.Log("recv round end");
-            StartCoroutine(WaitForRoundEndAnim());
+            StartCoroutine(WaitForRoundEndAnim(target));
         }
-        IEnumerator WaitForRoundEndAnim()
+        IEnumerator WaitForRoundEndAnim(uint pid)
         {
             yield return StartCoroutine(WaitForRoundEnd());
 
             //更新操作
+            //更新ui
+            GamingPageManager.Instance.UpdatePlayerList(pid);
 
             //显示回合结束
             GamingPageManager.Instance.StartRoundEnd();
@@ -333,6 +343,8 @@ namespace Checkmate.Modules.Game
             if (needTurn)
             {
                 //下一回合
+                //更新ui
+                GamingPageManager.Instance.ResetPlayerList();
                 //更新行动点
                 APManager.Instance.Reset();
                 //更新buff
@@ -341,6 +353,7 @@ namespace Checkmate.Modules.Game
                 EffectManager.Instance.NextTurn();
                 //更新技能
                 SkillManager.Instance.NextTurn();
+                
             }
             StartCoroutine(WaitForBeginControl());
         }

@@ -153,6 +153,8 @@ namespace Checkmate.Services.Game
             mFSP.SendRoundEnd(reserve);
             Debuger.Log("send round end");
         }
+
+
         //结束时调用
         private void OnRoundEnd(byte[] content)
         {

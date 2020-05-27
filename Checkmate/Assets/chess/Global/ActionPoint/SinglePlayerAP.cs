@@ -26,6 +26,10 @@ public class SinglePlayerAP
         currentAP -= num;
     }
 
+    public void SetCurAP(int num)
+    {
+        currentAP = num;
+    }
     public int GetCurrentAP()
     {
         return currentAP;

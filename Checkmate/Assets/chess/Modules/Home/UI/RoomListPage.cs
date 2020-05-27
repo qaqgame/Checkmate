@@ -1,4 +1,5 @@
 ﻿using Checkmate.Global.Data;
+using Checkmate.Modules.Home.UI;
 using FairyGUI;
 using QGF;
 using QGF.Unity.FGUI;
@@ -16,6 +17,7 @@ namespace Checkmate.Module.UI
     {
         public VirtualList mRooms;//房间列表的ui
         private RoomManager mManager;//房间列表的管理
+        private GButton mCreate;
         protected override void OnLoad()
         {
             base.OnLoad();
@@ -25,6 +27,9 @@ namespace Checkmate.Module.UI
             mRooms.onRenderItem = OnRoomItemRender;
             //添加双击事件
             mRooms.onItemDoubleClicked = OnItemDoubleClicked;
+
+            mCreate = mCtrlTarget.GetChildByPath("Create").asButton;
+            mCreate.onClick.Add(ShowCreateWindow);
         }
 
         protected override void OnOpen(object arg)
@@ -37,7 +42,6 @@ namespace Checkmate.Module.UI
             mManager.onExit.AddListener(OnExitRoom);
             mManager.UpdateRoomList();
 
-            mManager.CreateRoom("testRoom", "testMap");
         }
 
         protected override void OnPanelDestroy()
@@ -90,6 +94,12 @@ namespace Checkmate.Module.UI
         {
             FGUIManager.Instance.CloseWindow("Home.RoomWindow");
             mManager.UpdateRoomList();
+        }
+
+
+        private void ShowCreateWindow()
+        {
+            FGUIManager.Instance.OpenWindow<CreateWindow>("CreateRoomWindow", "Home", mManager);
         }
     }
 }

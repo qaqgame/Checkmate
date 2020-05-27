@@ -6,6 +6,7 @@ using QGF;
 using QGF.Event;
 using QGF.Network.Core.RPCLite;
 using QGF.Network.FSPLite;
+using QGF.Unity.FGUI;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -138,6 +139,7 @@ namespace Checkmate.Module
         [RPCRequest]
         public void CreateRoom(string name, string map)
         {
+            FGUIManager.Instance.CloseWindow("Home.CreateRoomWindow");
             string content = File.ReadAllText(mapPath + map + "_config.json");
             MapConfig config = JsonConvert.DeserializeObject<MapConfig>(content);
             Debuger.Log("get roles:{0}", config.Roles.Count);
@@ -294,5 +296,14 @@ namespace Checkmate.Module
             //GameStartParam startParam = param;
             //onNotifyGameStart.Invoke(startParam);
         }
+
+        //==============================
+        //createwindow相关
+        public void CancelCreate()
+        {
+            FGUIManager.Instance.CloseWindow("Home.CreateRoomWindow");
+        }
+
+        
     }
 }

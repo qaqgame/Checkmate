@@ -13,6 +13,7 @@ public class APManager : Singleton<APManager>
     public void Init()
     {
         elementAP = new Dictionary<int, SinglePlayerAP>();
+        Reset();
         onAPChanged = new QGFEvent();
     }
 
@@ -52,10 +53,24 @@ public class APManager : Singleton<APManager>
         }
     }
 
+    public void SetAP(int uid,int num)
+    {
+        elementAP[uid].SetCurAP(num);
+        if (uid == PlayerManager.Instance.PID)
+        {
+            onAPChanged.Invoke();
+        }
+    }
+
     public int GetCurAP()
     {
         int uid = (int)PlayerManager.Instance.PID;
         return elementAP[uid].GetCurrentAP();
+    }
+
+    public int GetCurAP(int pid)
+    {
+        return elementAP[pid].GetCurrentAP();
     }
 
     public int GetMaxAp()

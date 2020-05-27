@@ -93,6 +93,16 @@ namespace Checkmate.Modules.Game
             mPage.HideTips();
         }
 
+        public void UpdatePlayerList(uint pid)
+        {
+            mPage.UpdatePlayers(pid);
+        }
+
+        public void ResetPlayerList()
+        {
+            mPage.ResetPlayers();
+        }
+
         /// <summary>
         /// 在更新回合时调用
         /// </summary>
