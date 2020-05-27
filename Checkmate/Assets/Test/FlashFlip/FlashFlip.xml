@@ -19,10 +19,24 @@
             </Targets>
 
             <Executes>
+                <Execute src="Standard.PlayEffect">
+                    <Params>
+                        <Param type="String" value="Portal"/>
+                        <Param type="Controller" value="%Obj"/>
+                        <Param type="Float" value="2"/>
+                    </Params>
+                </Execute>
                 <Execute src="FlashFlip.FlashFlipTo">
                     <Params>
                         <Param type="Controller" value="%Obj"/>
                         <Param type="Position" value="#SingleCell[0].Position"/>
+                    </Params>
+                </Execute>
+                <Execute src="Standard.PlayGroundEffect">
+                    <Params>
+                        <Param type="String" value="Portal"/>
+                        <Param type="Position" value="%Center"/>
+                        <Param type="Float" value="0.5"/>
                     </Params>
                 </Execute>
             </Executes>

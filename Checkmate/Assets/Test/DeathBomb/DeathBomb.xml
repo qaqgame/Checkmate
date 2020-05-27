@@ -29,7 +29,7 @@
                 <Execute src="Standard.PlayGroundEffect">
                     <Params>
                         <Param type="String" value="SunFall"/>
-                        <Param type="Controller" value="%Center"/>
+                        <Param type="Position" value="%Center"/>
                         <Param type="Float" value="7"/>
                     </Params>
                 </Execute>
