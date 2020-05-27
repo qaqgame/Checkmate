@@ -119,6 +119,9 @@ public class MoveItem : MonoBehaviour
                 item.rc.GetGameObject().transform.position = Vector3.Lerp(a, b, t);
                 yield return null;
             }
+            // 修改行动点
+            APManager.Instance.ReduceAp(item.rc.Team, 1);
+
             MapManager.Instance.GetCell(item.rc.Position).RemoveVisibility(item.rc);
 
             item.rc.Position = item.Path[i];
