@@ -349,7 +349,7 @@ namespace Checkmate.Game.Controller
             env.Dst = this;
             env.Damage = dmg;
             GameEnv.Instance.PushEnv(env);
-            GameExecuteManager.Instance.Add(() => { GameEnv.Damage = GameEnv.Instance.CurrentExe.Damage; });
+            GameExecuteManager.Instance.Add(_SetDamage);
             //执行target的ondamaged
             BuffManager.Instance.ExecuteWithEnv(TriggerType.OnBeDamaged,this,env.Main);
             //执行src的ondamage
@@ -362,6 +362,12 @@ namespace Checkmate.Game.Controller
             GameExecuteManager.Instance.Add(_Damage);
 
             GameEnv.Instance.PopEnv();
+        }
+
+        private void _SetDamage()
+        {
+            GameEnv.Damage = GameEnv.Instance.CurrentExe.Damage; 
+            Debuger.Log("damage:{0}", GameEnv.Instance.CurrentExe.Damage.ToString());
         }
 
         private void _Damage()
