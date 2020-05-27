@@ -24,17 +24,24 @@ namespace Checkmate.Modules.Game.UI.Component
         {
             // 获取组件
             GComponent com = obj.asCom;
-            GTextField TurnText = com.GetChild("Text").asTextField;
-            GTextField TimeText = com.GetChild("APPoint").asTextField;
+            GTextField NameText = com.GetChild("Text").asTextField;
+            GTextField APText = com.GetChild("APPoint").asTextField;
 
             int pid = players[itemId];
             int ap = APManager.Instance.GetCurAP(pid);
             string name = PlayerManager.Instance.GetName(pid);
 
+            NameText.text = name;
+            APText.text = ap.ToString();
             if (itemId == 0&&IsCurrent)
             {
                 GImage bg = com.GetChild("Bg").asImage;
                 bg.color = new UnityEngine.Color(0, 0.5f, 0);
+            }
+            else
+            {
+                GImage bg = com.GetChild("Bg").asImage;
+                bg.color = new UnityEngine.Color(1.0f, 1.0f, 1.0f);
             }
         }
 
@@ -65,30 +72,33 @@ namespace Checkmate.Modules.Game.UI.Component
 
         public void Add(int pid)
         {
-            int curAp = APManager.Instance.GetCurAP(pid);
-            int idx=0;
-            for(int i = 0; i < players.Count; ++i)
+            if (players != null && !players.Contains(pid))
             {
-                int tid = players[i];
-                int ap = APManager.Instance.GetCurAP(tid);
-                //按照从大到小排列
-                if (curAp > ap)
+                int curAp = APManager.Instance.GetCurAP(pid);
+                int idx = 0;
+                for (int i = 0; i < players.Count; ++i)
                 {
-                    break;
+                    int tid = players[i];
+                    int ap = APManager.Instance.GetCurAP(tid);
+                    //按照从大到小排列
+                    if (curAp > ap)
+                    {
+                        break;
+                    }
+                    idx++;
                 }
-                idx++;
-            }
-            //结尾则直接add
-            if (idx == players.Count)
-            {
-                players.Add(pid);
-            }
-            else
-            {
-                players.Insert(idx, pid);
-            }
+                //结尾则直接add
+                if (idx == players.Count)
+                {
+                    players.Add(pid);
+                }
+                else
+                {
+                    players.Insert(idx, pid);
+                }
 
-            Refresh(players.Count);
+                Refresh(players.Count);
+            }
         }
     }
 }

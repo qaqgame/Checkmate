@@ -41,7 +41,7 @@ namespace Checkmate.Modules.Game.UI
 
             mTipsPanel = mCtrlTarget.GetChild("Tips").asCom;
             mTips = new TipsPanel(mTipsPanel);
-            //mTips.Hide();
+            mTips.Hide();
 
             mTipsIn = mCtrlTarget.GetTransition("TipsIn");
             mTipsOut = mCtrlTarget.GetTransition("TipsOut");
@@ -55,8 +55,8 @@ namespace Checkmate.Modules.Game.UI
             GList temp = mCtrlTarget.GetChildByPath("CurrentQueue.List").asList;
             mCurPlayers = new PlayerList(temp,true);
 
-            temp = mCtrlTarget.GetChildByPath("NextQueue.List").asList;
-            mNextPlayers = new PlayerList(temp,false);
+            GList temp1 = mCtrlTarget.GetChildByPath("NextQueue.List").asList;
+            mNextPlayers = new PlayerList(temp1,false);
 
             //==================
             //获取回合结束按钮
