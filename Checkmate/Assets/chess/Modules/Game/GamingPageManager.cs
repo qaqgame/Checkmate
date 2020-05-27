@@ -88,6 +88,10 @@ namespace Checkmate.Modules.Game
             }
         }
 
+        public void HideTips()
+        {
+            mPage.HideTips();
+        }
 
         /// <summary>
         /// 在更新回合时调用

@@ -1,4 +1,5 @@
-﻿using Checkmate.Game.Skill;
+﻿using Checkmate.Game.Controller;
+using Checkmate.Game.Skill;
 using FairyGUI;
 using QGF.Unity.FGUI;
 using System;
@@ -15,12 +16,21 @@ namespace Checkmate.Modules.Game.UI.Component
         private List<int> mSkills;//所有技能实例id
 
         public Action<int> onSkillClicked=null;//技能点击事件
-
+        public Action<EffectController> onTouchBegin;
+        public Action onTouchEnd;
         public SkillList(GList list) : base(list, 0)
         {
             onRenderItem = RenderItem;
             onItemClicked = OnClicked;
-            
+            mList.onRightClickItem.Add(OnRightClick);
+        }
+
+        public void Clear()
+        {
+            onRenderItem = null;
+            onItemClicked = null;
+            mList.onRollOver.Clear();
+            mList.onRollOut.Clear();
         }
 
         void RenderItem(int itemIdx, int childIdx, GObject obj)
@@ -71,5 +81,19 @@ namespace Checkmate.Modules.Game.UI.Component
                 onSkillClicked.Invoke(skillId);
             }
         }
+
+        private void OnRightClick(EventContext context)
+        {
+            GObject item = context.data as GObject;
+            int index = mList.GetChildIndex(item);
+            int selIdx = mList.ChildIndexToItemIndex(index);
+            if (onTouchBegin != null && selIdx >= 0)
+            {
+                int skillId = mSkills[selIdx];
+                BaseSkill skill = SkillManager.Instance.GetInstance(skillId);
+                onTouchBegin.Invoke(skill);
+            }
+        }
+
     }
 }

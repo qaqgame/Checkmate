@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Checkmate.Game.Buff;
 using UnityEngine;
+using QGF;
 
 namespace Checkmate.Game.UI.Component
 {
@@ -15,9 +16,19 @@ namespace Checkmate.Game.UI.Component
     {
         List<int> mBuffs;//所有的buff
 
+        public Action<EffectController> onBuffTouchBegin;
+        public Action onBuffTouchEnd;
         public BuffList(GList list):base(list,0)
         {
             onRenderItem = RenderItem;
+            mList.onRightClickItem.Add(OnRightClick);
+        }
+
+        public void Clear()
+        {
+            mList.onRollOut.Clear();
+            mList.onRollOver.Clear();
+            onRenderItem = null;
         }
 
         void RenderItem(int itemIdx, int childIdx, GObject obj)
@@ -51,6 +62,20 @@ namespace Checkmate.Game.UI.Component
             mBuffs = buffs;
             //刷新显示
             Refresh(mBuffs.Count);
+        }
+
+
+        private void OnRightClick(EventContext context)
+        {
+            GObject item = context.data as GObject;
+            int index = mList.GetChildIndex(item);
+            int selIdx = mList.ChildIndexToItemIndex(index);
+            if (onBuffTouchBegin != null && selIdx >= 0)
+            {
+                int bid = mBuffs[selIdx];
+                Checkmate.Game.Buff.Buff buff = BuffManager.Instance.GetBuff(bid);
+                onBuffTouchBegin.Invoke(buff);
+            }
         }
     }
 }

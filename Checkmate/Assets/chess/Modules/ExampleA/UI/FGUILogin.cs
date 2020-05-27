@@ -21,7 +21,7 @@ namespace Checkmate.Module.UI
             base.OnLoad();
             mActInput = mCtrlTarget.GetChildByPath("InputField.actInput.input").asTextInput;
             mPswInput = mCtrlTarget.GetChildByPath("InputField.pswInput.input").asTextInput;
-            mBtnLogin = mCtrlTarget.GetChildByPath("BtnField.btnLogin").asButton;
+            mBtnLogin = mCtrlTarget.GetChildByPath("BtnField").asButton;
             mBtnLogin.onClick.Add(OnLoginBtnClicked);
         }
 

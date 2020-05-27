@@ -527,6 +527,7 @@ namespace Checkmate.Modules.Game
         {
             DrawUtil.ClearAll();
             GamingPageManager.Instance.HideRolePanel();
+            GamingPageManager.Instance.HideTips();
         }
     }
 }

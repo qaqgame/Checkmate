@@ -540,8 +540,8 @@ namespace Checkmate.Game.Controller
             //如果生命值不足，直接销毁
             if (Temp.Hp <= 0)
             {
-                Alive = false;
                 RoleManager.Instance.RemoveRole(RoleId);
+                Alive = false;
             }
         }
         //=============================
@@ -632,6 +632,12 @@ namespace Checkmate.Game.Controller
             //若未触发属性监听，手动通知外部
             if (TempMap.Tracks.Count == 0)
             {
+                Debuger.Log("Current HP: {0}", Current.Hp);
+                if (Current.Hp <= 0)
+                {
+                    OnKilled();
+                }
+                Debuger.Log("HP changed");
                 UpdatePanel();
                 //通知外部
                 if (onRoleChanged != null)

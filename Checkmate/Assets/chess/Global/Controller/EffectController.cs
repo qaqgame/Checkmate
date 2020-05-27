@@ -10,5 +10,8 @@ namespace Checkmate.Game.Controller
     public abstract class EffectController:BaseController
     {
         public DataMap Temp=new DataMap(), Current=new DataMap();
+
+        public virtual string GetIcon() { return null; }
+        public virtual string GetString() { return ""; }
     }
 }

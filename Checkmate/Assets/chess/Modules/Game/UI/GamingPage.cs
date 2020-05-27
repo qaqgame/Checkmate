@@ -21,6 +21,10 @@ namespace Checkmate.Modules.Game.UI
         GComponent mAPRoot;//AP的UI根节点
         GTextField mCurAP;//当前行动点
 
+        GComponent mTipsPanel;//提示ui
+        TipsPanel mTips;//提示ui类
+
+        Transition mTipsIn, mTipsOut;//提示界面进出动画
         protected override void OnLoad()
         {
             base.OnLoad();
@@ -29,6 +33,15 @@ namespace Checkmate.Modules.Game.UI
             mRolePanelUI = new RoleDataPanel(mRolePanel);
 
             mRolePanelUI.Visible = false;
+            mRolePanelUI.onEffectHover = OnEffectHover;
+            mRolePanelUI.onEffectOut = OnEffectOut;
+
+            mTipsPanel = mCtrlTarget.GetChild("Tips").asCom;
+            mTips = new TipsPanel(mTipsPanel);
+            //mTips.Hide();
+
+            mTipsIn = mCtrlTarget.GetTransition("TipsIn");
+            mTipsOut = mCtrlTarget.GetTransition("TipsOut");
             //------------------------
             //获取行动点显示
             mAPRoot = mCtrlTarget.GetChild("APPoint").asCom;
@@ -109,6 +122,36 @@ namespace Checkmate.Modules.Game.UI
         }
 
 
+
+        //说明界面的api
+        public void ShowTips(string icon,string text)
+        {
+            mTips.SetIcon(icon);
+            mTips.SetText(text);
+            if (!mTipsPanel.visible)
+            {
+                mTips.Show();
+                mTipsIn.Play();
+            }
+        }
+
+        public void HideTips()
+        {
+            if (mTipsPanel.visible)
+            {
+                mTipsOut.Play(() => { mTips.Hide(); });
+            }
+        }
+
+        private void OnEffectHover(EffectController effect)
+        {
+            ShowTips(effect.GetIcon(), effect.GetString());
+        }
+
+        private void OnEffectOut()
+        {
+            //HideTips();
+        }
 
         //回合结束事件
         private void OnRoundEndClicked()

@@ -308,6 +308,20 @@ namespace Checkmate.Game.Buff
         {
             return mActions.ContainsKey(type) ? mActions[type].Count : 0;
         }
+
+        public override string GetIcon()
+        {
+            return Icon;
+        }
+
+        public override string GetString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("Buff名:{0}\n", Name);
+            sb.AppendFormat("是否唯一:{0}\n", IsSingle ? "是" : "否");
+            sb.AppendFormat("效果:{0}", Description);
+            return sb.ToString();
+        }
     }
 
 

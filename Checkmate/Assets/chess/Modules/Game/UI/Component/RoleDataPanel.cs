@@ -45,6 +45,8 @@ namespace Checkmate.Modules.Game.UI.Component
             }
         }
 
+        public Action<EffectController> onEffectHover;
+        public Action onEffectOut;
         public RoleDataPanel(GComponent root)
         {
             mRoot = root;
@@ -57,10 +59,29 @@ namespace Checkmate.Modules.Game.UI.Component
             mRoleIcon = mRoot.GetChildByPath("RoleIcon.Icon").asLoader;
 
             mSkillList = new SkillList(skillList);
+            mSkillList.onTouchBegin = OnEffectHover;
+            mSkillList.onTouchEnd = OnEffectOut;
             mBuffList = new BuffList(buffList);
+            mBuffList.onBuffTouchBegin = OnEffectHover;
+            mBuffList.onBuffTouchEnd = OnEffectOut;
             mMainProperty = new RolePropertyList(mainPropList);
             mSecondProperty = new RolePropertyList(secondPropList);
             mSkillList.onSkillClicked = OnSkillBtnClicked;
+        }
+
+        private void OnEffectHover(EffectController effect)
+        {
+            if (onEffectHover != null)
+            {
+                onEffectHover.Invoke(effect);
+            }
+        }
+        private void OnEffectOut()
+        {
+            if (onEffectOut != null)
+            {
+                onEffectOut.Invoke();
+            }
         }
 
         private void RegistRole(RoleController role)
