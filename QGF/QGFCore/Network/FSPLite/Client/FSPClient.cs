@@ -322,7 +322,7 @@ namespace QGF.Network.FSPLite.Client
         {
             uint current = (uint)TimeUtils.GetTotalMillisecondsSince1970();
             var dt = current - mLastRecvTimestamp;
-            if (dt > 500)
+            if (dt > 1000)
             {
                 mWaitForReconnect = true;
             }
