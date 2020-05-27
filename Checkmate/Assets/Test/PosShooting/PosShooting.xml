@@ -4,7 +4,7 @@
         <DefaultRange type="Range" limit="5"/>
     </SkillRange>
     <EffectRange>
-        <DefaultRange type="Range" limit="0"/>
+        <DefaultRange type="Single" limit="0"/>
     </EffectRange>
     <Data>
         <value name="level" type="Int">3</value>
@@ -22,11 +22,12 @@
                 </Selects>
             </Targets>
             <Executes>
-                <Execute src="Standard.PlayGroundEffect">
+                <Execute src="Standard.AddTrackEffect">
                     <Params>
-                        <Param type="String" value="SunFall"/>
-                        <Param type="Position" value="%Center"/>
-                        <Param type="Float" value="7"/>
+                        <Param type="String" value="Fireball"/>
+                        <Param type="Controller" value="%Src"/>
+                        <Param type="Controller" value="#2"/>
+                        <Param type="Float" value="1"/>
                     </Params>
                 </Execute>
                 <Execute src="Standard.PlaySound">
