@@ -63,5 +63,6 @@ PrefabInstance:
       propertyPath: InitialModule.startSizeZ.minMaxState
       value: 3
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 11441266, guid: 965716b1b5cefa948bbf456c7b433186, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 965716b1b5cefa948bbf456c7b433186, type: 3}

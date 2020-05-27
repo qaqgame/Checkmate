@@ -165,8 +165,8 @@ namespace Checkmate.Services.Game
         //结束游戏
         public void EndGame(int winner)
         {
-     
-            mFSP.SendGameEnd(winner);
+            mFSP.SendFSP(EndCmd, winner);
+            //mFSP.SendGameEnd(winner);
             Debuger.LogWarning("end game with:{0}", winner);
         }
 
@@ -188,9 +188,9 @@ namespace Checkmate.Services.Game
             }
         }
 
-        public void GameExit()
+        public void GameAllEnd()
         {
-            mFSP.SendGameExit();
+            mFSP.SendGameEnd();
         }
 
         //移动
@@ -256,6 +256,11 @@ namespace Checkmate.Services.Game
                 case ActionCmd:
                     {
                         OnRecvAction(message.content);
+                        return;
+                    }
+                case EndCmd:
+                    {
+                        OnGameEnd(message.content);
                         return;
                     }
             }
