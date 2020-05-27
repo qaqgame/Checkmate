@@ -1,4 +1,4 @@
-<Buff name="FireBurned" turns="2" times="-1" icon="fireburned.png">
+<Buff name="FireBurned" turns="2" times="-1" icon="fireburned.png" single="true">
     <Description>每回合造成10点伤害，并降低1视野范围</Description>
     <Data>
         <value name="level" type="Int">2</value>
