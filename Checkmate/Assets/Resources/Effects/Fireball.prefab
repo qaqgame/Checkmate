@@ -51,5 +51,17 @@ PrefabInstance:
       propertyPath: startMagnitude
       value: 1.5
       objectReference: {fileID: 0}
+    - target: {fileID: 11441266, guid: 965716b1b5cefa948bbf456c7b433186, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 19882314, guid: 965716b1b5cefa948bbf456c7b433186, type: 3}
+      propertyPath: InitialModule.startSizeY.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 19882314, guid: 965716b1b5cefa948bbf456c7b433186, type: 3}
+      propertyPath: InitialModule.startSizeZ.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 965716b1b5cefa948bbf456c7b433186, type: 3}

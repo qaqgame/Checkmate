@@ -257,6 +257,8 @@ namespace Checkmate.Standard
             {
                 GameObject effect = Resources.Load("Effects/" + name) as GameObject;
                 GameObject obj = GameObject.Instantiate(effect, target.GetGameObject().transform);
+                currentRole = target;
+                parentModel = false;
                 obj.transform.position = src.GetGameObject().transform.position;
                 startPos = obj.transform.position;
                 currentTime = 0;

@@ -7,10 +7,20 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5751561320599936341, guid: c790e7b554d71454dafd83fd50c0ee26,
+        type: 3}
+      propertyPath: InitialModule.startSizeY.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5751561320599936341, guid: c790e7b554d71454dafd83fd50c0ee26,
+        type: 3}
+      propertyPath: InitialModule.startSizeZ.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 5751561320613975955, guid: c790e7b554d71454dafd83fd50c0ee26,
         type: 3}
       propertyPath: m_Name
-      value: Burning
+      value: FireBurn
       objectReference: {fileID: 0}
     - target: {fileID: 5751561320614146327, guid: c790e7b554d71454dafd83fd50c0ee26,
         type: 3}
