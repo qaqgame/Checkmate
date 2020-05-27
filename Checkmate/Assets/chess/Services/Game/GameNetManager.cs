@@ -188,6 +188,11 @@ namespace Checkmate.Services.Game
             }
         }
 
+        public void GameExit()
+        {
+            mFSP.SendGameExit();
+        }
+
         //移动
         public void Move(RoleController role,Position target)
         {

@@ -18,7 +18,7 @@ public class TranslateMove : MonoBehaviour {
 
 	void Update () {
         if(m_fowardMove)
-            transform.Translate(transform.forward * m_power);
+            transform.Translate(Vector3.forward * m_power);
         if (m_rightMove)
             transform.Translate(transform.right * m_power);
         if (m_upMove)

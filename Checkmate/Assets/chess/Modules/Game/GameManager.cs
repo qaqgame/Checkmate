@@ -251,6 +251,7 @@ namespace Checkmate.Modules.Game
         {
             Debuger.Log("recv game end");
             GamingPageManager.Instance.ShowGameEnd(result);
+            GameNetManager.Instance.GameExit();
         }
 
         private void OnControlStart(uint pid)
