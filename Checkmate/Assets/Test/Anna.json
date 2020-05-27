@@ -1,6 +1,6 @@
 {
-    "name": "Grey",
-    "model": "Grey",
+    "name": "Anna",
+    "model": "Anna",
     "team": 1,
     "position": {
         "x": 1,
@@ -22,27 +22,27 @@
 
     },
     "props": {
-        "hp": 80,
-        "mp": 120,
-        "miss": 0.4,
-        "physicalRes": 50,
-        "magicRes": 50,
-        "attack": 90,
-        "moveRange": 5,
-        "attackSpeed": 2.0,
-        "physicalIgnore": 0.2,
-        "magicIgnore": 0.2,
-        "viewRange": 5,
+        "hp": 100,
+        "mp": 80,
+        "miss": 0.2,
+        "physicalRes": 70,
+        "magicRes": 30,
+        "attack": 60,
+        "moveRange": 3,
+        "attackSpeed": 1.0,
+        "physicalIgnore": 0,
+        "magicIgnore": 0,
+        "viewRange": 3,
         "vieHeight": 0,
-        "attackRange": 3,
+        "attackRange": 1,
         "magicAttack": false,
         "canMiss": true,
         "extraData": "[{\"name\":\"test\",\"param\":{\"type\":\"Checkmate.Game.Position\",\"value\":\"\",\"param\":[{\"type\":\"int\",\"value\":\"3\",\"param\":[] },{\"type\":\"int\",\"value\":\"2\",\"param\":[] },{\"type\":\"int\",\"value\":\"1\",\"param\":[] }] } }]"
     },
-    "skills": ["TestSkill", "Gogogo", "DeathBomb", "SafePlace", "FlashFlip"],
-    "attackSource": "Fireball",
+    "skills": ["TestSkill", "Gogogo", "FireBurn", "SafePlace", "FlashFlip"],
+    "attackSource": "arrow",
     "attackEffect": "SwordWind",
-    "nearAttack": false,
+    "nearAttack": true,
     "extraData": ""
 
 }
