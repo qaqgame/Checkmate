@@ -14,14 +14,6 @@
                 <Param type="Controller" value="%Obj"/>
             </Params>
         </Execute>
-        <Execute src="Standard.PlayEffectWithDir">
-            <Params>
-                <Param type="String" value="PulseShotAttack"/>
-                <Param type="Controller" value="%Src"/>
-                <Param type="Controller" value="#2"/>
-                <Param type="Float" value="5"/>
-            </Params>
-        </Execute>
         <Execute src="Standard.AddTrackEffect">
             <Params>
                 <Param type="String" value="%Src.AtkSource"/>
