@@ -224,6 +224,7 @@ namespace Checkmate.Standard
                     currentParent = cell;
                     parentModel = false;
                     attachOnRole = false;
+                    GameExecuteManager.Instance.Wait(time, DestroyCurrent);
                 }
             }
         }
@@ -360,12 +361,7 @@ namespace Checkmate.Standard
         {
             if (src.Visible)
             {
-                GameObject effect = Resources.Load("Effects/" + eff) as GameObject;
-                GameObject obj = GameObject.Instantiate(effect, src.GetModel().transform);
-                obj.transform.name = eff + "_" + Time.time.ToString();
-                currentEffectName = obj.transform.name;
-                currentRole = src;
-                parentModel = true;
+                
                 //动画部分
                 //获取实例
                 GameObject model = src.GetModel();
@@ -378,6 +374,22 @@ namespace Checkmate.Standard
                 animator.SetBool("FinishAction", false);
                 animator.SetTrigger(anim);
 
+
+                GameObject effect = Resources.Load("Effects/" + eff) as GameObject;
+                if (effect != null)
+                {
+                    GameObject obj = GameObject.Instantiate(effect, src.GetModel().transform);
+                    obj.transform.name = eff + "_" + Time.time.ToString();
+                    currentEffectName = obj.transform.name;
+                    currentRole = src;
+                    parentModel = true;
+                }
+                else
+                {
+                    needDestroy = false;
+                }
+
+
                 if (needDestroy)
                 {
                     GameExecuteManager.Instance.Wait(() => { return WaitForAnim(anim, animator); }, DestroyCurrent);
@@ -386,6 +398,7 @@ namespace Checkmate.Standard
                 {
                     GameExecuteManager.Instance.Wait(() => { return WaitForAnim(anim, animator); });
                 }
+
             }
         }
 

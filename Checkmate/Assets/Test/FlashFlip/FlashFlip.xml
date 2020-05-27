@@ -36,7 +36,7 @@
                     <Params>
                         <Param type="String" value="Portal"/>
                         <Param type="Position" value="%Center"/>
-                        <Param type="Float" value="0.5"/>
+                        <Param type="Float" value="1"/>
                     </Params>
                 </Execute>
             </Executes>
