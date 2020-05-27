@@ -33,6 +33,7 @@ namespace Checkmate.Game.Utils
             Main = target.Main;
             Center = target.Center;
             Data = target.Data;
+            Damage = target.Damage;
         }
 
         //public void ExecuteAction(SkillAction action)
