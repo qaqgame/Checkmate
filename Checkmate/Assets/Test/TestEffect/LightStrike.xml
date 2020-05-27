@@ -1,0 +1,40 @@
+<Effect name="TestEffect"  icon="damage.png" coolturn="0">
+    <Description>TestEffect</Description>
+    <Data>
+        <value name="level" type="Int">3</value>
+        <value name="Damage" type="Int">10</value>
+        <value name="BuffId" type="Int">-1</value>
+    </Data>
+
+    <Content>
+        <Action trigger="Timely">
+            <Targets>
+                <DefaultSearch id="1" type="Role" limit="99" start="Center" center="Center">
+                    <DefaultRange type="Range" limit="1"/>
+                </DefaultSearch>
+            </Targets>
+            <Executes>
+                <Execute src="Standard.PlayGroundEffect">
+                    <Params>
+                        <Param type="String" value="LightStrike"/>
+                        <Param type="Position" value="%Center"/>
+                        <Param type="Float" value="3"/>
+                    </Params>
+                </Execute>
+                <Execute src="Standard.DamageMagically">
+                    <Params>
+                        <Param type="Controller" value="#1"/>
+                        <Param type="Int" value="$Damage"/>
+                    </Params>
+                </Execute>
+                <Execute src="Standard.AddBuff">
+                    <Params>
+                        <Param type="Controller" value="%Dst"/>
+                        <Param type="String" value="LowSpeed"/>
+                    </Params>
+                    <Return value="$BuffId"/>
+                </Execute>
+            </Executes>
+        </Action>
+    </Content>
+</Effect>

@@ -4,5 +4,8 @@
     },
     {
         "effect":"Burn"
+    },
+    {
+        "effect":"LightStrike"
     }
 ]

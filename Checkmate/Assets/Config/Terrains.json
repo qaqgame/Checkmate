@@ -10,5 +10,11 @@
         "name":"沙漠",
         "description":"test-d",
         "file":"desert.png"
+    },
+    {
+        "id":3,
+        "name":"雪地",
+        "description":"test-l",
+        "file":"snow.png"
     }
 ]

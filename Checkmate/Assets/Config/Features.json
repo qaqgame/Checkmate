@@ -18,7 +18,7 @@
         "name":"tower_moon",
         "file":"TowerMoon",
         "single":true,
-        "effectIdx":[]
+        "effectIdx":[2]
     },
     {
         "id":1028,

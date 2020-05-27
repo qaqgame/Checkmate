@@ -1,0 +1,28 @@
+<Buff name="TestBuff" turns="1" times="-1" icon="test.png" single="true">
+    <Description>TestEffect</Description>
+    <Data>
+        <value name="level" type="Int">3</value>
+        <value name="Damage" type="Int">10</value>
+        <value name="EffectId" type="String"></value>
+    </Data>
+
+    <Content>
+        <Action trigger="OnAttached">
+            <Targets>
+            </Targets>
+            <Executes>
+                <Execute src="Standard.ChangeAttribute">
+                    <Params>
+                        <Param type="Controller" value="%Obj"/>
+                        <Param type="String" value="Sub"/>
+                        <Param type="String" value="MoveRange"/>
+                        <Param type="String" value="1"/>
+                        <Param type="String" value="Int"/>
+                        <Param type="Bool" value="false"/>
+                        <Param type="Bool" value="false"/>
+                    </Params>
+                </Execute>
+            </Executes>
+        </Action>
+    </Content>
+</Buff>
