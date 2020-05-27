@@ -286,6 +286,21 @@ namespace Checkmate.Game.Controller
         {
             int bid = BuffManager.Instance.InstanceBuff(file);
             Checkmate.Game.Buff.Buff buff = BuffManager.Instance.GetBuff(bid);
+            if (buff.IsSingle&&Buffs!=null&&Buffs.Count>0)
+            {
+                //寻找已有buff
+                foreach(int tb in Buffs)
+                {
+                    Checkmate.Game.Buff.Buff temp = BuffManager.Instance.GetBuff(tb);
+                    if (temp.Name == buff.Name)
+                    {
+                        temp.ReserveTime = buff.ReserveTime;
+                        temp.ReserveTurn = buff.ReserveTurn;
+                        UpdatePanel();
+                        return tb;
+                    }
+                }
+            }
             //调用onAddBuff
             OnAddBuff(ref buff);
             Buffs.Add(bid);

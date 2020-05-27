@@ -47,6 +47,13 @@ namespace Checkmate.Game.Buff
             get;
             private set;
         }
+        //是否是唯一buff
+        [GetProperty]
+        public bool IsSingle
+        {
+            get;
+            private set;
+        }
 
         [GetProperty]
         public int BuffId
@@ -204,7 +211,7 @@ namespace Checkmate.Game.Buff
         {
             Name = node.Attributes["name"].Value;
             Icon = node.Attributes["icon"].Value;
-
+            IsSingle = false;
             _reserveTurn = _reserveTime = -1;
             if (node.Attributes["turns"] != null)
             {
@@ -213,6 +220,10 @@ namespace Checkmate.Game.Buff
             if (node.Attributes["times"] != null)
             {
                 _reserveTime = int.Parse(node.Attributes["times"].Value);
+            }
+            if (node.Attributes["single"] != null)
+            {
+                IsSingle = bool.Parse(node.Attributes["single"].Value);
             }
             
 
