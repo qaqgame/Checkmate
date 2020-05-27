@@ -43,14 +43,12 @@
                         <Param type="Bool" value="false"/>
                     </Params>
                 </Execute>
-                <Executes>
                 <Execute src="Standard.AddBuff">
                     <Params>
                         <Param type="Controller" value="#2"/>
                         <Param type="String" value="Burned"/>
                     </Params>
                 </Execute>
-            </Executes>
             </Executes>
         </Action>
     </Content>
