@@ -14,6 +14,14 @@
                 <Param type="Controller" value="%Obj"/>
             </Params>
         </Execute>
+        <Execute src="Standard.PlayEffectWithDir">
+            <Params>
+                <Param type="String" value="PulseShotAttack"/>
+                <Param type="Controller" value="%Obj"/>
+                <Param type="Controller" value="%Dst"/>
+                <Param type="Float" value="7"/>
+            </Params>
+        </Execute>
         <Execute src="Standard.AddTrackEffect">
             <Params>
                 <Param type="String" value="%Src.AtkSource"/>
@@ -25,7 +33,7 @@
         <Execute src="Standard.Attack">
             <Params>
                 <Param type="Controller" value="#2"/>
-                <Param type="Bool" value="%Src.IsMagic"/>
+                <Param type="Bool" value="%Src.IsMagicAttack"/>
                 <Param type="Bool" value="%Src.CanMiss"/>
             </Params>
         </Execute>

@@ -7,5 +7,13 @@ AnimatorOverrideController:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: JellyAnim
-  m_Controller: {fileID: 0}
-  m_Clips: []
+  m_Controller: {fileID: 9100000, guid: 74a86ca0bdf44894190b052730e4309a, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: a7e98d51bd73b0348b47acf6a9f02766, type: 3}
+    m_OverrideClip: {fileID: 7400000, guid: 2a6f9c403266fd94d8256c5eea5713e8, type: 3}
+  - m_OriginalClip: {fileID: 7400000, guid: ce8a7098226991b4089e60f8da0ac630, type: 3}
+    m_OverrideClip: {fileID: 7400000, guid: 6a7ffdb7ab69d2442b9ce5e7d05abf56, type: 3}
+  - m_OriginalClip: {fileID: 7400000, guid: f2283fcc1389144489d8a3ed7a005b1c, type: 3}
+    m_OverrideClip: {fileID: 7400000, guid: 5935b74d5103c4e45907aab3b5e9e2d8, type: 3}
+  - m_OriginalClip: {fileID: 7400000, guid: 94c75858633b4e04f9e28db3b52b2bba, type: 3}
+    m_OverrideClip: {fileID: 7400000, guid: 1fcc178a0a138cf48868082a9377c776, type: 3}
