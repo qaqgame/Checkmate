@@ -3,7 +3,7 @@
     <Data>
         <value name="level" type="Int">2</value>
         <value name="Damage" type="Int">10</value>
-        <value name="ViewEffect" type="Int">1</value>
+        <value name="ViewEffect" type="String">1</value>
     </Data>
 
     <Content>
