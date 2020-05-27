@@ -3,6 +3,7 @@
     <Data>
         <value name="level" type="Int">3</value>
         <value name="Damage" type="Int">10</value>
+        <value name="EffectId" type="String"></value>
     </Data>
 
     <Content>
@@ -25,6 +26,17 @@
                         <Param type="String" value="Int"/>
                         <Param type="Bool" value="false"/>
                         <Param type="Bool" value="false"/>
+                    </Params>
+                </Execute>
+            </Executes>
+        </Action>
+        <Action trigger="OnRemoved">
+            <Targets>
+            </Targets>
+            <Executes>
+                <Execute src="Standard.RemovePlacedEffect">
+                    <Params>
+                        <Param type="String" value="$EffectId"/>
                     </Params>
                 </Execute>
             </Executes>

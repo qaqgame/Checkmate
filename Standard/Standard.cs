@@ -179,8 +179,10 @@ namespace Checkmate.Standard
         //=========================
         string currentEffectName;//当前name
         RoleController currentRole;//当前角色
+        ModelController currentParent;//当前特效父节点
         bool parentModel = false;
-                                   //控制流
+        bool attachOnRole = true;
+
 
         #region 控制流
 
@@ -198,8 +200,31 @@ namespace Checkmate.Standard
                 obj.transform.name = name + "_" + time.ToString();
                 currentEffectName = obj.transform.name;
                 currentRole = role;
+                currentParent = role;
                 parentModel = false;
+                attachOnRole = true;
                 GameExecuteManager.Instance.Wait(time, DestroyCurrent);
+            }
+        }
+
+        public void PlayGroundEffect(string name,Position position,float time)
+        {
+            Position src = GameEnv.Instance.CurrentExe.Src.GetPosition();
+            CellController srcCell = MapManager.Instance.GetCell(src);
+            if (srcCell != null && srcCell.Visible)
+            {
+                CellController cell = MapManager.Instance.GetCell(position);
+                if (cell != null&&cell.Visible)
+                {
+                    GameObject effect = Resources.Load("Effects/" + name) as GameObject;
+                    GameObject obj = GameObject.Instantiate(effect, cell.GetGameObject().transform);
+                    obj.transform.name = name + "_" + time.ToString();
+                    currentEffectName = obj.transform.name;
+                    currentRole = null;
+                    currentParent = cell;
+                    parentModel = false;
+                    attachOnRole = false;
+                }
             }
         }
 
@@ -213,19 +238,41 @@ namespace Checkmate.Standard
                 obj.transform.rotation = Quaternion.LookRotation(dst.GetModel().transform.position - src.GetModel().transform.position);
                 currentEffectName = obj.transform.name;
                 currentRole = src;
+                currentParent = src;
                 parentModel = true;
+                attachOnRole = true;
                 GameExecuteManager.Instance.Wait(time, DestroyCurrent);
             }
         }
         private void DestroyCurrent()
         {
-            DestroyEffect(currentEffectName, currentRole,parentModel);
+            if (attachOnRole)
+            {
+                DestroyEffect(currentEffectName, currentRole, parentModel);
+            }
+            else
+            {
+                DestroyEffect(currentEffectName, currentParent);
+            }
+        }
+
+        private void DestroyEffect(string realname, ModelController model)
+        {
+
+            Transform obj = null;
+            obj = model.GetGameObject().transform.Find(realname);
+            
+            if (obj != null)
+            {
+                GameObject.Destroy(obj.gameObject);
+            }
         }
 
         private void DestroyEffect(string realname,RoleController role,bool parentModel)
         {
 
             Transform obj=null;
+            
             if (parentModel)
             {
                 obj= role.GetModel().transform.Find(realname);
@@ -243,10 +290,13 @@ namespace Checkmate.Standard
 
 
         //附着效果
-        public void AttachEffect(string name,RoleController role)
+        public string AttachEffect(string name,RoleController role)
         {
             GameObject effect = Resources.Load("Effects/" + name) as GameObject;
-            GameObject.Instantiate(effect, role.GetGameObject().transform);
+            GameObject obj= GameObject.Instantiate(effect, role.GetGameObject().transform);
+            obj.transform.name = name + Time.time.ToString();
+            EffectInstances.Add(obj.transform.name, obj);
+            return obj.transform.name;
         }
 
         //跟踪效果
@@ -259,6 +309,8 @@ namespace Checkmate.Standard
                 GameObject obj = GameObject.Instantiate(effect, target.GetGameObject().transform);
                 currentRole = target;
                 parentModel = false;
+                attachOnRole = true;
+                currentParent = target;
                 obj.transform.position = src.GetGameObject().transform.position;
                 startPos = obj.transform.position;
                 currentTime = 0;

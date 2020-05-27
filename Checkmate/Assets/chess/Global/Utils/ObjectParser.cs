@@ -32,6 +32,7 @@ namespace Checkmate.Game.Utils
                 case "Float": return float.Parse(value);
                 case "String": return value;
                 case "Bool":return bool.Parse(value);
+                case "Position":return Position.Parse(value);
             }
             return null;
         }

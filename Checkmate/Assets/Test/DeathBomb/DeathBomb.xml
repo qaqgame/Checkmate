@@ -26,6 +26,13 @@
                 </DefaultSearch>
             </Targets>
             <Executes>
+                <Execute src="Standard.PlayGroundEffect">
+                    <Params>
+                        <Param type="String" value="SunFall"/>
+                        <Param type="Controller" value="%Center"/>
+                        <Param type="Float" value="7"/>
+                    </Params>
+                </Execute>
                 <Execute src="Standard.PlaySound">
                     <Params>
                         <Param type="String" value="Metal"/>

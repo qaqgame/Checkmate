@@ -59,7 +59,7 @@ namespace Checkmate.Services.Game
             mFSP.onRoundBegin -= OnRoundBegin;
             mFSP.onControlStart -= OnControlBegin;
             mFSP.onRoundEnd -= OnRoundEnd;
-            mFSP.onGameEnd -= OnGameEnd;
+            //mFSP.onGameEnd -= OnGameEnd;
             onActionRecv = null;
         }
 
@@ -72,7 +72,7 @@ namespace Checkmate.Services.Game
             mFSP.onRoundBegin += OnRoundBegin;
             mFSP.onControlStart += OnControlBegin;
             mFSP.onRoundEnd += OnRoundEnd;
-            mFSP.onGameEnd += OnGameEnd;
+            //mFSP.onGameEnd += OnGameEnd;
         }
 
         //创建

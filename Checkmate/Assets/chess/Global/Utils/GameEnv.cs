@@ -236,6 +236,10 @@ namespace Checkmate.Game.Utils
                 {
                     return GetController(value.Substring(1));
                 }
+                if (type == ParamType.Position)
+                {
+                    return GetPosition(value.Substring(1));
+                }
                 //获取变量
                 if (value.Contains('.'))
                 {
@@ -323,6 +327,15 @@ namespace Checkmate.Game.Utils
                 case "Dst": return Dst;
                 case "Main": return Main;
                 case "Data":return Data as BaseController;
+            }
+            return null;
+        }
+
+        private Position GetPosition(string value)
+        {
+            switch (value)
+            {
+                case "Center":return Center;
             }
             return null;
         }
