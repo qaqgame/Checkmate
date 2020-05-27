@@ -85,6 +85,36 @@ namespace Checkmate.Standard
             }
         }
 
+        public void ChangeDamage(string opt,string value)
+        {
+            float v = float.Parse(value);
+            float result=GameEnv.Damage;
+            switch (opt)
+            {
+                case "Add":
+                    {
+                        result = DataUtil.Add(GameEnv.Damage, v);
+                        break;
+                    }
+                case "Sub":
+                    {
+                        result = DataUtil.Sub(GameEnv.Damage, v);
+                        break;
+                    }
+                case "Mul":
+                    {
+                        result = DataUtil.Mul(GameEnv.Damage, v);
+                        break;
+                    }
+                case "Div":
+                    {
+                        result = DataUtil.Div(GameEnv.Damage, v);
+                        break;
+                    }
+            }
+            GameEnv.Damage = (int)result;
+        }
+
 
         public int AddBuff(RoleController role,string buff)
         {
@@ -133,6 +163,10 @@ namespace Checkmate.Standard
             target.DamagePhysically(dmg, miss);
         }
 
+        public void DamageMagically(RoleController target,int dmg,bool miss)
+        {
+            target.DamageMagically(dmg, miss);
+        }
         public void Attack(RoleController target,bool isMagic,bool canMiss)
         {
             target.Attacked(isMagic, canMiss);

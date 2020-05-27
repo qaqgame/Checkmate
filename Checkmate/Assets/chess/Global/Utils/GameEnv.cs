@@ -23,7 +23,7 @@ namespace Checkmate.Game.Utils
         public EffectController Main;//主体(技能、buff等)
         public Position Center=null;//中心（仅技能时发挥作用）
         public object Data;
-
+        public int Damage;//伤害
 
         public void Copy(EnvVariable target)
         {

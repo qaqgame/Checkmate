@@ -1,6 +1,7 @@
 ﻿using Checkmate.Game.Buff;
 using Checkmate.Game.Global.UI;
 using Checkmate.Game.Map;
+using Checkmate.Game.Player;
 using Checkmate.Game.Role;
 using Checkmate.Game.Skill;
 using Checkmate.Game.UI;
@@ -230,6 +231,7 @@ namespace Checkmate.Game.Controller
             Current.onAttributeChanged = OnCurrentAttributeChanged;
             Origin = new RoleAttributeController(data.props);
             Temp = new RoleAttributeController(data.props);
+            Temp.onAttributeChanging = OnTempAttributeChanging;
             Temp.onAttributeChanged = OnTempAttributeChanged;
             //Position = new Position(data.position.x, data.position.y, data.position.z);
             Team = data.team;
@@ -345,8 +347,9 @@ namespace Checkmate.Game.Controller
             EnvVariable env = new EnvVariable();
             env.Copy(GameEnv.Instance.CurrentExe);
             env.Dst = this;
-            GameEnv.Damage = dmg;
+            env.Damage = dmg;
             GameEnv.Instance.PushEnv(env);
+            GameExecuteManager.Instance.Add(() => { GameEnv.Damage = GameEnv.Instance.CurrentExe.Damage; });
             //执行target的ondamaged
             BuffManager.Instance.ExecuteWithEnv(TriggerType.OnBeDamaged,this,env.Main);
             //执行src的ondamage
@@ -413,7 +416,7 @@ namespace Checkmate.Game.Controller
             }
 
             int phy = Temp.PhysicalRes;
-            float res = 100 / (Mathf.Log(5, phy + 1) + 1);
+            float res = 1 / (Mathf.Log(5, (phy/10) + 1) + 1);
             int realDmg =(int)( res * dmg);
             //执行伤害
             OnDamaged(realDmg);
@@ -434,7 +437,7 @@ namespace Checkmate.Game.Controller
             }
 
             int phy = Temp.MagicRes;
-            float res = 100 / (Mathf.Log(5, phy + 1) + 1);
+            float res = 1 / (Mathf.Log(5, (phy/10) + 1) + 1);
             int realDmg = (int)(res * dmg);
             //执行伤害
             OnDamaged(realDmg);
@@ -638,6 +641,19 @@ namespace Checkmate.Game.Controller
                 OnTempAttrChanged();
             }
         }
+        private void OnTempAttributeChanging(string param, ref object value, object origin)
+        {
+            if (param == "ViewRange" || param == "ViewHeight")
+            {
+                //更新视野
+                if (PlayerManager.Instance.IsFriend(Team))
+                {
+                    CellController cell = MapManager.Instance.GetCell(Position);
+                    cell.RemoveVisibility(this);
+                }
+            }
+        }
+
         //temp改变时通知外部改变
         private void OnTempAttributeChanged(string param,ref object value,object origin)
         {
@@ -658,6 +674,15 @@ namespace Checkmate.Game.Controller
                 Debuger.Log("HP changed");
                 //通知生命值改变
                 mPanel.SetHP((int)value);
+            }
+            if (param == "ViewRange" || param == "ViewHeight")
+            {
+                //更新视野
+                if (PlayerManager.Instance.IsFriend(Team))
+                {
+                    CellController cell=MapManager.Instance.GetCell(Position);
+                    cell.SetVisibility(this);
+                }
             }
             //通知外部
             if (onRoleChanged != null)
