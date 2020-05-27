@@ -153,6 +153,13 @@ namespace Checkmate.Game.Controller
             private set;
         }
 
+        [GetProperty]
+        public bool Alive
+        {
+            get;
+            set;
+        }
+
         //当前位置
         private Position _position;
         [GetProperty]
@@ -533,6 +540,7 @@ namespace Checkmate.Game.Controller
             //如果生命值不足，直接销毁
             if (Temp.Hp <= 0)
             {
+                Alive = false;
                 RoleManager.Instance.RemoveRole(RoleId);
             }
         }

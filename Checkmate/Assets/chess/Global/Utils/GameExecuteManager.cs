@@ -1,4 +1,5 @@
-﻿using Checkmate.Game.Player;
+﻿using Checkmate.Game.Controller;
+using Checkmate.Game.Player;
 using QGF;
 using System;
 using System.Collections;
@@ -179,56 +180,59 @@ namespace Checkmate.Game.Utils
                     mCurrent = mTracks[rec].Dequeue();
                     PlayerManager.Instance.IsWaiting = true;
                     GameEnv.Instance.PushExeEnv(mCurrent.env);
-                    if (mCurrent.exe != null)
+                    if (!(GameEnv.Instance.CurrentExe.Obj.Type == (int)ControllerType.Role && !(GameEnv.Instance.CurrentExe.Obj as RoleController).Alive))
                     {
-                        Debuger.Log("executed: {0}", mCurrent.exe.Method.Name);
-                        mCurrent.exe.Invoke();
-                        //等待子项完成
-                        yield return StartCoroutine(ExecuteTrack(rec + 1));
-                        mCurrentRec = rec;
-                        //无等待项则继续
-                        yield return StartCoroutine(Wait());
-                    }
-                    else
-                    {
-                        //执行所有的action
-                        List<List<SkillAction>> actions = mCurrent.actions;
-                        for (int i = 0; i < actions.Count; ++i)
+                        if (mCurrent.exe != null)
                         {
-                            var list = actions[i];
-                            Debuger.Log("execute {0} times", i.ToString());
-                            //执行一个列表的action
-                            for (int j = 0; j < list.Count; ++j)
+                            Debuger.Log("executed: {0}", mCurrent.exe.Method.Name);
+                            mCurrent.exe.Invoke();
+                            //等待子项完成
+                            yield return StartCoroutine(ExecuteTrack(rec + 1));
+                            mCurrentRec = rec;
+                            //无等待项则继续
+                            yield return StartCoroutine(Wait());
+                        }
+                        else
+                        {
+                            //执行所有的action
+                            List<List<SkillAction>> actions = mCurrent.actions;
+                            for (int i = 0; i < actions.Count; ++i)
                             {
-                                var action = list[j];
-                                //如果满足条件则执行
-                                if (GameEnv.Instance.CurrentExe.ExecuteChecks(action))
+                                var list = actions[i];
+                                Debuger.Log("execute {0} times", i.ToString());
+                                //执行一个列表的action
+                                for (int j = 0; j < list.Count; ++j)
                                 {
-                                    Debuger.Log("check succeed");
-                                    GameEnv.Instance.CurrentExe.ExecuteTargets(action);
-                                    foreach (var exe in action.Executes)
+                                    var action = list[j];
+                                    //如果满足条件则执行
+                                    if (GameEnv.Instance.CurrentExe.ExecuteChecks(action))
                                     {
-                                        GameEnv.Instance.CurrentExe.ExecuteMain(exe);
-                                        Debuger.Log("execute action:{0}, rec: {1}", exe, rec);
-                                        //等待子项完成
-                                        yield return StartCoroutine(ExecuteTrack(rec + 1));
-                                        mCurrentRec = rec;
-                                        //无等待项则继续
-                                        yield return StartCoroutine(Wait());
+                                        Debuger.Log("check succeed");
+                                        GameEnv.Instance.CurrentExe.ExecuteTargets(action);
+                                        foreach (var exe in action.Executes)
+                                        {
+                                            GameEnv.Instance.CurrentExe.ExecuteMain(exe);
+                                            Debuger.Log("execute action:{0}, rec: {1}", exe, rec);
+                                            //等待子项完成
+                                            yield return StartCoroutine(ExecuteTrack(rec + 1));
+                                            mCurrentRec = rec;
+                                            //无等待项则继续
+                                            yield return StartCoroutine(Wait());
+                                        }
                                     }
                                 }
-                            }
 
-                            //清空temp属性变动
-                            if (GameEnv.Instance.CurrentExe.Main != null)
-                            {
-                                DataMap temp = GameEnv.Instance.CurrentExe.Main.Temp;
-                                //清除所有涉及对象的属性加成
-                                foreach (var role in temp.mUsedRoles)
+                                //清空temp属性变动
+                                if (GameEnv.Instance.CurrentExe.Main != null)
                                 {
-                                    role.TempMap.RemoveTrack(temp);
+                                    DataMap temp = GameEnv.Instance.CurrentExe.Main.Temp;
+                                    //清除所有涉及对象的属性加成
+                                    foreach (var role in temp.mUsedRoles)
+                                    {
+                                        role.TempMap.RemoveTrack(temp);
+                                    }
+                                    temp.Clear();
                                 }
-                                temp.Clear();
                             }
                         }
                     }

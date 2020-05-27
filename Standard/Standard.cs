@@ -228,7 +228,7 @@ namespace Checkmate.Standard
             Transform obj=null;
             if (parentModel)
             {
-                obj= role.GetModel().transform.parent.Find(realname);
+                obj= role.GetModel().transform.Find(realname);
             }
             else
             {
@@ -309,7 +309,7 @@ namespace Checkmate.Standard
             if (src.Visible)
             {
                 GameObject effect = Resources.Load("Effects/" + eff) as GameObject;
-                GameObject obj = GameObject.Instantiate(effect, src.GetModel().transform.parent);
+                GameObject obj = GameObject.Instantiate(effect, src.GetModel().transform);
                 obj.transform.name = eff + "_" + Time.time.ToString();
                 currentEffectName = obj.transform.name;
                 currentRole = src;

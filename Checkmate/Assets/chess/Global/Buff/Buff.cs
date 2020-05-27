@@ -195,6 +195,7 @@ namespace Checkmate.Game.Buff
             {
                 return;
             }
+           
             Debuger.Log("buff {0} execute {1}", Name, trigger.ToString());
             GameExecuteManager.Instance.Add(mActions[trigger]);
             ////清除所有涉及对象的属性加成
