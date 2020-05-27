@@ -18,6 +18,12 @@
             </Params>
             <Return value="$BuffId"/>
           </Execute>
+          <Execute src="Standard.AddBuff">
+            <Params>
+              <Param type="Controller" value="%Dst"/>
+              <Param type="String" value="FireBurned"/>
+            </Params>
+          </Execute>
         </Executes>
       </Action>
 
@@ -25,6 +31,12 @@
             <Targets>
             </Targets>
             <Executes>
+                <Execute src="Standard.AddBuff">
+                    <Params>
+                        <Param type="Controller" value="%Dst"/>
+                        <Param type="String" value="FireBurned"/>
+                    </Params>
+                </Execute>
                 <Execute src="Standard.Damage">
                     <Params>
                         <Param type="Controller" value="%Dst"/>
