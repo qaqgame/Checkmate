@@ -231,15 +231,6 @@ namespace Checkmate.Game.Utils
             //外部变量
             else if (value.Contains('%'))
             {
-                //如果是获取controller
-                if (type == ParamType.Controller)
-                {
-                    return GetController(value.Substring(1));
-                }
-                if (type == ParamType.Position)
-                {
-                    return GetPosition(value.Substring(1));
-                }
                 //获取变量
                 if (value.Contains('.'))
                 {
@@ -253,11 +244,17 @@ namespace Checkmate.Game.Utils
                     }
                     return controller.GetValue(v);
                 }
-                //否则直接转换
-                else
+                //如果是获取controller
+                if (type == ParamType.Controller)
                 {
-
+                    return GetController(value.Substring(1));
                 }
+                if (type == ParamType.Position)
+                {
+                    return GetPosition(value.Substring(1));
+                }
+                
+                
             }
             //代表取列表的单个控制器
             else if (value.Contains('#') && type != ParamType.ControllerList)
