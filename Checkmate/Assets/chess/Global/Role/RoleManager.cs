@@ -72,7 +72,7 @@ namespace Checkmate.Game.Role
             mRolePool.Add(id, controller);
             //添加到激活列表
             mActiveRoles.Add(id);
-
+            controller.Alive = true;
             //添加至玩家序列
             if (!mPlayerRoles.ContainsKey((uint)controller.Team))
             {
@@ -120,6 +120,7 @@ namespace Checkmate.Game.Role
             if (mRolePool.ContainsKey(key))
             {
                 RoleController controller = mRolePool[key];
+                controller.Alive = true;
                 //设置角色的当前属性值
                 controller.SetCurProperty(property);
 
