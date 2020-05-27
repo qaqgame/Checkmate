@@ -344,6 +344,7 @@ namespace Checkmate.Modules.Game
             {
                 //下一回合
                 //更新ui
+                Debuger.Log("reset called");
                 GamingPageManager.Instance.ResetPlayerList();
                 //更新行动点
                 APManager.Instance.Reset();
