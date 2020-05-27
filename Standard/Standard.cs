@@ -211,20 +211,23 @@ namespace Checkmate.Standard
         {
             Position src = GameEnv.Instance.CurrentExe.Src.GetPosition();
             CellController srcCell = MapManager.Instance.GetCell(src);
-            if (srcCell != null && srcCell.Visible)
+            if (srcCell != null)
             {
                 CellController cell = MapManager.Instance.GetCell(position);
-                if (cell != null&&cell.Visible)
+                if (cell != null)
                 {
-                    GameObject effect = Resources.Load("Effects/" + name) as GameObject;
-                    GameObject obj = GameObject.Instantiate(effect, cell.GetGameObject().transform);
-                    obj.transform.name = name + "_" + time.ToString();
-                    currentEffectName = obj.transform.name;
-                    currentRole = null;
-                    currentParent = cell;
-                    parentModel = false;
-                    attachOnRole = false;
-                    GameExecuteManager.Instance.Wait(time, DestroyCurrent);
+                    if (srcCell.Visible || cell.Visible)
+                    {
+                        GameObject effect = Resources.Load("Effects/" + name) as GameObject;
+                        GameObject obj = GameObject.Instantiate(effect, cell.GetGameObject().transform);
+                        obj.transform.name = name + "_" + time.ToString();
+                        currentEffectName = obj.transform.name;
+                        currentRole = null;
+                        currentParent = cell;
+                        parentModel = false;
+                        attachOnRole = false;
+                        GameExecuteManager.Instance.Wait(time, DestroyCurrent);
+                    }
                 }
             }
         }
@@ -240,6 +243,22 @@ namespace Checkmate.Standard
                 currentEffectName = obj.transform.name;
                 currentRole = src;
                 currentParent = src;
+                parentModel = true;
+                attachOnRole = true;
+                GameExecuteManager.Instance.Wait(time, DestroyCurrent);
+            }
+        }
+        public void PlayEffectOnEndWithDir(string name, RoleController src, RoleController dst, float time)
+        {
+            if (dst.Visible)
+            {
+                GameObject effect = Resources.Load("Effects/" + name) as GameObject;
+                GameObject obj = GameObject.Instantiate(effect, dst.GetModel().transform);
+                obj.transform.name = name + "_" + time.ToString();
+                obj.transform.rotation = Quaternion.LookRotation(dst.GetModel().transform.position - src.GetModel().transform.position);
+                currentEffectName = obj.transform.name;
+                currentRole = dst;
+                currentParent = dst;
                 parentModel = true;
                 attachOnRole = true;
                 GameExecuteManager.Instance.Wait(time, DestroyCurrent);
