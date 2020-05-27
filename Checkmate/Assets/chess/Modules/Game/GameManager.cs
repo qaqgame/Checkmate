@@ -274,6 +274,7 @@ namespace Checkmate.Modules.Game
             //Debuger.Log("bob state:{0}", bob.CurrentState.ToString());
             if (pid == PlayerManager.Instance.PID)
             {
+                RoleManager.Instance.ResetState(pid);
                 PlayerManager.Instance.Operating = true;
                 Debuger.Log("set operating");
                 Debuger.Log("waiting state:{0}", PlayerManager.Instance.IsWaiting.ToString());
@@ -357,6 +358,7 @@ namespace Checkmate.Modules.Game
                 
             }
             StartCoroutine(WaitForBeginControl());
+            
         }
         IEnumerator WaitForBeginControl()
         {

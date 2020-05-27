@@ -47,6 +47,14 @@ namespace Checkmate.Game.Role
             mPlayerRoles.Clear();
         }
 
+        public void ResetState(uint pid)
+        {
+            foreach(int id in mPlayerRoles[pid])
+            {
+                mRolePool[id].SetState(RoleState.Idle);
+            }
+        }
+
         //添加角色
         public RoleController AddRole(RoleData role)
         {
