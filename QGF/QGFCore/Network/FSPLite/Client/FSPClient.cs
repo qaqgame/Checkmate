@@ -134,7 +134,7 @@ namespace QGF.Network.FSPLite.Client
                 //创建Socket
                 Debuger.Log("创建Socket, AddressFamily = {0}", mRemoteEndPoint.AddressFamily);
                 mSystemSocket = new Socket(mRemoteEndPoint.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
-                mSystemSocket.Bind(IPUtils.GetIPEndPointAny(AddressFamily.InterNetwork, 0));
+                mSystemSocket.Bind(IPUtils.GetIPEndPointAny(AddressFamily.InterNetwork, 30000));
 
 
                 mIsRunning = true;

@@ -33,7 +33,7 @@ namespace Checkmate.Services.Online
         {
             m_net = new NetManager();
 
-            m_net.Init(typeof(KCPConnect), ServerID.ZoneServer, 0);
+            m_net.Init(typeof(KCPConnect), ServerID.ZoneServer, 30001);
 
             m_net.RegistRPCListener(this);
 
