@@ -21,6 +21,7 @@
                     <DefaultTeamSelector team="Enemy"/>
                 </Selects>
             </Targets>
+            <Executes>
             <Execute src="Standard.PlayAnimWithEffect">
               <Params>
                 <Param type="String" value="Attack"/>
@@ -36,6 +37,7 @@
                     <Param type="Bool" value="false"/>
                 </Params>
             </Execute>
+            </Executes>
         </Action>
     </Content>
 </Skill>
