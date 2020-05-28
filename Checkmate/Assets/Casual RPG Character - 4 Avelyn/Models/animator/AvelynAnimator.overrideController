@@ -9,13 +9,15 @@ AnimatorOverrideController:
   m_Name: AvelynAnimator
   m_Controller: {fileID: 9100000, guid: 74a86ca0bdf44894190b052730e4309a, type: 2}
   m_Clips:
-  - m_OriginalClip: {fileID: 7400000, guid: ae2e7deb95c81774e8abd2b0a8464ca6, type: 3}
-    m_OverrideClip: {fileID: 7400000, guid: 8925e6f950b183f4390fd6c56e1a9958, type: 3}
-  - m_OriginalClip: {fileID: 7400000, guid: aa705ffa48c0b6d4e9be7f47e6f695a1, type: 3}
+  - m_OriginalClip: {fileID: 7400000, guid: ce8a7098226991b4089e60f8da0ac630, type: 3}
     m_OverrideClip: {fileID: 7400000, guid: 0dee4dcb1e8982f4384f3cd331db3ce1, type: 3}
-  - m_OriginalClip: {fileID: 7400000, guid: 543ca509b01c1de4ea3434bc441fbd6d, type: 3}
-    m_OverrideClip: {fileID: 7400000, guid: 663b8921d705b3f48b61e26d26bf0500, type: 3}
-  - m_OriginalClip: {fileID: 7400000, guid: 84c5cb790e0f078498d8dbdc5f3d9fa1, type: 3}
-    m_OverrideClip: {fileID: 7400000, guid: 8925e6f950b183f4390fd6c56e1a9958, type: 3}
-  - m_OriginalClip: {fileID: 7400000, guid: 234f2042e450fe04caab917bc8f204b6, type: 3}
+  - m_OriginalClip: {fileID: 7400000, guid: 95dc4fbaa01379f4f908847fb44054d4, type: 3}
+    m_OverrideClip: {fileID: 7400000, guid: aa57c302269ced6449342b358a05cb96, type: 3}
+  - m_OriginalClip: {fileID: 7400000, guid: a7e98d51bd73b0348b47acf6a9f02766, type: 3}
     m_OverrideClip: {fileID: 7400000, guid: 36a4b6e9f4be3ed4ba3efd9b466a564c, type: 3}
+  - m_OriginalClip: {fileID: 7400000, guid: 94c75858633b4e04f9e28db3b52b2bba, type: 3}
+    m_OverrideClip: {fileID: 7400000, guid: 8925e6f950b183f4390fd6c56e1a9958, type: 3}
+  - m_OriginalClip: {fileID: 7400002, guid: 39c1e8b66fab3ba418b191caaf714f42, type: 3}
+    m_OverrideClip: {fileID: 7400000, guid: 663b8921d705b3f48b61e26d26bf0500, type: 3}
+  - m_OriginalClip: {fileID: 7400000, guid: 589a11892e95f834dbf23f9e1cc1f090, type: 3}
+    m_OverrideClip: {fileID: 7400000, guid: 28fcfac2b8bf916409a077b2bad43e90, type: 3}

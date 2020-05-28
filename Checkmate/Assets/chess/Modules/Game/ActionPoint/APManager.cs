@@ -38,6 +38,7 @@ public class APManager : Singleton<APManager>
                 elementAP[id].Reset(10, 10);
             }
         }
+        onAPChanged.Invoke();
     }
 
     public void AddListener(System.Action element)
