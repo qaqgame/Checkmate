@@ -370,6 +370,7 @@ namespace Checkmate.Game.Skill
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("技能名:{0}\n", Name);
+            sb.AppendFormat("消耗:{0}\n", Cost);
             sb.AppendFormat("冷却:{0}\n",MaxCool);
             sb.AppendFormat("效果:{0}", Description);
             return sb.ToString();
