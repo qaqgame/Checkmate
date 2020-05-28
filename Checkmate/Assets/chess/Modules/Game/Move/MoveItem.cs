@@ -98,7 +98,7 @@ public class MoveItem : MonoBehaviour
         IsMoving = true;
         for (int i = 1; i < item.Path.Count; i++)
         {
-            if(MapManager.Instance.GetCell(item.Path[i]).Role != -1)
+            if (MapManager.Instance.GetCell(item.Path[i]).Role != -1)
             {
                 // 移动结束
                 item.rc.SetState(RoleState.Idle);
@@ -106,7 +106,7 @@ public class MoveItem : MonoBehaviour
             }
             MapManager.Instance.GetCell(item.rc.Position).SetVisibility(item.rc);
             MapManager.Instance.GetCell(item.rc.Position).Role = -1;
-            while(GameExecuteManager.Instance.WaitForExecute)
+            while (GameExecuteManager.Instance.WaitForExecute)
             {
                 Debug.LogError("Wait for a while1");
                 yield return null;
@@ -114,6 +114,9 @@ public class MoveItem : MonoBehaviour
             // TODO: 移除当前位置的人物信息 : moveutil.RemoveCurRole()
             Vector3 a = MapManager.Instance.GetCellWorldPosition(item.Path[i - 1]);
             Vector3 b = MapManager.Instance.GetCellWorldPosition(item.Path[i]);
+            // 修改朝向
+            item.rc.FaceTo(b);
+
             for (float t = 0f; t < 1f; t += Time.deltaTime * item.travelSpeed)
             {
                 item.rc.GetGameObject().transform.position = Vector3.Lerp(a, b, t);
@@ -125,7 +128,7 @@ public class MoveItem : MonoBehaviour
             MapManager.Instance.GetCell(item.rc.Position).RemoveVisibility(item.rc);
 
             item.rc.Position = item.Path[i];
-            
+
             MapManager.Instance.GetCell(item.rc.Position).SetVisibility(item.rc);
             MapManager.Instance.GetCell(item.rc.Position).Role = item.rc.RoleId;
             while (GameExecuteManager.Instance.WaitForExecute)
@@ -133,7 +136,19 @@ public class MoveItem : MonoBehaviour
                 Debug.LogError("Wait for a while2");
                 yield return null;
             }
+
+            if (APManager.Instance.GetCurAP(item.rc.Team) <= 0)
+            {
+                yield break;
+            }
+
         }
+        // 控制移动动画
+        Animator animator = item.rc.GetModel().GetComponent<Animator>();
+        Animator tempAnim = animator;
+        tempAnim.ResetTrigger("Walk");
+        tempAnim.SetTrigger("Idle");
+
         // 移动结束
         item.rc.SetState(RoleState.Idle);
         
