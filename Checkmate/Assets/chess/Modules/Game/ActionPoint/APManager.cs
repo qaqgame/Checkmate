@@ -30,11 +30,11 @@ public class APManager : Singleton<APManager>
             int id = (int)pid;
             if (!elementAP.ContainsKey(id))
             {
-                elementAP.Add(id, new SinglePlayerAP(20, 20));
+                elementAP.Add(id, new SinglePlayerAP(10, 10));
             }
             else
             {
-                elementAP[id].Reset(20, 20);
+                elementAP[id].Reset(10, 10);
             }
         }
     }

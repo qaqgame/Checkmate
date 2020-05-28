@@ -24,7 +24,7 @@
             <Executes>
                 <Execute src="Standard.AddTrackEffect">
                     <Params>
-                        <Param type="String" value="Fireball"/>
+                        <Param type="String" value="EnergyArrow"/>
                         <Param type="Controller" value="%Src"/>
                         <Param type="Controller" value="#2"/>
                         <Param type="Float" value="1"/>

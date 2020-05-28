@@ -1,5 +1,5 @@
-<Buff name="TestBuff" turns="1" times="-1" icon="test.png" single="true">
-    <Description>TestEffect</Description>
+<Buff name="LowSpeed" turns="1" times="-1" icon="test.png" single="true">
+    <Description>行动力-1</Description>
     <Data>
         <value name="level" type="Int">3</value>
         <value name="Damage" type="Int">10</value>
