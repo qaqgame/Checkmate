@@ -41,7 +41,7 @@
                 </Execute>
                 <Execute src="Standard.DamagePhysically">
                     <Params>
-                        <Param type="Controller" value="#2"/>
+                        <Param type="ControllerList" value="#2"/>
                         <Param type="Int" value="$Damage"/>
                         <Param type="Bool" value="false"/>
                     </Params>

@@ -104,21 +104,21 @@ public class MoveItem : MonoBehaviour
                 // item.rc.SetState(RoleState.Idle);
                 break;
             }
-            MapManager.Instance.GetCell(item.rc.Position).SetVisibility(item.rc);
-            MapManager.Instance.GetCell(item.rc.Position).Role = -1;
-            while (GameExecuteManager.Instance.WaitForExecute)
-            {
-                Debug.LogError("Wait for a while1");
-                yield return null;
-            }
-            // TODO: 移除当前位置的人物信息 : moveutil.RemoveCurRole()
-            Vector3 a = MapManager.Instance.GetCellWorldPosition(item.Path[i - 1]);
-            Vector3 b = MapManager.Instance.GetCellWorldPosition(item.Path[i]);
-            // 修改朝向
-            item.rc.FaceTo(b);
             if (APManager.Instance.ReduceAp(item.rc.Team, 1))
             {
-
+                MapManager.Instance.GetCell(item.rc.Position).SetVisibility(item.rc);
+                MapManager.Instance.GetCell(item.rc.Position).Role = -1;
+                while (GameExecuteManager.Instance.WaitForExecute)
+                {
+                    Debug.LogError("Wait for a while1");
+                    yield return null;
+                }
+                // TODO: 移除当前位置的人物信息 : moveutil.RemoveCurRole()
+                Vector3 a = MapManager.Instance.GetCellWorldPosition(item.Path[i - 1]);
+                Vector3 b = MapManager.Instance.GetCellWorldPosition(item.Path[i]);
+                // 修改朝向
+                item.rc.FaceTo(b);
+            
                 for (float t = 0f; t < 1f; t += Time.deltaTime * item.travelSpeed)
                 {
                     item.rc.GetGameObject().transform.position = Vector3.Lerp(a, b, t);
