@@ -1,0 +1,43 @@
+<Skill name="WindSlap" cd="2" type="Active" cost="2" icon="windslap.png">
+    <Description>对自身周围一圈的敌人造成25点伤害</Description>
+    <SkillRange max="1" min="0" type="Cell|Role" team="Self|Friend|Enemy|Neutual">
+        <DefaultRange type="Range" limit="1"/>
+    </SkillRange>
+    <EffectRange>
+        <DefaultRange type="Single" limit="1"/>
+    </EffectRange>
+    <Data>
+        <value name="level" type="Int">1</value>
+        <value name="Damage" type="Int">25</value>
+    </Data>
+
+    <Content>
+        <Action trigger="Execute">
+            <Targets>
+                <DefaultSearch id="1" type="Role" limit="99" start="Src" center="Src">
+                    <DefaultRange type="Range" limit="1"/>
+                </DefaultSearch>
+                <Selects id="2" src="1">
+                    <DefaultTeamSelector team="Enemy"/>
+                </Selects>
+            </Targets>
+            <Execute src="Standard.PlayAnimWithEffect">
+              <Params>
+                <Param type="String" value="Attack"/>
+                <Param type="String" value="MassiveSword"/>
+                <Param type="Controller" value="%Obj"/>
+                <Param type="Bool" value="true"/>
+              </Params>
+            </Execute>
+            <Executes>
+                <Execute src="Standard.DamagePhysically">
+                    <Params>
+                        <Param type="ControllerList" value="#2"/>
+                        <Param type="Int" value="$Damage"/>
+                        <Param type="Bool" value="false"/>
+                    </Params>
+                </Execute>
+            </Executes>
+        </Action>
+    </Content>
+</Skill>

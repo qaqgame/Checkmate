@@ -39,9 +39,9 @@
         "canMiss": true,
         "extraData": "[{\"name\":\"test\",\"param\":{\"type\":\"Checkmate.Game.Position\",\"value\":\"\",\"param\":[{\"type\":\"int\",\"value\":\"3\",\"param\":[] },{\"type\":\"int\",\"value\":\"2\",\"param\":[] },{\"type\":\"int\",\"value\":\"1\",\"param\":[] }] } }]"
     },
-    "skills": ["TestSkill", "Gogogo", "FireBurn", "SafePlace", "FlashFlip"],
-    "attackSource": "arrow",
-    "attackEffect": "SwordWind",
+    "skills": ["TestSkill", "WindSlap", "FireBurn", "SafePlace", "FlashFlip"],
+    "attackSource": "Fireball",
+    "attackEffect": "BladeFlash",
     "nearAttack": true,
     "extraData": ""
 

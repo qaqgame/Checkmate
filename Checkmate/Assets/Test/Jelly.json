@@ -41,7 +41,7 @@
     },
     "skills": ["TestSkill", "Gogogo", "DeathBomb", "PosShooting", "FlashFlip"],
     "attackSource": "Fireball",
-    "attackEffect": "SwordWind",
+    "attackEffect": "Explosion",
     "nearAttack": false,
     "extraData": ""
 
