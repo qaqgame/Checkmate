@@ -139,13 +139,14 @@ public class MoveItem : MonoBehaviour
                     yield return null;
                 }
 
-                if (APManager.Instance.GetCurAP(item.rc.Team) <= 0)
-                {
-                    break;
-                }
+                //if (APManager.Instance.GetCurAP(item.rc.Team) <= 0)
+                //{
+                //   break;
+                //}
             }
             else
             {
+                Debug.Log("Move:Cannot Move");
                break;
             }
         }
@@ -156,6 +157,7 @@ public class MoveItem : MonoBehaviour
         tempAnim.SetTrigger("Idle");
 
         // 移动结束
+        Debug.Log("Move:MoveEnd");
         item.rc.SetState(RoleState.Idle);
         
     }
