@@ -127,6 +127,9 @@ namespace Assets.Chess
             GlobalEvent.onGameStart += OnGameStart;
             GlobalEvent.onGameEnd += OnGameEnd;
 
+            GlobalEvent.onEditStart += OnEditStart;
+            GlobalEvent.onEditFinished += OnEditOver;
+
             //example
             
             ModuleManager.Instance.ShowModule("ExampleAModule");
@@ -135,6 +138,24 @@ namespace Assets.Chess
 
         //==========================================
         //事件处理函数
+
+        private void OnEditStart()
+        {
+            Debuger.Log("start load edit");
+            FGUIManager.Instance.LoadSceneWithClearAll("MapEditor", OnGameSceneLoadStart, OnGameSceneLoadFinished, OnGameSceneLoading);
+        }
+
+        private void OnEditOver()
+        {
+            Debuger.Log("start load main");
+            AppLoading.Show("加载页面...");
+            FGUIManager.Instance.LoadScene<FGUILoading>("Main", () => {
+                Debuger.Log("create home page");
+                ModuleManager.Instance.ShowModule("HomeModule");
+                AppLoading.Close();
+            });
+        }
+
         private void OnGameStart(GameParam gp, FSPParam param)
         {
             Debug.Log("start load game");

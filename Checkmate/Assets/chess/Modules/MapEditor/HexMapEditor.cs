@@ -9,6 +9,7 @@ using QGF.Codec;
 using QGF;
 using QGF.Utils;
 using Newtonsoft.Json;
+using Assets.Chess;
 
 namespace Checkmate.Game
 {
@@ -194,7 +195,7 @@ namespace Checkmate.Game
                 }
                 if (roleMode == OptionalToggle.Yes)
                 {
-                    SetRole(cell);
+                    SetRole(cell,mActiveRole,mActiveTeam);
                 }
                 else if (roleMode == OptionalToggle.No)
                 {
@@ -252,7 +253,7 @@ namespace Checkmate.Game
             isDrag = false;
         }
         //添加角色
-        private void SetRole(HexCell cell)
+        private void SetRole(HexCell cell,string role,int team)
         {
             Position pos = cell.coordinates.ToPosition();
             int idx = mSelRoles.FindIndex(temp => temp.position.Equals(pos.ToString()));
@@ -264,8 +265,8 @@ namespace Checkmate.Game
             }
 
             RoleTrack track = new RoleTrack();
-            track.name = mActiveRole;
-            track.team = mActiveTeam;
+            track.name =role;
+            track.team = team;
             track.position = pos.ToString();
             mSelRoles.Add(track);
 
@@ -410,18 +411,40 @@ namespace Checkmate.Game
         //加载文件
         public void Load()
         {
-            string path = rootPath + "testMap.map";
-            byte[] bytes = FileUtils.ReadFile(path);
+            string fileName = mActiveName;
+            string path = rootPath + fileName+".map";
+            string configPath = rootPath + fileName + "_config.json";
+            byte[] bytes = File.ReadAllBytes(path);
+            
             if (bytes.Length <= 0)
             {
-                Debuger.LogError("read map file:{0} error!", "testMap");
+                Debug.LogError("read map file:"+ fileName+" error!");
             }
             MapData data = PBSerializer.NDeserialize<MapData>(bytes);
             if (data.version != "1.0")
             {
-                Debuger.LogWarning("map version error!");
+                Debug.LogWarning("map version error!");
             }
             hexGrid.Load(data);
+
+            //加载config
+            string configContent = File.ReadAllText(configPath);
+            MapConfig config = JsonConvert.DeserializeObject<MapConfig>(configContent);
+            mActiveRule = config.Rule;
+            maxTeam = config.MaxTeam;
+            UpdateTeams();
+            foreach(var role in config.Roles)
+            {
+                Position pos = Position.Parse(role.position);
+                HexCell cell = hexGrid.GetCell(pos);
+                SetRole(cell, role.name, role.team);
+            }
+        }
+
+
+        public void Exit()
+        {
+            GlobalEvent.onEditFinished.Invoke();
         }
     }
 }

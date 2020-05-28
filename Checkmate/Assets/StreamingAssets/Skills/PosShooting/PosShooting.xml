@@ -1,0 +1,55 @@
+<Skill name="PosShooting" cd="3" type="Active" cost="3" icon="posshooting.png">
+    <Description>向目的地造成一次30的伤害，并添加一个burned的buff</Description>
+    <SkillRange max="5" min="0" type="Cell|Role" team="Self|Friend|Enemy|Neutual">
+        <DefaultRange type="Range" limit="5"/>
+    </SkillRange>
+    <EffectRange>
+        <DefaultRange type="Single" limit="0"/>
+    </EffectRange>
+    <Data>
+        <value name="level" type="Int">3</value>
+        <value name="Damage" type="Int">30</value>
+    </Data>
+
+    <Content>
+        <Action trigger="Execute">
+            <Targets>
+                <DefaultSearch id="1" type="Role" limit="1" start="Center" center="Center">
+                    <DefaultRange type="Single" limit="1"/>
+                </DefaultSearch>
+                <Selects id="2" src="1">
+                    <DefaultTeamSelector team="Enemy"/>
+                </Selects>
+            </Targets>
+            <Executes>
+                <Execute src="Standard.AddTrackEffect">
+                    <Params>
+                        <Param type="String" value="Fireball"/>
+                        <Param type="Controller" value="%Src"/>
+                        <Param type="Controller" value="#2"/>
+                        <Param type="Float" value="1"/>
+                    </Params>
+                </Execute>
+                <Execute src="Standard.PlaySound">
+                    <Params>
+                        <Param type="String" value="Metal"/>
+                        <Param type="Float" value="0.5"/>
+                    </Params>
+                </Execute>
+                <Execute src="Standard.DamagePhysically">
+                    <Params>
+                        <Param type="Controller" value="#2"/>
+                        <Param type="Int" value="$Damage"/>
+                        <Param type="Bool" value="false"/>
+                    </Params>
+                </Execute>
+                <Execute src="Standard.AddBuff">
+                    <Params>
+                        <Param type="Controller" value="#2"/>
+                        <Param type="String" value="Burned"/>
+                    </Params>
+                </Execute>
+            </Executes>
+        </Action>
+    </Content>
+</Skill>

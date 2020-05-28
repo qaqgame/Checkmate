@@ -1,0 +1,77 @@
+<Effect name="FireBurnEffect" icon="fireburn.png" coolturn="0" life="3">
+    <Description>持续3回合的地面灼烧效果</Description>
+    <Data>
+        <value name="level" type="Int">3</value>
+        <value name="Damage" type="Int">20</value>
+        <value name="BuffId" type="String">FireBurn</value>
+    </Data>
+
+    <Content>
+      <Action trigger="OnAttached">
+        <Targets>
+        </Targets>
+        <Executes>
+          <Execute src="Standard.PlaceEffect">
+            <Params>
+              <Param type="Position" value="%Obj.Position"/>
+              <Param type="String" value="FireBurn"/>
+            </Params>
+            <Return value="$BuffId"/>
+          </Execute>
+          <Execute src="Standard.AddBuff">
+            <Params>
+              <Param type="Controller" value="%Dst"/>
+              <Param type="String" value="FireBurned"/>
+            </Params>
+          </Execute>
+        </Executes>
+      </Action>
+
+      <Action trigger="Enter">
+            <Targets>
+            </Targets>
+            <Executes>
+                <Execute src="Standard.AddBuff">
+                    <Params>
+                        <Param type="Controller" value="%Dst"/>
+                        <Param type="String" value="FireBurned"/>
+                    </Params>
+                </Execute>
+                <Execute src="Standard.Damage">
+                    <Params>
+                        <Param type="Controller" value="%Dst"/>
+                        <Param type="Int" value="$Damage"/>
+                    </Params>
+                </Execute>
+            </Executes>
+        </Action>  
+
+        <Action trigger="Timely">
+            <Checks>
+                <DefaultCheck src="%Src.HasRole" srcType="Bool" target="true" targetType="Bool" compare="Equal"/>
+            </Checks>
+            <Targets>
+            </Targets>
+            <Executes>
+                <Execute src="Standard.Damage">
+                    <Params>
+                        <Param type="Controller" value="%Dst"/>
+                        <Param type="Int" value="$Damage"/>
+                    </Params>
+                </Execute>
+            </Executes>
+        </Action>
+
+        <Action trigger="OnRemoved">
+          <Targets>
+          </Targets>
+          <Executes>
+            <Execute src="Standard.RemovePlacedEffect">
+              <Params>
+                <Param type="String" value="$BuffId"/>
+              </Params>
+            </Execute>
+          </Executes>
+        </Action>
+    </Content>
+</Effect>

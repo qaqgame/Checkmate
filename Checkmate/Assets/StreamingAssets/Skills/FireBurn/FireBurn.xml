@@ -1,5 +1,5 @@
-<Skill name="FireBurn" cd="4" type="Active" cost="3" icon="fireburn.png">
-    <Description>FireBurn: Shoot a Fire Ray to a direction up to three cells</Description>
+<Skill name="FireBurn" cd="6" type="Active" cost="3" icon="fireburn.png">
+    <Description>选择范围为2的Cell内的一条路径，对路径上的敌人造成伤害，并留下持续3回合的地面灼烧效果。</Description>
     <SkillRange max="2" min="0" type="Cell|Role" team="Self|Friend|Enemy|Neutual">
         <DefaultRange type="Range" limit="2"/>
     </SkillRange>
@@ -9,12 +9,16 @@
     <Data>
         <value name="level" type="Int">1</value>
         <value name="Damage" type="Int">30</value>
+        <value name="EffectFilePath" type="String">FireBurnEffect</value>
     </Data>
 
     <Content>
         <Action trigger="Execute">
             <Targets>
                 <DefaultSearch id="1" type="Role" limit="99" start="Src" center="Center">
+                    <DefaultRange type="Line" limit="2"/>
+                </DefaultSearch>
+                <DefaultSearch id="cellList" type="Cell" limit="4" start="Src" center="Center">
                     <DefaultRange type="Line" limit="2"/>
                 </DefaultSearch>
                 <Selects id="2" src="1">
@@ -27,6 +31,12 @@
                         <Param type="Controller" value="#2"/>
                         <Param type="Int" value="$Damage"/>
                         <Param type="Bool" value="false"/>
+                    </Params>
+                </Execute>
+                <Execute src="Standard.AddCellEffects">
+                    <Params>
+                        <Param type="ControllerList" value="#cellList"/>
+                        <Param type="String" value="$EffectFilePath"/>
                     </Params>
                 </Execute>
             </Executes>

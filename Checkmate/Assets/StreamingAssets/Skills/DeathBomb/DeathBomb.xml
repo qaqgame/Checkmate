@@ -1,0 +1,58 @@
+<Skill name="DeathBomb" cd="7" type="Active" cost="7" icon="deathbomb.png">
+    <Description>向目标地点发射榴弹炮，周围2圈范围内敌军受到伤害，并在中心与周围一圈留下2回合灼烧效果</Description>
+    <SkillRange max="7" min="0" type="Cell|Role" team="Self|Friend|Enemy|Neutual">
+        <DefaultRange type="Range" limit="7"/>
+    </SkillRange>
+    <EffectRange>
+        <DefaultRange type="Range" limit="2"/>
+    </EffectRange>
+    <Data>
+        <value name="level" type="Int">3</value>
+        <value name="Damage" type="Int">40</value>
+        <value name="EffectFilePath" type="String">FireBurnEffect</value>
+    </Data>
+
+    <Content>
+        <Action trigger="Execute">
+            <Targets>
+                <DefaultSearch id="1" type="Role" limit="99" start="Center" center="Center">
+                    <DefaultRange type="Range" limit="2"/>
+                </DefaultSearch>
+                <Selects id="2" src="1">
+                    <DefaultTeamSelector team="Enemy"/>
+                </Selects>
+                <DefaultSearch id="cellList" type="Cell" limit="7" start="Center" center="Center">
+                    <DefaultRange type="Range" limit="1"/>
+                </DefaultSearch>
+            </Targets>
+            <Executes>
+                <Execute src="Standard.PlayGroundEffect">
+                    <Params>
+                        <Param type="String" value="SunFall"/>
+                        <Param type="Position" value="%Center"/>
+                        <Param type="Float" value="7"/>
+                    </Params>
+                </Execute>
+                <Execute src="Standard.PlaySound">
+                    <Params>
+                        <Param type="String" value="Metal"/>
+                        <Param type="Float" value="0.5"/>
+                    </Params>
+                </Execute>
+                <Execute src="Standard.DamagePhysically">
+                    <Params>
+                        <Param type="Controller" value="#2"/>
+                        <Param type="Int" value="$Damage"/>
+                        <Param type="Bool" value="false"/>
+                    </Params>
+                </Execute>
+                <Execute src="Standard.AddCellEffects">
+                    <Params>
+                        <Param type="ControllerList" value="#cellList"/>
+                        <Param type="String" value="$EffectFilePath"/>
+                    </Params>
+                </Execute>
+            </Executes>
+        </Action>
+    </Content>
+</Skill>

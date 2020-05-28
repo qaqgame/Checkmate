@@ -20,5 +20,8 @@ namespace Assets.Chess
 
         public static QGFEvent<GameParam,FSPParam> onGameStart = new QGFEvent<GameParam,FSPParam>();//游戏开始事件
         public static QGFEvent onGameEnd = new QGFEvent();//游戏结束事件
+
+        public static QGFEvent onEditStart = new QGFEvent();
+        public static QGFEvent onEditFinished = new QGFEvent();
     }
 }

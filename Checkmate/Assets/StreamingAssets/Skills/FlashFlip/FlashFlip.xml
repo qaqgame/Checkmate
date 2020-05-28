@@ -1,0 +1,45 @@
+<Skill name="FlashFlip" cd="3" type="Active" cost="2" icon="flashflip.png">
+    <Description>瞬间闪现到一个指定的位置</Description>
+    <SkillRange max="2" min="0" type="Cell" team="Self|Friend|Enemy|Neutual">
+        <DefaultRange type="Range" limit="2"/>
+    </SkillRange>
+    <EffectRange>
+        <DefaultRange type="Single" limit="2"/>
+    </EffectRange>
+    <Data>
+        <value name="level" type="Int">1</value>
+    </Data>
+
+    <Content>
+        <Action trigger="Execute">
+            <Targets>
+                <DefaultSearch id="SingleCell" type="Cell" limit="1" start="Center" center="Center">
+                    <DefaultRange type="Single" limit="2"/>
+                </DefaultSearch>
+            </Targets>
+
+            <Executes>
+                <Execute src="Standard.PlayEffect">
+                    <Params>
+                        <Param type="String" value="Portal"/>
+                        <Param type="Controller" value="%Obj"/>
+                        <Param type="Float" value="2"/>
+                    </Params>
+                </Execute>
+                <Execute src="FlashFlip.FlashFlipTo">
+                    <Params>
+                        <Param type="Controller" value="%Obj"/>
+                        <Param type="Position" value="#SingleCell[0].Position"/>
+                    </Params>
+                </Execute>
+                <Execute src="Standard.PlayGroundEffect">
+                    <Params>
+                        <Param type="String" value="Portal"/>
+                        <Param type="Position" value="%Center"/>
+                        <Param type="Float" value="1"/>
+                    </Params>
+                </Execute>
+            </Executes>
+        </Action>
+    </Content>
+</Skill>

@@ -1,0 +1,26 @@
+{
+    "Rule":"KillMode",
+    "MaxTeam":2,
+    "Roles":[
+        {
+            "name":"Alice",
+            "team":0,
+            "position":"(2,-4,2)"
+        },
+        {
+            "name":"Anna",
+            "team":0,
+            "position":"(4,-4,0)"
+        },
+        {
+            "name":"Grey",
+            "team":1,
+            "position":"(3,-6,3)"
+        },
+        {
+            "name":"Jelly",
+            "team":1,
+            "position":"(3,-3,0)"
+        }
+    ]
+}

@@ -348,7 +348,7 @@ namespace Checkmate.Game
                 }
                 else
                 {
-                    Debuger.Log("current shader:{0}", currentRender.material.shader.name);
+                    Debug.Log("current shader:"+ currentRender.material.shader.name);
                 }
 
             }

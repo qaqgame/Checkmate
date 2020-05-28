@@ -1,0 +1,4 @@
+<Config name="FlashFlip">
+    <Main namespace="Checkmate.FlashFlip" class="FlashFlip">FlashFlip.dll</Main>
+    <Rely></Rely>
+</Config>
