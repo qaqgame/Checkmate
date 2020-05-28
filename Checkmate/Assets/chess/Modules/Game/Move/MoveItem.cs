@@ -101,8 +101,8 @@ public class MoveItem : MonoBehaviour
             if (MapManager.Instance.GetCell(item.Path[i]).Role != -1)
             {
                 // 移动结束
-                item.rc.SetState(RoleState.Idle);
-                yield break;
+                // item.rc.SetState(RoleState.Idle);
+                break;
             }
             MapManager.Instance.GetCell(item.rc.Position).SetVisibility(item.rc);
             MapManager.Instance.GetCell(item.rc.Position).Role = -1;
@@ -141,7 +141,7 @@ public class MoveItem : MonoBehaviour
 
                 if (APManager.Instance.GetCurAP(item.rc.Team) <= 0)
                 {
-                    yield break;
+                    break;
                 }
             }
             else
