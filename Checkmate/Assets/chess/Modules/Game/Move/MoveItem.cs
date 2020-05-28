@@ -146,7 +146,7 @@ public class MoveItem : MonoBehaviour
             }
             else
             {
-                yield break;
+               break;
             }
         }
         // 控制移动动画
