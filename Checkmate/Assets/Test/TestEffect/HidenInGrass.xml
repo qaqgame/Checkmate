@@ -1,0 +1,44 @@
+<Effect name="HidenInGrass"  icon="grass.png" coolturn="0">
+    <Description>进入时增加闪避，离开时移除</Description>
+    <Data>
+        <value name="level" type="Int">3</value>
+        <value name="Miss" type="String">0.1</value>
+    </Data>
+
+    <Content>
+        <Action trigger="Enter">
+            <Targets>
+            </Targets>
+            <Executes>
+                <Execute src="Standard.ChangeAttribute">
+                    <Params>
+                        <Param type="Controller" value="%Dst"/>
+                        <Param type="String" value="Add"/>
+                        <Param type="String" value="Miss"/>
+                        <Param type="String" value="$Miss"/>
+                        <Param type="String" value="Float"/>
+                        <Param type="Bool" value="false"/>
+                        <Param type="Bool" value="false"/>
+                    </Params>
+                </Execute>
+            </Executes>
+        </Action>
+        <Action trigger="Leave">
+            <Targets>
+            </Targets>
+            <Executes>
+                <Execute src="Standard.ChangeAttribute">
+                    <Params>
+                        <Param type="Controller" value="%Dst"/>
+                        <Param type="String" value="Sub"/>
+                        <Param type="String" value="Miss"/>
+                        <Param type="String" value="$Miss"/>
+                        <Param type="String" value="Float"/>
+                        <Param type="Bool" value="false"/>
+                        <Param type="Bool" value="false"/>
+                    </Params>
+                </Execute>
+            </Executes>
+        </Action>
+    </Content>
+</Effect>

@@ -11,7 +11,7 @@
         "name":"grass",
         "file":"Grass",
         "single":false,
-        "effectIdx":[]
+        "effectIdx":[3]
     },
     {
         "id":1027,
