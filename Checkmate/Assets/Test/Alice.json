@@ -40,8 +40,8 @@
         "extraData": "[{\"name\":\"test\",\"param\":{\"type\":\"Checkmate.Game.Position\",\"value\":\"\",\"param\":[{\"type\":\"int\",\"value\":\"3\",\"param\":[] },{\"type\":\"int\",\"value\":\"2\",\"param\":[] },{\"type\":\"int\",\"value\":\"1\",\"param\":[] }] } }]"
     },
     "skills": ["TestSkill", "Gogogo", "FireBurn", "SafePlace", "FlashFlip"],
-    "attackSource": "arrow",
-    "attackEffect": "FireBreath",
+    "attackSource": "FireBall",
+    "attackEffect": "BlueSpell",
     "nearAttack": true,
     "extraData": ""
 
