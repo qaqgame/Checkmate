@@ -29,15 +29,13 @@
                 <Param type="Bool" value="true"/>
               </Params>
             </Execute>
-            <Executes>
-                <Execute src="Standard.DamagePhysically">
-                    <Params>
-                        <Param type="ControllerList" value="#2"/>
-                        <Param type="Int" value="$Damage"/>
-                        <Param type="Bool" value="false"/>
-                    </Params>
-                </Execute>
-            </Executes>
+            <Execute src="Standard.DamagePhysically">
+                <Params>
+                    <Param type="ControllerList" value="#2"/>
+                    <Param type="Int" value="$Damage"/>
+                    <Param type="Bool" value="false"/>
+                </Params>
+            </Execute>
         </Action>
     </Content>
 </Skill>
