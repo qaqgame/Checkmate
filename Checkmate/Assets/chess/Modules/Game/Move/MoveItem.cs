@@ -78,7 +78,7 @@ public class MoveItem : MonoBehaviour
     {
         while (true)
         {
-            if (moveitems.Count > 0)
+            while(moveitems.Count > 0)
             {
                 //取出移动项
                 Item item = moveitems.Dequeue();
@@ -141,7 +141,7 @@ public class MoveItem : MonoBehaviour
 
                 //if (APManager.Instance.GetCurAP(item.rc.Team) <= 0)
                 //{
-                //   break;
+                //    break;
                 //}
             }
             else
