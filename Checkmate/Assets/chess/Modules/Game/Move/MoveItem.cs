@@ -116,32 +116,38 @@ public class MoveItem : MonoBehaviour
             Vector3 b = MapManager.Instance.GetCellWorldPosition(item.Path[i]);
             // 修改朝向
             item.rc.FaceTo(b);
-
-            for (float t = 0f; t < 1f; t += Time.deltaTime * item.travelSpeed)
+            if (APManager.Instance.ReduceAp(item.rc.Team, 1))
             {
-                item.rc.GetGameObject().transform.position = Vector3.Lerp(a, b, t);
-                yield return null;
+
+                for (float t = 0f; t < 1f; t += Time.deltaTime * item.travelSpeed)
+                {
+                    item.rc.GetGameObject().transform.position = Vector3.Lerp(a, b, t);
+                    yield return null;
+                }
+                // 修改行动点
+
+
+                MapManager.Instance.GetCell(item.rc.Position).RemoveVisibility(item.rc);
+
+                item.rc.Position = item.Path[i];
+
+                MapManager.Instance.GetCell(item.rc.Position).SetVisibility(item.rc);
+                MapManager.Instance.GetCell(item.rc.Position).Role = item.rc.RoleId;
+                while (GameExecuteManager.Instance.WaitForExecute)
+                {
+                    Debug.LogError("Wait for a while2");
+                    yield return null;
+                }
+
+                if (APManager.Instance.GetCurAP(item.rc.Team) <= 0)
+                {
+                    yield break;
+                }
             }
-            // 修改行动点
-            APManager.Instance.ReduceAp(item.rc.Team, 1);
-
-            MapManager.Instance.GetCell(item.rc.Position).RemoveVisibility(item.rc);
-
-            item.rc.Position = item.Path[i];
-
-            MapManager.Instance.GetCell(item.rc.Position).SetVisibility(item.rc);
-            MapManager.Instance.GetCell(item.rc.Position).Role = item.rc.RoleId;
-            while (GameExecuteManager.Instance.WaitForExecute)
-            {
-                Debug.LogError("Wait for a while2");
-                yield return null;
-            }
-
-            if (APManager.Instance.GetCurAP(item.rc.Team) <= 0)
+            else
             {
                 yield break;
             }
-
         }
         // 控制移动动画
         Animator animator = item.rc.GetModel().GetComponent<Animator>();
