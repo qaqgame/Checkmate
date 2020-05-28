@@ -1,4 +1,5 @@
 ﻿using Checkmate.Game.Player;
+using QGF;
 using QGF.Common;
 using QGF.Event;
 using System.Collections;
@@ -48,6 +49,7 @@ public class APManager : Singleton<APManager>
     {
         if (elementAP[uid].ReduceCurAP(num))
         {
+            Debuger.Log("reduce ap:{0}, {1}", uid, num);
             if (uid == PlayerManager.Instance.PID)
             {
                 onAPChanged.Invoke();

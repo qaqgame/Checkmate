@@ -2,6 +2,7 @@
 using Checkmate.Game.Controller;
 using Checkmate.Game.Global.Utils;
 using Checkmate.Game.Map;
+using Checkmate.Game.Player;
 using Checkmate.Game.Role;
 using Checkmate.Game.Utils;
 using Checkmate.Global.Data;
@@ -93,6 +94,7 @@ namespace Checkmate.Game.Skill
             {
                 return;
             }
+
             //设置环境
             EnvVariable env = new EnvVariable();
             env.Src = src;
@@ -104,6 +106,10 @@ namespace Checkmate.Game.Skill
             GameEnv.Instance.PushEnv(env);
             //执行该src的onSkill
             BuffManager.Instance.ExecuteWithEnv(TriggerType.OnSkill, src);
+            if (src.Team != (int)PlayerManager.Instance.PID)
+            {
+                APManager.Instance.ReduceAp(src.Team, mSkills[id].Cost);
+            }
             //执行
             mSkills[id].OnExecute();
             //添加结束时操作（重置该角色状态)
@@ -188,6 +194,11 @@ namespace Checkmate.Game.Skill
                 Debuger.LogError("error get attack target role in {0}", center.ToString());
             }
             RoleController target = RoleManager.Instance.GetRole(dstId);
+            //非本人的操作
+            if (role.Team != (int)PlayerManager.Instance.PID)
+            {
+                APManager.Instance.ReduceAp(role.Team, 2);
+            }
             Debuger.Log("execute attack:{0} to {1} ,target position:{2}", role.Name, target.Name, target.Position.ToString());
             //设置环境
             EnvVariable env = new EnvVariable();
