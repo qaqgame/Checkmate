@@ -21,9 +21,15 @@ public class SinglePlayerAP
     }
 
     //消耗AP
-    public void ReduceCurAP(int num)
+    public bool ReduceCurAP(int num)
     {
+        if (currentAP < num)
+        {
+            return false;
+        }
         currentAP -= num;
+        return true;
+        
     }
 
     public void SetCurAP(int num)

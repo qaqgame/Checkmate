@@ -166,6 +166,9 @@ namespace Checkmate.Modules.Game.Control
                                     GameNetManager.Instance.Move(role, target.GetPosition());
                                     //
                                     role.SetState(RoleState.Move);
+                                    Animator animator = role.GetModel().GetComponent<Animator>();
+                                    animator.ResetTrigger("Idle");
+                                    animator.SetTrigger("Walk");
                                     mState = InputState.Idle;
                                     GameEvent.onResetAll.Invoke();
                                 }
@@ -176,16 +179,18 @@ namespace Checkmate.Modules.Game.Control
                                     {
                                         //消耗行动点
                                         int cost = SkillManager.Instance.GetCost(mCurrentSkill);
-                                        APManager.Instance.ReduceAp((int)PlayerManager.Instance.PID, cost);
+                                        if (APManager.Instance.ReduceAp((int)PlayerManager.Instance.PID, cost))
+                                        {
 
-                                        //施法
+                                            //施法
 
 
-                                        GameNetManager.Instance.Skill(mCurrentSkill, role, target.GetPosition());
+                                            GameNetManager.Instance.Skill(mCurrentSkill, role, target.GetPosition());
 
-                                        role.SetState(RoleState.Spell);
-                                        mState = InputState.Idle;
-                                        GameEvent.onResetAll.Invoke();
+                                            role.SetState(RoleState.Spell);
+                                            mState = InputState.Idle;
+                                            GameEvent.onResetAll.Invoke();
+                                        }
                                     }
                                 }
                                 else if (role.CurrentState == RoleState.PreAttack && target != null)
@@ -208,13 +213,15 @@ namespace Checkmate.Modules.Game.Control
                                         if (PlayerManager.Instance.IsEnemy(t.Team))
                                         {
                                             //消耗行动点
+                                            if (APManager.Instance.ReduceAp((int)PlayerManager.Instance.PID, 2))
+                                            {
+                                                //攻击操作
+                                                GameNetManager.Instance.Attack(role, t.Position);
 
-                                            //攻击操作
-                                            GameNetManager.Instance.Attack(role, t.Position);
-
-                                            role.SetState(RoleState.Attack);
-                                            mState = InputState.Idle;
-                                            GameEvent.onResetAll.Invoke();
+                                                role.SetState(RoleState.Attack);
+                                                mState = InputState.Idle;
+                                                GameEvent.onResetAll.Invoke();
+                                            }
                                         }
                                     }
                                 }

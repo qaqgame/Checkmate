@@ -44,13 +44,17 @@ public class APManager : Singleton<APManager>
         onAPChanged.AddListener(element);
     }
 
-    public void ReduceAp(int uid,int num)
+    public bool ReduceAp(int uid,int num)
     {
-        elementAP[uid].ReduceCurAP(num);
-        if (uid == PlayerManager.Instance.PID)
+        if (elementAP[uid].ReduceCurAP(num))
         {
-            onAPChanged.Invoke();
+            if (uid == PlayerManager.Instance.PID)
+            {
+                onAPChanged.Invoke();
+            }
+            return true;
         }
+        return false;
     }
 
     public void SetAP(int uid,int num)
