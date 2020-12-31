@@ -1,4 +1,5 @@
 ﻿using Checkmate.Game.Controller;
+using Checkmate.Game.Skill;
 using QGF.Common;
 using System;
 using System.Collections.Generic;
@@ -71,12 +72,14 @@ namespace Assets.chess.Global.AI
             private set { fullExtended = value; }
         }
 
-        public void Act(ActionType act, State holder)
+        public void Act(ActionType act, State holder, State enemy)         // 进行模拟动作
         {
             switch (act)
             {
-                case ActionType.Skill1:
-
+                case ActionType.Skill1:                        // 模拟进行技能1
+                    int mCurrSkill = holder.rc.Skills[0];
+                    BaseSkill skill = SkillManager.Instance.GetInstance(mCurrSkill);
+                    
                     break;
                 case ActionType.Skill2:
 
@@ -139,10 +142,10 @@ namespace Assets.chess.Global.AI
             {
                 // ai随机Action操作
                 int r = ran.Next(AIController.Instance.AvailableActionNum + 1);
-                Act((ActionType)r, aiState);
+                Act((ActionType)r, aiState, playerState);
                 // 玩家随机Action操作
                 r = ran.Next(AIController.Instance.AvailableActionNum + 1);
-                Act((ActionType)r, playerState);
+                Act((ActionType)r, playerState, aiState);
                 count++;
             }
         }
@@ -159,12 +162,11 @@ namespace Assets.chess.Global.AI
         private static State mstate;
         private static State pstate;
 
-        public void Init(RoleController rc, RoleController aicontroller, RoleController plcontroller)
+        public void Init(RoleController aicontroller, RoleController plcontroller)
         {
-            roleController = rc;
             roleController = aicontroller;
-            mstate = new State(aicontroller);
-            pstate = new State(plcontroller);
+            mstate = new State(DeepCopyByBinary<RoleController>(aicontroller));         // 深拷贝
+            pstate = new State(DeepCopyByBinary<RoleController>(plcontroller));         // 深拷贝
         }
         
         void MTCSAction(State mstate, State pstate)
@@ -180,6 +182,7 @@ namespace Assets.chess.Global.AI
             }
         }
 
+        // 深拷贝
         public static T DeepCopyByBinary<T>(T obj)
         {
             object retval;
