@@ -31,6 +31,8 @@ namespace Checkmate.Game.Controller
         PreAttack,//预攻击
         Attack,
     }
+
+    [Serializable]
     public class RoleController : ModelController
     {
         private GameObject mObj;//根物体
