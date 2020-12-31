@@ -1,4 +1,5 @@
-﻿using Checkmate.Game.Controller;
+﻿using Checkmate.Game;
+using Checkmate.Game.Controller;
 using Checkmate.Game.Skill;
 using QGF.Common;
 using System;
@@ -23,8 +24,19 @@ namespace Assets.chess.Global.AI
 
     public class State
     {
-        public bool died;
+        private bool died;
         public RoleController rc;
+
+
+        public bool endState(int mcost)   // 是否在一回合内已经无法行动
+        {   
+            // ai也受到playerManager管理
+            if(APManager.Instance.GetCurAP()-mcost < 0)
+            {
+                return true;
+            }
+            return died;
+        }
          
         public State(RoleController rolecontroller)
         {
@@ -46,7 +58,7 @@ namespace Assets.chess.Global.AI
         int simulateNums;            // 进行模拟的次数
         bool terminal
         {
-            get { return aiState.died || playerState.died; }
+            get { return aiState.endState(0) || playerState.endState(0); }
             set { terminal = value; }
         }// 判断是否终止
         int maxRounds;               // MTCS最多进行模拟的回合数
@@ -79,7 +91,23 @@ namespace Assets.chess.Global.AI
                 case ActionType.Skill1:                        // 模拟进行技能1
                     int mCurrSkill = holder.rc.Skills[0];
                     BaseSkill skill = SkillManager.Instance.GetInstance(mCurrSkill);
-                    
+                    if (holder.endState(skill.Cost))          // 无行动点可继续行动，退出该次模拟，并且代表这次模拟无价值
+                    {
+                        qualityValue = 0.0f;
+                        simulated = true;
+                        return;
+                    }
+                    List<Position> pos = skill.GetMousePositions(holder.rc.Position);
+                    if (!pos.Contains(enemy.rc.Position))      // 技能范围内没有敌人，代表这一步没有价值，停止模拟
+                    {
+                        qualityValue = 0.0f;
+                        simulated = true;
+                        return;
+                    }
+                    else    // 技能范围内有敌人,进行操作
+                    {
+
+                    }
                     break;
                 case ActionType.Skill2:
 
@@ -140,12 +168,19 @@ namespace Assets.chess.Global.AI
             Random ran = new Random();
             while (count < maxRounds && !terminal)          // 只模拟接下来的maxRounds个回合，并且这期间没有达到终止。采用随机选择Action的方式进行模拟
             {
-                // ai随机Action操作
-                int r = ran.Next(AIController.Instance.AvailableActionNum + 1);
-                Act((ActionType)r, aiState, playerState);
-                // 玩家随机Action操作
-                r = ran.Next(AIController.Instance.AvailableActionNum + 1);
-                Act((ActionType)r, playerState, aiState);
+                while(!aiState.endState(0))                // 一回合内ai随机行动
+                {
+                    // ai随机Action操作
+                    int r = ran.Next(AIController.Instance.AvailableActionNum + 1);
+                    Act((ActionType)r, aiState, playerState);
+                }
+                
+                while(!playerState.endState(0))              // 一回合内玩家随机行动
+                {
+                    // 玩家随机Action操作
+                    int r = ran.Next(AIController.Instance.AvailableActionNum + 1);
+                    Act((ActionType)r, playerState, aiState);
+                }
                 count++;
             }
         }
