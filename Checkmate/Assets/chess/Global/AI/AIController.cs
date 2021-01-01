@@ -1,5 +1,6 @@
 ﻿using Checkmate.Game;
 using Checkmate.Game.Controller;
+using Checkmate.Game.Player;
 using Checkmate.Game.Skill;
 using QGF.Common;
 using System;
@@ -26,9 +27,10 @@ namespace Assets.chess.Global.AI
     {
         private bool died;
         public RoleController rc;
+        private int HP;
+        private Position pos;
 
-
-        public bool endState(int mcost)   // 是否在一回合内已经无法行动
+        public bool endState(int mcost)   // 是否在一回合内已经无法行动,可能时因为死亡或者无行动点
         {   
             // ai也受到playerManager管理
             if(APManager.Instance.GetCurAP()-mcost < 0)
@@ -37,12 +39,25 @@ namespace Assets.chess.Global.AI
             }
             return died;
         }
+
+        public bool Died
+        {
+            get { return Died; }
+            set { died = value; }
+        }
          
         public State(RoleController rolecontroller)
         {
             rc = rolecontroller;
+            HP = rc.Current.Hp;
+            pos = rc.Position;
         }
         
+        public int currHp
+        {
+            get { return HP; }
+            set { HP = value; }
+        }
     }
 
     public class MTCSNode
@@ -50,12 +65,16 @@ namespace Assets.chess.Global.AI
         MTCSNode parents = null;                  // 当前节点的父节点
         public List<MTCSNode> childrens = new List<MTCSNode>();     // 当前节点的子节点
 
-        //int visitTimes = 0;   // 该节点的访问次数
+        int visitTimesAll = 0;   // 该节点的总访问次数，用于子节点引用父节点的改值来计算UCB，该值代表总访问次数
         float qualityValue = 0.0F;   // 选择该节点作为下一步的价值
         State aiState;               // ai的State
         State playerState;           // 玩家的State
         ActionType act;
+        Position targetPos;
         int simulateNums;            // 进行模拟的次数
+        int winNums;                // 模拟中获得胜利的次数
+        public double UCB;
+
         bool terminal
         {
             get { return aiState.endState(0) || playerState.endState(0); }
@@ -89,24 +108,38 @@ namespace Assets.chess.Global.AI
             switch (act)
             {
                 case ActionType.Skill1:                        // 模拟进行技能1
-                    int mCurrSkill = holder.rc.Skills[0];
+                    int mCurrSkill = holder.rc.Skills[0];      // todo: 确认skill[0]代表第一个技能，应该
                     BaseSkill skill = SkillManager.Instance.GetInstance(mCurrSkill);
                     if (holder.endState(skill.Cost))          // 无行动点可继续行动，退出该次模拟，并且代表这次模拟无价值
                     {
-                        qualityValue = 0.0f;
-                        simulated = true;
+                        qualityValue += 0.0f;
+                        targetPos = null;
                         return;
                     }
                     List<Position> pos = skill.GetMousePositions(holder.rc.Position);
                     if (!pos.Contains(enemy.rc.Position))      // 技能范围内没有敌人，代表这一步没有价值，停止模拟
                     {
-                        qualityValue = 0.0f;
-                        simulated = true;
+                        qualityValue += 0.0f;
+                        targetPos = null;
                         return;
                     }
                     else    // 技能范围内有敌人,进行操作
                     {
-
+                        APManager.Instance.ReduceAp((int)PlayerManager.Instance.PID,skill.Cost);            // TODO: 在AI的回合，PlayerManager.Instance.PID应该代表ai
+                        // TODO: 执行技能，注意要随时修改died属性
+                        targetPos = enemy.rc.Position;
+                        object damage = skill.GetValue("Damage");         // 获取技能伤害
+                        if(damage == null)                       // 非伤害型技能，将cost作为qualityValue
+                        {
+                            qualityValue += skill.Cost;
+                            return;
+                        }
+                        enemy.currHp -= (int)damage;              // 伤害型技能，将damage作为qualityValue
+                        qualityValue += (int)damage;
+                        if(enemy.currHp <= 0)
+                        {
+                            enemy.Died = true;
+                        }
                     }
                     break;
                 case ActionType.Skill2:
@@ -164,25 +197,53 @@ namespace Assets.chess.Global.AI
         }
         public void Simulation()
         {
-            int count = 0;
-            Random ran = new Random();
-            while (count < maxRounds && !terminal)          // 只模拟接下来的maxRounds个回合，并且这期间没有达到终止。采用随机选择Action的方式进行模拟
+            for (int i = 0; i < simulateNums; i++)             //模拟simulateNums次
             {
-                while(!aiState.endState(0))                // 一回合内ai随机行动
+                int count = 0;
+                Random ran = new Random();
+                while (count < maxRounds && !terminal)          // 只模拟接下来的maxRounds个回合，并且这期间没有达到终止。采用随机选择Action的方式进行模拟
                 {
-                    // ai随机Action操作
-                    int r = ran.Next(AIController.Instance.AvailableActionNum + 1);
-                    Act((ActionType)r, aiState, playerState);
-                }
+                    while(!aiState.endState(0))                // 一回合内ai随机行动
+                    {
+                        // ai随机Action操作
+                        int r = ran.Next(AIController.Instance.AvailableActionNum + 1);
+                        Act((ActionType)r, aiState, playerState);
+                    }
                 
-                while(!playerState.endState(0))              // 一回合内玩家随机行动
-                {
-                    // 玩家随机Action操作
-                    int r = ran.Next(AIController.Instance.AvailableActionNum + 1);
-                    Act((ActionType)r, playerState, aiState);
+                    while(!playerState.endState(0))              // 一回合内玩家随机行动
+                    {
+                        // 玩家随机Action操作
+                        int r = ran.Next(AIController.Instance.AvailableActionNum + 1);
+                        Act((ActionType)r, playerState, aiState);
+                    }
+                    count++;
                 }
-                count++;
+                if(playerState.Died)
+                {
+                    winNums++;
+                }
             }
+            simulated = true;
+            // 计算UCB
+            double v1 = (double)winNums / simulateNums + Math.Sqrt(qualityValue/simulateNums);
+            double c = 1.96;
+            double v2 = Math.Sqrt((c * Math.Log(visitTimesAll)) / simulateNums);
+            UCB = v1 + v2;
+        }
+
+        public MTCSNode GetBestAct()
+        {
+            int index = 0;
+            double maxUCB = 0;
+            for(int i = 0; i < childrens.Count; i++)
+            {
+                if(childrens[i].UCB >= maxUCB)
+                {
+                    index = i;
+                    maxUCB = childrens[i].UCB;
+                }
+            }
+            return childrens[index];
         }
     }
     public class AIController : Singleton<AIController>
@@ -215,6 +276,8 @@ namespace Assets.chess.Global.AI
                     act.Simulation();
                 }
             }
+            MTCSNode actBest = root.GetBestAct();
+            // TODO: 根据actBest进行act
         }
 
         // 深拷贝
