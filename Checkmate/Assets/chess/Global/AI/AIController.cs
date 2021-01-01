@@ -107,18 +107,21 @@ namespace Assets.chess.Global.AI
 
         public void Act(ActionType act, State holder, State enemy)         // 进行模拟动作
         {
+            int mCurrSkill;
+            BaseSkill skill;
+            List<Position> pos;
             switch (act)
             {
                 case ActionType.Skill1:                        // 模拟进行技能1
-                    int mCurrSkill = holder.rc.Skills[0];      // todo: 确认skill[0]代表第一个技能，应该
-                    BaseSkill skill = SkillManager.Instance.GetInstance(mCurrSkill);
+                    mCurrSkill = holder.rc.Skills[0];      // todo: 确认skill[0]代表第一个技能，应该
+                    skill = SkillManager.Instance.GetInstance(mCurrSkill);
                     if (holder.endState(skill.Cost))          // 无行动点可继续行动，退出该次模拟，并且代表这次模拟无价值
                     {
                         qualityValue += 0.0f;
                         targetPos = null;
                         return;
                     }
-                    List<Position> pos = skill.GetMousePositions(holder.rc.Position);
+                    pos = skill.GetMousePositions(holder.rc.Position);
                     if (!pos.Contains(enemy.rc.Position))      // 技能范围内没有敌人，代表这一步没有价值，停止模拟
                     {
                         qualityValue += 0.0f;
@@ -127,7 +130,6 @@ namespace Assets.chess.Global.AI
                     }
                     else    // 技能范围内有敌人,进行操作
                     {
-                        //APManager.Instance.ReduceAp((int)PlayerManager.Instance.PID,skill.Cost);
                         holder.ap -= skill.Cost;           // TODO: 在AI的回合，PlayerManager.Instance.PID应该代表ai
                         // TODO: 执行技能，注意要随时修改died属性
                         targetPos = enemy.rc.Position;
@@ -146,13 +148,94 @@ namespace Assets.chess.Global.AI
                     }
                     break;
                 case ActionType.Skill2:
-
+                    mCurrSkill = holder.rc.Skills[1];      // todo: 确认skill[1]代表第2个技能，应该
+                    skill = SkillManager.Instance.GetInstance(mCurrSkill);
+                    if (holder.endState(skill.Cost))          // 无行动点可继续行动，退出该次模拟，并且代表这次模拟无价值
+                    {
+                        qualityValue += 0.0f;
+                        targetPos = null;
+                        return;
+                    }
+                    pos = skill.GetMousePositions(holder.rc.Position);
+                    if (!pos.Contains(enemy.rc.Position))      // 技能范围内没有敌人，代表这一步没有价值，停止模拟
+                    {
+                        qualityValue += 0.0f;
+                        targetPos = null;
+                        return;
+                    }
+                    else    // 技能范围内有敌人,进行操作
+                    {
+                        holder.ap -= skill.Cost;           // TODO: 在AI的回合，PlayerManager.Instance.PID应该代表ai
+                        // TODO: 执行技能，注意要随时修改died属性
+                        targetPos = enemy.rc.Position;
+                        object damage = skill.GetValue("Damage");         // 获取技能伤害
+                        if (damage == null)                       // 非伤害型技能，将cost作为qualityValue
+                        {
+                            qualityValue += skill.Cost;
+                            return;
+                        }
+                        enemy.currHp -= (int)damage;              // 伤害型技能，将damage作为qualityValue
+                        qualityValue += (int)damage;
+                        if (enemy.currHp <= 0)
+                        {
+                            enemy.Died = true;
+                        }
+                    }
                     break;
                 case ActionType.Skill3:
-
+                    mCurrSkill = holder.rc.Skills[2];      // todo: 确认skill[2]代表第3个技能，应该
+                    skill = SkillManager.Instance.GetInstance(mCurrSkill);
+                    if (holder.endState(skill.Cost))          // 无行动点可继续行动，退出该次模拟，并且代表这次模拟无价值
+                    {
+                        qualityValue += 0.0f;
+                        targetPos = null;
+                        return;
+                    }
+                    pos = skill.GetMousePositions(holder.rc.Position);
+                    if (!pos.Contains(enemy.rc.Position))      // 技能范围内没有敌人，代表这一步没有价值，停止模拟
+                    {
+                        qualityValue += 0.0f;
+                        targetPos = null;
+                        return;
+                    }
+                    else    // 技能范围内有敌人,进行操作
+                    {
+                        holder.ap -= skill.Cost;           // TODO: 在AI的回合，PlayerManager.Instance.PID应该代表ai
+                        // TODO: 执行技能，注意要随时修改died属性
+                        targetPos = enemy.rc.Position;
+                        object damage = skill.GetValue("Damage");         // 获取技能伤害
+                        if (damage == null)                       // 非伤害型技能，将cost作为qualityValue
+                        {
+                            qualityValue += skill.Cost;
+                            return;
+                        }
+                        enemy.currHp -= (int)damage;              // 伤害型技能，将damage作为qualityValue
+                        qualityValue += (int)damage;
+                        if (enemy.currHp <= 0)
+                        {
+                            enemy.Died = true;
+                        }
+                    }
                     break;
                 case ActionType.GeneralAttack:
-
+                    int range = holder.rc.Temp.AttackRange;
+                    if(HexMapUtil.GetDistance(holder.rc.Position, enemy.rc.Position) > range)
+                    {
+                        qualityValue += 0;
+                        targetPos = null;
+                        return;
+                    } else
+                    {
+                        targetPos = enemy.rc.Position;
+                        int damage = holder.rc.Temp.Attack;
+                        enemy.currHp -= (int)damage;              //将damage作为qualityValue
+                        qualityValue += (int)damage;
+                        if (enemy.currHp <= 0)
+                        {
+                            enemy.Died = true;
+                        }
+                    }
+                    
                     break;
 
                 case ActionType.MoveForth:
