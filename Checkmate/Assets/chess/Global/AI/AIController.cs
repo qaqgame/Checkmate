@@ -1,5 +1,6 @@
 ﻿using Checkmate.Game;
 using Checkmate.Game.Controller;
+using Checkmate.Game.Map;
 using Checkmate.Game.Player;
 using Checkmate.Game.Skill;
 using QGF.Common;
@@ -19,8 +20,7 @@ namespace Assets.chess.Global.AI
         Skill2,
         Skill3,
         GeneralAttack,
-        MoveForth,
-        MoveDepart
+        MoveForth
     }
 
     public class State
@@ -28,12 +28,13 @@ namespace Assets.chess.Global.AI
         private bool died;
         public RoleController rc;
         private int HP;
-        private Position pos;
+        public Position pos = new Position();
+        public int ap;
 
         public bool endState(int mcost)   // 是否在一回合内已经无法行动,可能时因为死亡或者无行动点
         {   
             // ai也受到playerManager管理
-            if(APManager.Instance.GetCurAP()-mcost < 0)
+            if(ap-mcost < 0)
             {
                 return true;
             }
@@ -51,6 +52,7 @@ namespace Assets.chess.Global.AI
             rc = rolecontroller;
             HP = rc.Current.Hp;
             pos = rc.Position;
+            ap = APManager.Instance.GetCurAP();
         }
         
         public int currHp
@@ -125,7 +127,8 @@ namespace Assets.chess.Global.AI
                     }
                     else    // 技能范围内有敌人,进行操作
                     {
-                        APManager.Instance.ReduceAp((int)PlayerManager.Instance.PID,skill.Cost);            // TODO: 在AI的回合，PlayerManager.Instance.PID应该代表ai
+                        //APManager.Instance.ReduceAp((int)PlayerManager.Instance.PID,skill.Cost);
+                        holder.ap -= skill.Cost;           // TODO: 在AI的回合，PlayerManager.Instance.PID应该代表ai
                         // TODO: 执行技能，注意要随时修改died属性
                         targetPos = enemy.rc.Position;
                         object damage = skill.GetValue("Damage");         // 获取技能伤害
@@ -153,11 +156,24 @@ namespace Assets.chess.Global.AI
                     break;
 
                 case ActionType.MoveForth:
-
-                    break;
-
-                case ActionType.MoveDepart:
-
+                    int distance = HexMapUtil.GetDistance(holder.rc.Position, enemy.rc.Position);             // ai与玩家的距离
+                    CellController holderCell = MapManager.Instance.GetCell(holder.rc.Position);              // 操作者所处的cell
+                    CellController enemyCell = MapManager.Instance.GetCell(enemy.rc.Position);                // 敌人所处的cell
+                    Random r1 = new Random();
+                    int i = r1.Next(5);
+                    CellController t = enemyCell.GetNeighbor((HexDirection)i);                                // 随机移动
+                    for (int j = 0; j < i; j++)
+                    {
+                        int dir = r1.Next(6);
+                        if(t.GetNeighbor((HexDirection)dir).Position != enemyCell.Position)
+                        {
+                            t = t.GetNeighbor((HexDirection)dir);
+                        }
+                    }
+                    holder.pos = t.Position;
+                    int movdis = HexMapUtil.GetDistance(holder.rc.Position, holder.pos);
+                    qualityValue += movdis;                                                       // 移动距离作为qualityValue
+                    holder.ap -= movdis;
                     break;
             }
         }
