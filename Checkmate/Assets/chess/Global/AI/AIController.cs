@@ -3,6 +3,7 @@ using Checkmate.Game.Controller;
 using Checkmate.Game.Map;
 using Checkmate.Game.Player;
 using Checkmate.Game.Skill;
+using Checkmate.Services.Game;
 using QGF.Common;
 using System;
 using System.Collections.Generic;
@@ -27,9 +28,14 @@ namespace Assets.chess.Global.AI
     {
         private bool died;
         public RoleController rc;
-        private int HP;
+        // private int HP;
         public Position pos = new Position();
         public int ap;
+        public int ap1;
+        public RoleAttributeController roleAttributeController1;     
+        private RoleAttributeController roleAttributeController;    // 需要随着模拟变化的
+        public List<bool> isSkillInCD;          // 需要随着模拟而变化的
+        public List<bool> isSkillInCD1;
 
         public bool endState(int mcost)   // 是否在一回合内已经无法行动,可能时因为死亡或者无行动点
         {   
@@ -47,18 +53,83 @@ namespace Assets.chess.Global.AI
             set { died = value; }
         }
          
-        public State(RoleController rolecontroller)
+        public State(RoleController rolecontroller, RoleAttributeController roleattr)
         {
             rc = rolecontroller;
-            HP = rc.Current.Hp;
+            // HP = rc.Temp.Hp;
             pos = rc.Position;
             ap = APManager.Instance.GetCurAP();
+            ap1 = ap;
+            died = roleattr.Hp > 0;
+            roleAttributeController = new RoleAttributeController();
+            roleAttributeController.Copy(roleattr);
+            roleAttributeController1 = roleattr;
+            isSkillInCD = new List<bool>();
+            isSkillInCD1 = new List<bool>(); // todo:判断技能是否在cd
         }
         
         public int currHp
         {
-            get { return HP; }
-            set { HP = value; }
+            get { return roleAttributeController.Hp; }
+            set { roleAttributeController.Hp = value; }
+        }
+
+        public void Reset()
+        {
+            died = roleAttributeController1.Hp > 0;
+            pos = rc.Position;
+            ap = ap1;
+            roleAttributeController.Copy(roleAttributeController1);
+            for(int i = 0; i < isSkillInCD.Count; i++)
+            {
+                isSkillInCD[i] = isSkillInCD1[1];
+            }
+        }
+
+        // 更新state
+        public void Update(MTCSNode act)
+        {
+            switch(act.act)
+            {
+                case ActionType.Skill1:
+                    //isSkillInCD1[0] = true;
+                    ap1 -= act.apCost;
+                    pos = act.targetPos;
+                    if(act.targetPos == act.playerState.rc.Position)
+                    {
+                        act.playerState.roleAttributeController1.Hp -= act.skilldemage;
+                    }
+                    break;
+                case ActionType.Skill2:
+                    //isSkillInCD1[1] = true;
+                    ap1 -= act.apCost;
+                    pos = act.targetPos;
+                    if (act.targetPos == act.playerState.rc.Position)
+                    {
+                        act.playerState.roleAttributeController1.Hp -= act.skilldemage;
+                    }
+                    break;
+                case ActionType.Skill3:
+                    //isSkillInCD1[2] = true;
+                    ap1 -= act.apCost;
+                    pos = act.targetPos;
+                    if (act.targetPos == act.playerState.rc.Position)
+                    {
+                        act.playerState.roleAttributeController1.Hp -= act.skilldemage;
+                    }
+                    break;
+                case ActionType.GeneralAttack:
+                    pos = act.targetPos;
+                    if (act.targetPos == act.playerState.rc.Position)
+                    {
+                        act.playerState.roleAttributeController1.Hp -= act.skilldemage;
+                    }
+                    break;
+                case ActionType.MoveForth:
+                    pos = act.targetPos;
+                    ap1 -= act.apCost;
+                    break;
+            }
         }
     }
 
@@ -70,12 +141,15 @@ namespace Assets.chess.Global.AI
         int visitTimesAll = 0;   // 该节点的总访问次数，用于子节点引用父节点的改值来计算UCB，该值代表总访问次数
         float qualityValue = 0.0F;   // 选择该节点作为下一步的价值
         State aiState;               // ai的State
-        State playerState;           // 玩家的State
-        ActionType act;
-        Position targetPos;
+        public State playerState;           // 玩家的State
+        public ActionType act;
+        public Position targetPos;
         int simulateNums;            // 进行模拟的次数
         int winNums;                // 模拟中获得胜利的次数
         public double UCB;
+        public int skilldemage;
+        public int apCost;
+        
 
         bool terminal
         {
@@ -97,6 +171,9 @@ namespace Assets.chess.Global.AI
             terminal = false;
             maxRounds = 4;
             simulated = false;
+            skilldemage = 0;
+            apCost = 0;
+            
         }
 
         public bool fullExtended
@@ -113,38 +190,48 @@ namespace Assets.chess.Global.AI
             switch (act)
             {
                 case ActionType.Skill1:                        // 模拟进行技能1
-                    mCurrSkill = holder.rc.Skills[0];      // todo: 确认skill[0]代表第一个技能，应该
+                    mCurrSkill = holder.rc.Skills[0];      // skill[0]代表第一个技能
                     skill = SkillManager.Instance.GetInstance(mCurrSkill);
                     if (holder.endState(skill.Cost))          // 无行动点可继续行动，退出该次模拟，并且代表这次模拟无价值
                     {
                         qualityValue += 0.0f;
-                        targetPos = null;
+                        targetPos = holder.rc.Position;
                         return;
                     }
                     pos = skill.GetMousePositions(holder.rc.Position);
                     if (!pos.Contains(enemy.rc.Position))      // 技能范围内没有敌人，代表这一步没有价值，停止模拟
                     {
                         qualityValue += 0.0f;
-                        targetPos = null;
+                        targetPos = holder.rc.Position;
                         return;
                     }
+                    //else if (holder.isSkillInCD[0])                // 技能正在冷却
+                    //{
+                    //    qualityValue += 0.0f;
+                    //    targetPos = holder.rc.Position;
+                    //    return;
+                    //}
                     else    // 技能范围内有敌人,进行操作
                     {
                         holder.ap -= skill.Cost;           // TODO: 在AI的回合，PlayerManager.Instance.PID应该代表ai
+                        apCost = skill.Cost;
                         // TODO: 执行技能，注意要随时修改died属性
                         targetPos = enemy.rc.Position;
                         object damage = skill.GetValue("Damage");         // 获取技能伤害
                         if(damage == null)                       // 非伤害型技能，将cost作为qualityValue
                         {
+                            skilldemage = 0;
                             qualityValue += skill.Cost;
                             return;
                         }
                         enemy.currHp -= (int)damage;              // 伤害型技能，将damage作为qualityValue
+                        skilldemage = (int)damage;
                         qualityValue += (int)damage;
                         if(enemy.currHp <= 0)
                         {
                             enemy.Died = true;
                         }
+                        //holder.isSkillInCD[0] = true;
                     }
                     break;
                 case ActionType.Skill2:
@@ -153,19 +240,26 @@ namespace Assets.chess.Global.AI
                     if (holder.endState(skill.Cost))          // 无行动点可继续行动，退出该次模拟，并且代表这次模拟无价值
                     {
                         qualityValue += 0.0f;
-                        targetPos = null;
+                        targetPos = holder.rc.Position;
                         return;
                     }
                     pos = skill.GetMousePositions(holder.rc.Position);
                     if (!pos.Contains(enemy.rc.Position))      // 技能范围内没有敌人，代表这一步没有价值，停止模拟
                     {
                         qualityValue += 0.0f;
-                        targetPos = null;
+                        targetPos = holder.rc.Position;
                         return;
                     }
+                    /*else if(holder.isSkillInCD[1])                // 技能正在冷却
+                    {
+                        qualityValue += 0.0f;
+                        targetPos = holder.rc.Position;
+                        return;
+                    }*/
                     else    // 技能范围内有敌人,进行操作
                     {
                         holder.ap -= skill.Cost;           // TODO: 在AI的回合，PlayerManager.Instance.PID应该代表ai
+                        apCost = skill.Cost;
                         // TODO: 执行技能，注意要随时修改died属性
                         targetPos = enemy.rc.Position;
                         object damage = skill.GetValue("Damage");         // 获取技能伤害
@@ -175,11 +269,13 @@ namespace Assets.chess.Global.AI
                             return;
                         }
                         enemy.currHp -= (int)damage;              // 伤害型技能，将damage作为qualityValue
+                        skilldemage = (int)damage;
                         qualityValue += (int)damage;
                         if (enemy.currHp <= 0)
                         {
                             enemy.Died = true;
                         }
+                        //holder.isSkillInCD[1] = true;
                     }
                     break;
                 case ActionType.Skill3:
@@ -188,19 +284,26 @@ namespace Assets.chess.Global.AI
                     if (holder.endState(skill.Cost))          // 无行动点可继续行动，退出该次模拟，并且代表这次模拟无价值
                     {
                         qualityValue += 0.0f;
-                        targetPos = null;
+                        targetPos = holder.rc.Position;
                         return;
                     }
                     pos = skill.GetMousePositions(holder.rc.Position);
                     if (!pos.Contains(enemy.rc.Position))      // 技能范围内没有敌人，代表这一步没有价值，停止模拟
                     {
                         qualityValue += 0.0f;
-                        targetPos = null;
+                        targetPos = holder.rc.Position;
                         return;
                     }
+                    /*else if(holder.isSkillInCD[2])                // 技能正在冷却
+                    {
+                        qualityValue += 0.0f;
+                        targetPos = holder.rc.Position;
+                        return;
+                    }*/
                     else    // 技能范围内有敌人,进行操作
                     {
                         holder.ap -= skill.Cost;           // TODO: 在AI的回合，PlayerManager.Instance.PID应该代表ai
+                        apCost = skill.Cost;
                         // TODO: 执行技能，注意要随时修改died属性
                         targetPos = enemy.rc.Position;
                         object damage = skill.GetValue("Damage");         // 获取技能伤害
@@ -210,25 +313,29 @@ namespace Assets.chess.Global.AI
                             return;
                         }
                         enemy.currHp -= (int)damage;              // 伤害型技能，将damage作为qualityValue
+                        skilldemage = (int)damage;
                         qualityValue += (int)damage;
                         if (enemy.currHp <= 0)
                         {
                             enemy.Died = true;
                         }
+                        //holder.isSkillInCD[2] = true;
                     }
                     break;
-                case ActionType.GeneralAttack:
+                case ActionType.GeneralAttack:             // TODO: 普攻的行动点消耗
+                    // todo: apcost
                     int range = holder.rc.Temp.AttackRange;
                     if(HexMapUtil.GetDistance(holder.rc.Position, enemy.rc.Position) > range)
                     {
                         qualityValue += 0;
-                        targetPos = null;
+                        targetPos = holder.rc.Position;
                         return;
                     } else
                     {
                         targetPos = enemy.rc.Position;
                         int damage = holder.rc.Temp.Attack;
                         enemy.currHp -= (int)damage;              //将damage作为qualityValue
+                        skilldemage = (int)damage;
                         qualityValue += (int)damage;
                         if (enemy.currHp <= 0)
                         {
@@ -240,23 +347,29 @@ namespace Assets.chess.Global.AI
 
                 case ActionType.MoveForth:
                     int distance = HexMapUtil.GetDistance(holder.rc.Position, enemy.rc.Position);             // ai与玩家的距离
-                    CellController holderCell = MapManager.Instance.GetCell(holder.rc.Position);              // 操作者所处的cell
-                    CellController enemyCell = MapManager.Instance.GetCell(enemy.rc.Position);                // 敌人所处的cell
-                    Random r1 = new Random();
-                    int i = r1.Next(5);
-                    CellController t = enemyCell.GetNeighbor((HexDirection)i);                                // 随机移动
-                    for (int j = 0; j < i; j++)
+                    CellController temp = MapManager.Instance.GetCell(holder.rc.Position);
+                    Random r = new Random();
+                    CellController next = temp.GetNeighbor((HexDirection)r.Next(6));
+                    int distanceT = HexMapUtil.GetDistance(next.Position, enemy.rc.Position);
+                    for(int m = 0; m < Math.Min(holder.ap,10); m++)
                     {
-                        int dir = r1.Next(6);
-                        if(t.GetNeighbor((HexDirection)dir).Position != enemyCell.Position)
+                        if(distanceT > distance)
                         {
-                            t = t.GetNeighbor((HexDirection)dir);
+                            next = temp.GetNeighbor((HexDirection)r.Next(6));
+                            distanceT = HexMapUtil.GetDistance(next.Position, enemy.rc.Position);
+                        } else
+                        {
+                            temp = next;
+                            next = temp.GetNeighbor((HexDirection)r.Next(6));
+                            distanceT = HexMapUtil.GetDistance(next.Position, enemy.rc.Position);
+                            distance = HexMapUtil.GetDistance(temp.Position, enemy.rc.Position);
+                            m++;
                         }
                     }
-                    holder.pos = t.Position;
-                    int movdis = HexMapUtil.GetDistance(holder.rc.Position, holder.pos);
-                    qualityValue += movdis;                                                       // 移动距离作为qualityValue
-                    holder.ap -= movdis;
+                    qualityValue += Math.Min(holder.ap, 10);
+                    targetPos = temp.Position;
+                    holder.ap -= Math.Min(holder.ap, 10);
+                    apCost = Math.Min(holder.ap, 10);
                     break;
             }
         }
@@ -315,6 +428,9 @@ namespace Assets.chess.Global.AI
                         int r = ran.Next(AIController.Instance.AvailableActionNum + 1);
                         Act((ActionType)r, playerState, aiState);
                     }
+
+                    aiState.Reset();
+                    playerState.Reset();
                     count++;
                 }
                 if(playerState.Died)
@@ -356,42 +472,64 @@ namespace Assets.chess.Global.AI
         }// 获取枚举ActionType内元素的个数，作为MTCS的第二层节点数
         private static State mstate;
         private static State pstate;
-
-        public void Init(RoleController aicontroller, RoleController plcontroller)
-        {
-            roleController = aicontroller;
-            mstate = new State(DeepCopyByBinary<RoleController>(aicontroller));         // 深拷贝
-            pstate = new State(DeepCopyByBinary<RoleController>(plcontroller));         // 深拷贝
-        }
+        private static RoleAttributeController airoleattr;
+        private static RoleAttributeController plroleattr;
         
-        void MTCSAction(State mstate, State pstate)
+        void MTCSAction(RoleController aicontroller, RoleController plcontroller)
         {
-            MTCSNode root = new MTCSNode(mstate, pstate);
-            foreach (var c in root.childrens)           // 对子节点进行模拟，之后选出最优子节点
+            List<MTCSNode> acts = new List<MTCSNode>();
+            roleController = aicontroller;
+            airoleattr = new RoleAttributeController();
+            airoleattr.Copy(aicontroller.Temp);
+            plroleattr = new RoleAttributeController();
+            plroleattr.Copy(plcontroller.Temp);
+            mstate = new State(aicontroller,airoleattr);
+            pstate = new State(plcontroller,plroleattr);
+
+            while(!mstate.endState(0))
             {
-                if (!c.simulated)
+                mstate.Reset();
+                pstate.Reset();
+                MTCSNode root = new MTCSNode(mstate, pstate);
+                foreach (var c in root.childrens)           // 对子节点进行模拟，之后选出最优子节点
                 {
-                    MTCSNode act = root.Selection();
-                    act.Simulation();
+                    if (!c.simulated)
+                    {
+                        MTCSNode act = root.Selection();
+                        act.Simulation();
+                    }
+                }
+                MTCSNode actBest = root.GetBestAct();
+                acts.Add(actBest);
+                mstate.Update(actBest);
+            }
+            int Skillid;
+            // 根据acts发送消息出去
+            for(int i = 0; i < acts.Count; i++)
+            {
+                switch(acts[i].act)
+                {
+                    case ActionType.Skill1:
+                        Skillid = roleController.Skills[0];
+                        GameNetManager.Instance.Skill(Skillid, roleController, acts[i].targetPos);
+                        break;
+                    case ActionType.Skill2:
+                        Skillid = roleController.Skills[1];
+                        GameNetManager.Instance.Skill(Skillid, roleController, acts[i].targetPos);
+                        break;
+                    case ActionType.Skill3:
+                        Skillid = roleController.Skills[2];
+                        GameNetManager.Instance.Skill(Skillid, roleController, acts[i].targetPos);
+                        break;
+                    case ActionType.GeneralAttack:
+                        GameNetManager.Instance.Attack(roleController, acts[i].targetPos);
+                        break;
+                    case ActionType.MoveForth:
+                        GameNetManager.Instance.Move(roleController, acts[i].targetPos);
+                        break;
                 }
             }
-            MTCSNode actBest = root.GetBestAct();
-            // TODO: 根据actBest进行act
         }
 
-        // 深拷贝
-        public static T DeepCopyByBinary<T>(T obj)
-        {
-            object retval;
-            using (MemoryStream ms = new MemoryStream())
-            {
-                BinaryFormatter bf = new BinaryFormatter();
-                bf.Serialize(ms, obj);
-                ms.Seek(0, SeekOrigin.Begin);
-                retval = bf.Deserialize(ms);
-                ms.Close();
-            }
-            return (T)retval;
-        }
     }
 }

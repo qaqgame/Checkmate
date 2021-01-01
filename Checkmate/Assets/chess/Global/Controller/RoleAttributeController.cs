@@ -433,6 +433,10 @@ namespace Checkmate.Game.Controller
             _canMiss = data.canMiss;
         }
 
+        public RoleAttributeController()
+        {
+        }
+
         public void Set(RoleProperty data)
         {
             _hp = data.hp;
